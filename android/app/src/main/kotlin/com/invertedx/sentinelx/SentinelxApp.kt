@@ -6,7 +6,7 @@ import org.bitcoinj.params.MainNetParams
 object SentinelxApp {
 
 
-    public var networkParameters: NetworkParameters = if (BuildConfig.DEBUG) MainNetParams.get() else MainNetParams.get();
+    public var networkParameters: NetworkParameters = if (BuildConfig.DEBUG) MainNetParams.get() else MainNetParams.get()
 
 
     fun isTestNet(): Boolean {
