@@ -1,7 +1,7 @@
 package com.invertedx.sentinelx.api
 
-import io.reactivex.Completable
-import io.reactivex.Single
+import android.util.Log
+import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
@@ -9,25 +9,32 @@ import okhttp3.Request
 class ApiService {
     val SAMOURAI_API = "https://api.samouraiwallet.com/v2/"
     val SAMOURAI_API_TESTNET = "https://api.samouraiwallet.com/test/v2/"
-    lateinit var client: OkHttpClient;
+    var client: OkHttpClient
 
-    constructor() {
+    init {
         //TODO- Tor service proxy here
         val builder = OkHttpClient.Builder()
         client = builder.build()
     }
 
 
-    fun getTxAndXPUBData(XpubOrAddress: String): Single<String> {
+    fun getTxAndXPUBData(XpubOrAddress: String): Observable<String> {
 
         val url = "${SAMOURAI_API}multiaddr?active=$XpubOrAddress"
-
-        return Single.fromCallable {
+        Log.i("API", "CALL url -> $url")
+        return Observable.fromCallable {
             val request = Request.Builder()
                     .url(url)
                     .build()
             val response = client.newCall(request).execute()
-            return@fromCallable response.body().toString()
+            try {
+                val content = response.body()!!.string()
+                Log.i("API", "response -> $content")
+                return@fromCallable content
+            } catch (ex: Exception) {
+                return@fromCallable "{}"
+            }
+
         }
     }
 }
