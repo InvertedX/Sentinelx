@@ -1,6 +1,7 @@
 package com.invertedx.sentinelx.channel
 
 import android.content.Context
+import com.invertedx.sentinelx.utils.SentinalPrefs
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
@@ -19,6 +20,13 @@ class SystemChannel(private val applicationContext: Context) : MethodChannel.Met
                     dir.mkdir()
                 }
                 return result.success(dir.path)
+            }
+            "setNetwork" -> {
+                val isTestNet = methodCall.argument<Boolean>("mode")
+                val pref = SentinalPrefs(applicationContext)
+                if (isTestNet != null)
+                    pref.isTestNet = isTestNet
+                result.success("Success")
             }
 
         }
