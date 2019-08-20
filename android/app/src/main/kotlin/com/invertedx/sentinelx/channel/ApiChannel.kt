@@ -1,12 +1,15 @@
 package com.invertedx.sentinelx.channel
 
 import android.content.Context
+import android.util.Log
 import com.invertedx.sentinelx.api.ApiService
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 
-class ApiChannel(private val applicationContext: Context) : MethodChannel.MethodCallHandler {
+class ApiChannel(applicationContext: Context) : MethodChannel.MethodCallHandler {
 
 
     override fun onMethodCall(methodCall: MethodCall?, result: MethodChannel.Result?) {
@@ -21,12 +24,18 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
                     return
                 }
                 ApiService().getTxAndXPUBData(xpubOrAddress)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             if (it != null) {
+                                Log.i("API", it.toString())
                                 result.success(it)
                             }
-                        }, { result.error("APIError", "Error", it) })
-                        .dispose()
+                        }, {
+
+                            it.printStackTrace()
+                            result.error("APIError", "Error", it.message)
+                        })
             }
 
         }
