@@ -2,34 +2,24 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
-class CryptoChannel {
-  static const platform = const MethodChannel('crypto.channel');
+class ApiChannel {
+  static const platform = const MethodChannel('api.channel');
 
-  static final CryptoChannel _singleton = new CryptoChannel._internal();
+  static final ApiChannel _singleton = new ApiChannel._internal();
 
-  factory CryptoChannel() {
+  factory ApiChannel() {
     return _singleton;
   }
 
-  CryptoChannel._internal();
+  ApiChannel._internal();
 
-  Future<bool> validateXPUB(String xpub) async {
+  Future<String> getXpubOrAddress(String xpubOrAddress) async {
     try {
-      await platform.invokeMethod<String>("validateXPUB", {'xpub': xpub});
-      return true;
-    } catch (exception) {
-      print(exception);
-      return false;
-    }
-  }
-
-  Future<bool> validateAddress(String address) async {
-    try {
-      await platform.invokeMethod<String>("validateAddress", {'address': address});
-      return true;
-    } catch (exception) {
-      print(exception);
-      return false;
+      String response = await platform.invokeMethod("getTxData", {'xpubOrAddress': xpubOrAddress});
+      print("res : $response");
+      return response;
+    } catch (error) {
+      throw error;
     }
   }
 }

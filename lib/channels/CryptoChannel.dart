@@ -13,6 +13,17 @@ class CryptoChannel {
 
   CryptoChannel._internal();
 
+  Future<bool> getAddress(String xpub, int account_index, int change_index) async {
+    try {
+      await platform.invokeMethod<String>(
+          "generateAddress", {'xpub': xpub, 'change_index': change_index, 'account_index': account_index});
+      return true;
+    } catch (exception) {
+      print(exception);
+      return false;
+    }
+  }
+
   Future<bool> validateXPUB(String xpub) async {
     try {
       await platform.invokeMethod<String>("validateXPUB", {'xpub': xpub});
@@ -30,6 +41,39 @@ class CryptoChannel {
     } catch (exception) {
       print(exception);
       return false;
+    }
+  }
+
+  Future<String> generateAddressBIP49(String xpub, int accountIndex) async {
+    try {
+      String address =
+          await platform.invokeMethod<String>("generateAddressBIP49", {'xpub': xpub, 'account_index': accountIndex});
+      return address;
+    } catch (exception) {
+      print(exception);
+      throw exception;
+    }
+  }
+
+  Future<String> generateAddressBIP84(String xpub, int accountIndex) async {
+    try {
+      String address =
+          await platform.invokeMethod<String>("generateAddressBIP84", {'xpub': xpub, 'account_index': accountIndex});
+      return address;
+    } catch (exception) {
+      print(exception);
+      throw exception;
+    }
+  }
+
+  Future<String> generateAddressXpub(String xpub, int accountIndex) async {
+    try {
+      String address =
+          await platform.invokeMethod<String>("generateAddressXpub", {'xpub': xpub, 'account_index': accountIndex});
+      return address;
+    } catch (exception) {
+      print(exception);
+      throw exception;
     }
   }
 }

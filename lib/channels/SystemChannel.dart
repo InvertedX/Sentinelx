@@ -17,4 +17,16 @@ class SystemChannel {
     var path = await platform.invokeMethod<String>("documentPath");
     return Directory(path);
   }
+
+
+  Future<bool> setNetwork(bool isTestNet) async {
+    try {
+      await platform.invokeMethod<String>("setNetwork", {'mode': isTestNet});
+      return true;
+    } catch (exception) {
+      print(exception);
+      return false;
+    }
+  }
+
 }
