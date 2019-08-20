@@ -7,34 +7,14 @@ import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 
-initDatabase() async {
-  await AppDatabase.instance.database;
-  final wallets = await Wallet.getAllWallets();
-  AppState appState = AppState();
+class TxDB {
+  static final TxDB _singleton = TxDB._();
 
-  if (wallets.length == 0) {
-    var wallet = new Wallet(totalAmount: 0, walletName: "Wallet 1", xpubs: []);
-    Wallet.insert(wallet);
-    print("Init : Wallet created");
-    appState.wallets = wallets.toList();
-    appState.selectWallet(wallets.toList().first);
-  } else {
-    appState.wallets = wallets.toList();
-    appState.selectWallet(wallets.toList().first);
-
-    print(appState.selectedWallet.toJson());
-
-  }
-}
-
-class AppDatabase {
-  static final AppDatabase _singleton = AppDatabase._();
-
-  static AppDatabase get instance => _singleton;
+  static TxDB get instance => _singleton;
 
   Completer<Database> _dbOpenCompleter;
 
-  AppDatabase._();
+  TxDB._();
 
   Database _database;
 
@@ -50,7 +30,7 @@ class AppDatabase {
   Future _openDatabase() async {
     final appDocumentDir = await SystemChannel().getDataDir();
     print(appDocumentDir);
-    final dbPath = join(appDocumentDir.path, 'sentinalx.db');
+    final dbPath = join(appDocumentDir.path, 'txes.db');
     final database = await databaseFactoryIo.openDatabase(dbPath);
     _dbOpenCompleter.complete(database);
   }
