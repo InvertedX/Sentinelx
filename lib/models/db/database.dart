@@ -12,7 +12,7 @@ initDatabase() async {
   if (wallets.length == 0) {
     //Default account
     //for future updates app will support multiple account
-    var wallet = new Wallet(totalAmount: 0, walletName: "Wallet 1", xpubs: []);
+    var wallet = new Wallet( walletName: "Wallet 1", xpubs: []);
     Wallet.insert(wallet);
     print("Init : Wallet created");
     appState.wallets = wallets.toList();

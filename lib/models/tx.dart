@@ -1,5 +1,10 @@
+import 'package:flutter/widgets.dart';
+import 'package:sembast/sembast.dart';
+import 'package:sentinelx/models/db/txDB.dart';
 
-class Xpub {
+import '../db_test.dart';
+
+class Xpub extends ChangeNotifier {
   String m;
   String path;
 
@@ -18,8 +23,7 @@ class Xpub {
   }
 }
 
-
-class Txs {
+class Tx {
   String hash;
   int time;
   int version;
@@ -29,19 +33,24 @@ class Txs {
   List<Out> out;
   int blockHeight;
   int balance;
+  String key;
+  static const String STORE_NAME = 'txs';
 
-  Txs(
+  static Future<Database> get _db async => await TxDB.instance.database;
+  static final txStore = stringMapStoreFactory.store(STORE_NAME);
+
+  Tx(
       {this.hash,
-        this.time,
-        this.version,
-        this.locktime,
-        this.result,
-        this.inputs,
-        this.out,
-        this.blockHeight,
-        this.balance});
+      this.time,
+      this.version,
+      this.locktime,
+      this.result,
+      this.inputs,
+      this.out,
+      this.blockHeight,
+      this.balance});
 
-  Txs.fromJson(Map<String, dynamic> json) {
+  Tx.fromJson(Map<String, dynamic> json) {
     hash = json['hash'];
     time = json['time'];
     version = json['version'];
@@ -78,11 +87,28 @@ class Txs {
     }
     data['block_height'] = this.blockHeight;
     data['balance'] = this.balance;
+    data['key'] = this.hash;
     return data;
   }
+
+  static Future insert(List<Tx> items) async {
+    var db = await _db;
+    await db.transaction((txn) async {
+      for (var i = 0; i < items.length; i++) {
+        await txStore.add(txn, items[i].toJson());
+      }
+    });
+  }
+
+  static Future<List<Tx>> getTxes() async {
+    final recordSnapshots = await txStore.find(await _db);
+    return recordSnapshots.map((snapshot) {
+      final tx = Tx.fromJson(snapshot.value);
+      tx.key = snapshot.key;
+      return tx;
+    }).toList();
+  }
 }
-
-
 
 class PrevOut {
   String txid;
@@ -114,7 +140,6 @@ class PrevOut {
   }
 }
 
-
 class Inputs {
   int vin;
   int sequence;
@@ -125,9 +150,7 @@ class Inputs {
   Inputs.fromJson(Map<String, dynamic> json) {
     vin = json['vin'];
     sequence = json['sequence'];
-    prevOut = json['prev_out'] != null
-        ? new PrevOut.fromJson(json['prev_out'])
-        : null;
+    prevOut = json['prev_out'] != null ? new PrevOut.fromJson(json['prev_out']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -164,6 +187,34 @@ class Out {
     if (this.xpub != null) {
       data['xpub'] = this.xpub.toJson();
     }
+    return data;
+  }
+}
+
+class Address {
+  String address;
+  num finalBalance;
+  num accountIndex;
+  num changeIndex;
+  num nTx;
+
+  Address({this.address, this.finalBalance, this.accountIndex, this.changeIndex, this.nTx});
+
+  Address.fromJson(Map<String, dynamic> json) {
+    address = json['address'];
+    finalBalance = json.containsKey("final_balance") ? json['final_balance'] : 0;
+    accountIndex = json.containsKey("account_index") ? json['account_index'] : 0;
+    changeIndex = json.containsKey("change_index") ? json['change_index'] : 0;
+    nTx = json['n_tx'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['address'] = this.address;
+    data['final_balance'] = this.finalBalance;
+    data['account_index'] = this.accountIndex;
+    data['change_index'] = this.changeIndex;
+    data['n_tx'] = this.nTx;
     return data;
   }
 }

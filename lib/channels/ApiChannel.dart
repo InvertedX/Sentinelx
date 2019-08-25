@@ -22,4 +22,13 @@ class ApiChannel {
       throw error;
     }
   }
+
+  Future<bool> addHDAccount(String xpub, String bip) async {
+    try {
+      bool okay = await platform.invokeMethod("addHDAccount", {'xpub': xpub, "bip": bip});
+      return okay;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

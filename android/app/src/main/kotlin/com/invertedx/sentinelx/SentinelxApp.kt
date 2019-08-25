@@ -3,6 +3,7 @@ package com.invertedx.sentinelx
 import android.util.Log
 import org.bitcoinj.core.NetworkParameters
 import org.bitcoinj.params.MainNetParams
+import org.bitcoinj.params.TestNet3Params
 
 
 fun Any.e(msg: Any? = "No Message provided") {
@@ -24,7 +25,7 @@ fun Any.d(msg: Any? = "No Message provided") {
 object SentinelxApp {
 
 
-    public var networkParameters: NetworkParameters = if (BuildConfig.DEBUG) MainNetParams.get() else MainNetParams.get()
+    public var networkParameters: NetworkParameters = if (BuildConfig.DEBUG) TestNet3Params.get() else TestNet3Params.get()
 
 
     fun isTestNet(): Boolean {

@@ -1,6 +1,7 @@
 package com.invertedx.sentinelx.hd;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.invertedx.sentinelx.SentinelxApp;
 
@@ -52,19 +53,15 @@ public class HD_WalletFactory	{
         return instance;
     }
 
-    public HD_Wallet restoreWallet(String data, String passphrase, int nbAccounts) throws AddressFormatException, DecoderException  {
+    public HD_Wallet restoreWallet(String data) throws AddressFormatException, DecoderException  {
 
         HD_Wallet hdw = null;
-
-        if(passphrase == null) {
-            passphrase = "";
-        }
 
         NetworkParameters params =  SentinelxApp.INSTANCE.getNetworkParameters();
 
         if(data.startsWith("xpub") || data.startsWith("ypub") || data.startsWith("zpub") || data.startsWith("tpub") || data.startsWith("upub") || data.startsWith("vpub")) {
             String[] xpub = data.split(":");
-//            Log.i("HD_WalletFactory", "xpubs:" + xpub.length);
+            Log.i("HD_WalletFactory", "xpubs:" + xpub.length);
             hdw = new HD_Wallet(params, xpub);
         }
 

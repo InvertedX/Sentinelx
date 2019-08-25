@@ -1,8 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:sembast/sembast.dart';
+import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/xpub.dart';
 
-import 'app_db.dart';
+import 'package:sentinelx/models/db/sentinelxDB.dart';
+import 'package:sentinelx/shared_state/balance.dart';
 
 class Wallet extends ChangeNotifier {
   static const String STORE_NAME = 'wallet';
@@ -11,11 +13,11 @@ class Wallet extends ChangeNotifier {
   String walletName = "Wallet 1";
   List<XPUBModel> xpubs = [];
   List<String> legacyAddresses = [];
-  num totalAmount = 0;
+  BalanceModel balanceModel = new BalanceModel();
 
-  Wallet({this.walletName, this.xpubs, this.totalAmount});
+  Wallet({this.walletName, this.xpubs });
 
-  static Future<Database> get _db async => await AppDatabase.instance.database;
+  static Future<Database> get _db async => await SentinelxDB.instance.database;
 
   static final _walletStore = intMapStoreFactory.store(STORE_NAME);
 
@@ -48,6 +50,7 @@ class Wallet extends ChangeNotifier {
       wallet.toJson(),
       finder: finder,
     );
+    print("UPDATED");
   }
 
   Map<String, dynamic> toJson() {
@@ -58,17 +61,24 @@ class Wallet extends ChangeNotifier {
     if (this.walletName != null) {
       data['walletName'] = this.walletName;
     }
-    if (this.totalAmount != null) {
-      data['totalAmount'] = this.totalAmount;
+    if (this.balanceModel != null) {
+      data['balanceModel'] = this.balanceModel.toJson();
     }
     if (this.legacyAddresses != null) {
       data['legacyAddresses'] = this.legacyAddresses.toList();
     }
+    print("data $data");
     return data;
   }
 
   Wallet.fromJson(Map<String, dynamic> json) {
-    this.totalAmount = json['totalAmount'];
+
+    if(json.containsKey("balanceModel")){
+      this.balanceModel.fromJSON(
+          json['balanceModel']
+      ) ;
+    }
+
     this.walletName = json['walletName'];
 
     if (json['xpubs'] != null) {
@@ -78,5 +88,35 @@ class Wallet extends ChangeNotifier {
       });
       this.xpubs = xpubs;
     }
+  }
+
+  num updateTotalBalance(){
+    num total = 0;
+    this.xpubs.forEach((model){
+      total = total+ model.final_balance;
+    });
+    this.balanceModel.update(total);
+    this.notifyListeners();
+    return total;
+  }
+
+  Future saveState() {
+    return Wallet.update(this);
+  }
+
+  void updateXpubState(Address addressObj, num balance) {
+    XPUBModel xpub = this.xpubs.where((item) => item.xpub == addressObj.address).toList().first;
+    xpub.change_index = addressObj.changeIndex;
+    xpub.account_index = addressObj.accountIndex;
+    xpub.final_balance = balance;
+    xpub.notifyListeners();
+    updateTotalBalance();
+    Wallet.update(this);
+  }
+
+  Future clear() {
+    this.xpubs = [];
+    notifyListeners();
+    return this.saveState();
   }
 }
