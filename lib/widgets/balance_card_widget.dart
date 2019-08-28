@@ -90,7 +90,7 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
                   ),
                 ),
               ),
-              Spacer(flex: 1)
+              Spacer(flex:1)
             ],
           ),
         ),

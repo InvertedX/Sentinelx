@@ -20,12 +20,16 @@ class _CardWidgetState extends State<CardWidget> {
 //    final counter =;
 
     XPUBModel xpubModel = Provider.of<XPUBModel>(context);
+    final IconData icon = (xpubModel.bip.contains("84") || xpubModel.bip.contains("49"))
+        ? SentinelxIcons.segwit
+        : !xpubModel.bip.contains("44") ? SentinelxIcons.xpub : SentinelxIcons.bitcoin;
+
     return Stack(
       children: <Widget>[
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(6),
-            color: Color(0xff5C4FC0),
+            color: Color(0xff3B456D),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -33,7 +37,7 @@ class _CardWidgetState extends State<CardWidget> {
               ClipPath(
                 clipper: WaveClipper(reverse: true),
                 child: Container(
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: Color(0xff7162ED)),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: Color(0xff3B456D)),
                   height: 120,
                   width: double.infinity,
                 ),
@@ -56,13 +60,17 @@ class _CardWidgetState extends State<CardWidget> {
                     Expanded(
                         child: Align(
                           alignment: Alignment.bottomLeft,
-                           child: Chip(
-                             avatar: CircleAvatar(
-                               backgroundColor: Colors.grey[800],
-                               child: Icon(SentinelxIcons.xpub,size: 16,),
-                             ),
-                             label: Text(xpubModel.bip),
-                           ),
+                          child: Chip(
+                            avatar: CircleAvatar(
+                              child: Center(
+                                child: Icon(
+                                  icon,
+                                  size: 12,
+                                ),
+                              ),
+                            ),
+                            label: Text(xpubModel.bip),
+                          ),
                         ),
                         flex: 1),
                     Expanded(
@@ -91,15 +99,20 @@ class _CardWidgetState extends State<CardWidget> {
                     ),
                   )),
               Expanded(
-                child: Container(
-                  width: 120,
-                  alignment: Alignment.bottomLeft,
-                  child: Text(
-                    "XPUB:${xpubModel.xpub}",
-                    maxLines: 1,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Container(
+                      width: 120,
+                      alignment: Alignment.bottomLeft,
+                      child: Text(
+                        "XPUB:${xpubModel.xpub}",
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
                 ),
-                flex: 2,
+                flex: 1,
               )
             ],
           ),

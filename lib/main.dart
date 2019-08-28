@@ -5,11 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
 import 'package:sentinelx/models/db/database.dart';
+import 'package:sentinelx/models/db/txDB.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Track/track_screen.dart';
 import 'package:sentinelx/screens/home.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/shared_state/txState.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
 
 import 'models/wallet.dart';
@@ -17,13 +19,12 @@ import 'models/wallet.dart';
 Future main() async {
   Provider.debugCheckInvalidValueType = null;
   await initDatabase();
-  var txs = await Tx.getTxes();
-  print("TXES ${txs.map((tx) => tx.toJson()).toList()}");
   return runApp(MultiProvider(
     providers: [
       Provider<AppState>.value(value: AppState()),
       ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
       Provider<Wallet>.value(value: AppState().selectedWallet),
+      ChangeNotifierProvider<TxState>.value(value: AppState().selectedWallet.txState),
     ],
     child: SentinelX(),
   ));
@@ -46,4 +47,3 @@ class SentinelX extends StatelessWidget {
 //    return
   }
 }
-

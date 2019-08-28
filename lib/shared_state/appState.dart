@@ -1,13 +1,20 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:sentinelx/channels/ApiChannel.dart';
+import 'package:sentinelx/models/db/txDB.dart';
+import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/balance.dart';
-
+import 'package:sentinelx/shared_state/txState.dart';
 
 class AppState extends ChangeNotifier {
   AppState._privateConstructor();
+
+  TxDB txDB;
 
   static final AppState _instance = AppState._privateConstructor();
 
@@ -18,16 +25,47 @@ class AppState extends ChangeNotifier {
   List<Wallet> wallets = [];
   Wallet selectedWallet;
   ThemeProvider theme = ThemeProvider();
-//  String theme = "light";
+  int pageIndex = 0;
 
   selectWallet(Wallet wallet) {
     this.selectedWallet = wallet;
     notifyListeners();
   }
-//
-//  toggleTheme() {
-//    this.theme = "dark";
-//    notifyListeners();
-//  }
 
+  Future refreshTx(int index) async {
+    try {
+      String xpub = this.selectedWallet.xpubs[index - 1].xpub;
+      var response = await ApiChannel().getXpubOrAddress(xpub);
+      Map<String, dynamic> json = jsonDecode(response);
+      if (json.containsKey("addresses")) {
+        List<dynamic> items = json['addresses'];
+        var balance = 0;
+        if (json.containsKey("wallet")) {
+          balance = json['wallet']['final_balance'];
+        }
+        if (items.length == 1) {
+          Map<String, dynamic> address = items.first;
+          var addressObj = Address.fromJson(address);
+          AppState().selectedWallet.updateXpubState(addressObj, balance);
+          if (json.containsKey("txs")) {
+            List<dynamic> txes = json['txs'];
+            TxDB.insertOrUpdate(txes, addressObj, true);
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      print("E ${e}");
+    }
+  }
+
+  void setPageIndex(int index) async {
+    pageIndex = index;
+    if (pageIndex == 0) {
+      this.selectedWallet.txState.addTxes(await TxDB.getAllTxes(this.selectedWallet.xpubs));
+    } else {
+      String xpub = this.selectedWallet.xpubs[index - 1].xpub;
+      this.selectedWallet.txState.addTxes(await TxDB.getTxes(xpub));
+    }
+  }
 }

@@ -68,9 +68,11 @@ class _TrackState extends State<Track> with SingleTickerProviderStateMixin {
           TabTrackXpub(_trackXpub),
           TabTrackSegwit(_trackSegwit),
         ]),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton.extended(
           onPressed: save,
-          child: Icon(Icons.save),
+          heroTag: "ADD",
+          icon: Icon(Icons.save),
+          label: Text("Save"),
         ),
       ),
     );

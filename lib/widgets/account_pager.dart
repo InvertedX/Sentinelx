@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/wallet.dart';
@@ -11,7 +12,7 @@ class AccountsPager extends StatefulWidget {
   _AccountsPagerState createState() => _AccountsPagerState();
 }
 
-class _AccountsPagerState extends State<AccountsPager> {
+class _AccountsPagerState extends State<AccountsPager> with SingleTickerProviderStateMixin {
   PageController _pageController;
   Wallet wallet;
   @override
@@ -23,7 +24,9 @@ class _AccountsPagerState extends State<AccountsPager> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
+      padding: EdgeInsets.symmetric(vertical: 12),
+      height: 230,
+      color: Color(0xff202433),
       child: Consumer<Wallet>(
         builder: (context, model, child) {
           wallet = model;
@@ -42,17 +45,30 @@ class _AccountsPagerState extends State<AccountsPager> {
 
   Widget _pageBuilder(BuildContext context, int index) {
     if (index == 0) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: BalanceCardWidget(),
+      return Container(
+        height: 200,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: BalanceCardWidget(),
+        ),
       );
     } else {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ChangeNotifierProvider.value(value: wallet.xpubs[index - 1], child: CardWidget()),
+      return Container(
+        height: 200,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ChangeNotifierProvider.value(value: wallet.xpubs[index - 1], child: CardWidget()),
+        ),
       );
     }
   }
 
-  void _onPageChange(int value) {}
+  void _onPageChange(int index) {
+    Provider.of<AppState>(context).setPageIndex(index);
+  }
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 }

@@ -2,10 +2,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
+import 'package:sentinelx/models/db/txDB.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/shared_state/txState.dart';
+import 'package:sentinelx/utils/format_util.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
+import 'package:flutter_group_sliver/flutter_group_sliver.dart';
+import 'package:sentinelx/widgets/fab_menu.dart';
+import 'package:sentinelx/widgets/tx_widget.dart';
 
 import 'Track/track_screen.dart';
 
@@ -20,120 +27,91 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: true, backgroundColor: Color(0xff13141b), //      appBar: AppBar(
-//        title: Text("SentinelX"),
-//        primary: true,
-//        centerTitle: true,
-//      ),
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            title: Text('SentinelX'),
-            centerTitle: true,
-            primary: true,
-          ),
-          SliverFixedExtentList(
-            itemExtent: 230.0,
-            delegate: SliverChildListDelegate(
-              [
-                Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: AccountsPager(),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ), //      body: Column(
-//        children: <Widget>[
-//          Padding(
-//            padding: const EdgeInsets.all(12.0),
-//            child: AccountsPager(),
-//          ),
-//          RaisedButton(
-//            onPressed: ApiCall,
-//            child: Text("API"),
-//          ),
-//          RaisedButton(
-//            onPressed: Clear,
-//            child: Text("Clear"),
-//          )
-//        ],
-//      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => onPress(context),
-        child: Icon(Icons.add),
+      appBar: AppBar(
+        title: Text('SentinelX'),
+        centerTitle: true,
+        primary: true,
+        elevation: 18
+        ,
       ),
+      backgroundColor: Color(0xff161925),
+      body: RefreshIndicator(
+          child: CustomScrollView(
+            slivers: <Widget>[
+              SliverFixedExtentList(
+                  itemExtent: 220.0,
+                  delegate: SliverChildListDelegate(
+                    [
+                      AccountsPager(),
+                    ],
+                  )),
+              SliverToBoxAdapter(
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.only(top: 16,left: 16),
+                  height: 40,
+                  child: Text(
+                    "Transactions",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600,color: Colors.grey[400]),
+                  ),
+                ),
+              ),
+              SliverGroupBuilder(
+                decoration: BoxDecoration(
+                    //              color: Color(0xff0B0D14),
+                    borderRadius: BorderRadius.circular(12)),
+                margin: EdgeInsets.all(4),
+                child: Consumer<TxState>(
+                  builder: (context, model, child) {
+                    return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                        Tx tx = model.txList[index];
+                        if (tx is ListSection) {
+                          return Container(
+                            padding: EdgeInsets.symmetric(vertical: 18, horizontal: 12),
+                            child: Text(tx.section,style: TextStyle(color: Colors.grey[400],fontWeight: FontWeight.w500)),
+                          );
+                        } else {
+                          return Container(
+                            child: TxWidget(tx),
+                          );
+                        }
+                      },
+                      childCount: model.txList.length,
+                    ));
+                  },
+                ),
+              ),
+            ],
+          ),
+          onRefresh: () => refreshTx()),
+      floatingActionButton:  FabMenu(),
     );
   }
 
   Future onPress(BuildContext context) async {
-//    showModalBottomSheet(
-//      context: context,
-//      backgroundColor: Colors.transparent,
-//      builder: (context) => Track(),
-//    );
-
-//
     Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
       return Track();
     }));
-
-//    showModalBottomSheet<void>(
-//        context: context,
-//        builder: (BuildContext context) {
-//          return Container(
-//              child: AnimatedPadding(
-//            padding: MediaQuery.of(context).viewInsets,
-//            duration: const Duration(milliseconds: 100),
-//            curve: Curves.decelerate,
-//            child: new Container(
-//              alignment: Alignment.bottomCenter,
-//              child: TrackNew(),
-//            ),
-//          ));
-//        });
   }
 
 //
-  Future ApiCall() async {
-    try {
-      print("API CALL START");
-      var response = await ApiChannel().getXpubOrAddress(AppState().selectedWallet.xpubs[1].xpub);
-      Map<String, dynamic> json = jsonDecode(response);
-      if (json.containsKey("txs")) {
-        List<dynamic> items = json['txs'];
-        List<Tx> txs = items.map((item) => Tx.fromJson(item)).toList();
-        print("txs ${txs.length}");
-        Tx.insert(txs);
-      }
-
-      if (json.containsKey("addresses")) {
-        List<dynamic> items = json['addresses'];
-        var balance = 0;
-        if (json.containsKey("wallet")) {
-          balance = json['wallet']['final_balance'];
-        }
-        if (items.length == 1) {
-          Map<String, dynamic> address = items.first;
-          var addressObj = Address.fromJson(address);
-          AppState().selectedWallet.updateXpubState(addressObj, balance);
-          var add = await AppState().selectedWallet.xpubs.first.generateAddress();
-          print("add $add");
-        }
-      }
-
-//      print(" API Complte ${response.toString()}");
-    } catch (e) {
-      print("E ${e}");
-    }
-//    await SystemChannel().setNetwork(true);
-//    XPUBModel xpubModel = AppState().selectedWallet.xpubs.first;
-//    await CryptoChannel().getAddress(xpubModel.xpub, xpubModel.account_index, xpubModel.change_index);
-  }
 
   void Clear() async {
     await AppState().selectedWallet.clear();
     print("ClEAER");
   }
+
+  Future<bool> refreshTx() async {
+    if (AppState().pageIndex == 0) {
+      for (int i = 0; i < AppState().selectedWallet.xpubs.length; i++) {
+        await AppState().refreshTx(i);
+      }
+      return true;
+    }
+    await AppState().refreshTx(AppState().pageIndex);
+    return true;
+  }
 }
+

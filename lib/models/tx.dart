@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:sembast/sembast.dart';
+import 'package:sembast/utils/value_utils.dart';
 import 'package:sentinelx/models/db/txDB.dart';
+import 'package:sentinelx/shared_state/appState.dart';
 
 import '../db_test.dart';
 
@@ -36,7 +38,10 @@ class Tx {
   String key;
   static const String STORE_NAME = 'txs';
 
-  static Future<Database> get _db async => await TxDB.instance.database;
+  //associated xpub and address will be updated in this filed
+  List<String> associatedWallets = [];
+
+  static Future<Database> get _db async => await TxDB.instance(AppState().selectedWallet.getTxDb()).database;
   static final txStore = stringMapStoreFactory.store(STORE_NAME);
 
   Tx(
@@ -68,6 +73,10 @@ class Tx {
         out.add(new Out.fromJson(v));
       });
     }
+    if (json['associatedWallets'] != null) {
+      List<String> wallets =  json['associatedWallets'].cast<String>();
+      this.associatedWallets = wallets.toList();
+    }
     blockHeight = json['block_height'];
     balance = json['balance'];
   }
@@ -87,26 +96,69 @@ class Tx {
     }
     data['block_height'] = this.blockHeight;
     data['balance'] = this.balance;
-    data['key'] = this.hash;
+//    data['key'] = this.hash;
+
+    if (this.associatedWallets != null) {
+      data['associatedWallets'] = this.associatedWallets;
+    }
     return data;
   }
 
-  static Future insert(List<Tx> items) async {
-    var db = await _db;
-    await db.transaction((txn) async {
-      for (var i = 0; i < items.length; i++) {
-        await txStore.add(txn, items[i].toJson());
+  void update(Map<String, dynamic> jsonTx, bool isXpub) {
+    jsonTx.keys.forEach((key) {
+      switch (key) {
+        case "hash":
+          {
+            hash = jsonTx['hash'];
+            break;
+          }
+        case "time":
+          {
+            time = jsonTx['time'];
+            break;
+          }
+        case "version":
+          {
+            version = jsonTx['version'];
+            break;
+          }
+        case "locktime":
+          {
+            locktime = jsonTx['locktime'];
+            break;
+          }
+        case "result":
+          {
+            result = jsonTx['result'];
+            break;
+          }
+        case "inputs":
+          {
+            if (jsonTx['inputs'] != null) {
+              inputs = new List<Inputs>();
+              jsonTx['inputs'].forEach((v) {
+                inputs.add(new Inputs.fromJson(v));
+              });
+            }
+            break;
+          }
+        case "out":
+          {
+            if (jsonTx['out'] != null) {
+              out = new List<Out>();
+              jsonTx['out'].forEach((v) {
+                out.add(new Out.fromJson(v));
+              });
+            }
+            break;
+          }
+        case "block_height":
+          {
+            blockHeight = jsonTx['block_height'];
+            break;
+          }
       }
     });
-  }
-
-  static Future<List<Tx>> getTxes() async {
-    final recordSnapshots = await txStore.find(await _db);
-    return recordSnapshots.map((snapshot) {
-      final tx = Tx.fromJson(snapshot.value);
-      tx.key = snapshot.key;
-      return tx;
-    }).toList();
   }
 }
 
@@ -217,4 +269,11 @@ class Address {
     data['n_tx'] = this.nTx;
     return data;
   }
+}
+
+class ListSection extends Tx{
+  String section ="";
+  DateTime timeStamp =  DateTime.now();
+  ListSection({this.section, this.timeStamp});
+
 }

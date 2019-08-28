@@ -1,31 +1,47 @@
 import 'package:flutter/widgets.dart';
 import 'package:sembast/sembast.dart';
+import 'package:sentinelx/models/db/txDB.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/xpub.dart';
 
 import 'package:sentinelx/models/db/sentinelxDB.dart';
 import 'package:sentinelx/shared_state/balance.dart';
+import 'package:sentinelx/shared_state/txState.dart';
 
 class Wallet extends ChangeNotifier {
   static const String STORE_NAME = 'wallet';
 
   int id;
-  String walletName = "Wallet 1";
+  String walletName = "Wallet1";
   List<XPUBModel> xpubs = [];
   List<String> legacyAddresses = [];
   BalanceModel balanceModel = new BalanceModel();
+  TxState txState = TxState();
+  TxDB txDB;
 
-  Wallet({this.walletName, this.xpubs });
+  Wallet({this.walletName, this.xpubs});
+
 
   static Future<Database> get _db async => await SentinelxDB.instance.database;
 
   static final _walletStore = intMapStoreFactory.store(STORE_NAME);
 
+  Future initTxDb() async {
+    print("initTxDbinitTxDb");
+    txDB = TxDB.instance(this.getTxDb());
+    await txDB.database;
+    this.loadAllTxes();
+  }
+
+  Future loadAllTxes() async {
+    List<Tx> txList =   await TxDB.getAllTxes(this.xpubs);
+    txState.addTxes(txList);
+  }
+
   void addXpub({String xpub, String bip}) {
     var xpubItem = new XPUBModel(xpub: xpub, bip: bip);
     this.xpubs.add(xpubItem);
     this.notifyListeners();
-    print(this.toJson());
     Wallet.update(this);
   }
 
@@ -50,7 +66,6 @@ class Wallet extends ChangeNotifier {
       wallet.toJson(),
       finder: finder,
     );
-    print("UPDATED");
   }
 
   Map<String, dynamic> toJson() {
@@ -72,11 +87,8 @@ class Wallet extends ChangeNotifier {
   }
 
   Wallet.fromJson(Map<String, dynamic> json) {
-
-    if(json.containsKey("balanceModel")){
-      this.balanceModel.fromJSON(
-          json['balanceModel']
-      ) ;
+    if (json.containsKey("balanceModel")) {
+      this.balanceModel.fromJSON(json['balanceModel']);
     }
 
     this.walletName = json['walletName'];
@@ -90,10 +102,10 @@ class Wallet extends ChangeNotifier {
     }
   }
 
-  num updateTotalBalance(){
+  num updateTotalBalance() {
     num total = 0;
-    this.xpubs.forEach((model){
-      total = total+ model.final_balance;
+    this.xpubs.forEach((model) {
+      total = total + model.final_balance;
     });
     this.balanceModel.update(total);
     this.notifyListeners();
@@ -118,5 +130,9 @@ class Wallet extends ChangeNotifier {
     this.xpubs = [];
     notifyListeners();
     return this.saveState();
+  }
+
+  String getTxDb() {
+    return "txstore-wallet-${this.id}.db";
   }
 }
