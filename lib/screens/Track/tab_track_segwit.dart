@@ -34,66 +34,68 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 22),
-      child: Column(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-            child: Row(
+      child: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              child: Row(
+                children: <Widget>[
+                  Icon(
+                    SentinelxIcons.segwit,
+                    size: 24,
+                    color: Colors.grey[400],
+                  ),
+                  Container(
+                      margin: EdgeInsets.only(left: 16),
+                      child: Text(
+                        "bitcoin wallet via segwit YPUB/ZPUB (BIP49/84)",
+                        style: TextStyle(color: Colors.grey[400]),
+                      ))
+                ],
+              ),
+            ),
+            Column(
               children: <Widget>[
-                Icon(
-                  SentinelxIcons.segwit,
-                  size: 24,
-                  color: Colors.grey[400],
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+                  child: TextField(
+                    controller: _labelEditController,
+                    decoration: InputDecoration(
+                      labelText: "Label",
+                    ),
+                  ),
                 ),
                 Container(
-                    margin: EdgeInsets.only(left: 16),
-                    child: Text(
-                      "bitcoin wallet via segwit YPUB/ZPUB (BIP49/84)",
-                      style: TextStyle(color: Colors.grey[400]),
-                    ))
+                  margin: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+                  child: TextField(
+                    controller: _xpubEditController,
+                    decoration: InputDecoration(
+                      labelText: "Enter YPUB/ZPUB (BIP49/84)",
+                    ),
+                    maxLines: 3,
+                  ),
+                ),
               ],
             ),
-          ),
-          Column(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-                child: TextField(
-                  controller: _labelEditController,
-                  decoration: InputDecoration(
-                    labelText: "Label",
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-                child: TextField(
-                  controller: _xpubEditController,
-                  decoration: InputDecoration(
-                    labelText: "Enter YPUB/ZPUB (BIP49/84)",
-                  ),
-                  maxLines: 3,
-                ),
-              ),
-            ],
-          ),
-          loading
-              ? Column(
-                  children: <Widget>[
-                    Container(
-                        margin: EdgeInsets.only(top: 60),
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          backgroundColor: Color(0xffFFBC01),
-                        )),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text("Please wait..."),
-                    )
-                  ],
-                )
-              : SizedBox.shrink()
-        ],
+            loading
+                ? Column(
+                    children: <Widget>[
+                      Container(
+                          margin: EdgeInsets.only(top: 60),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            backgroundColor: Color(0xffFFBC01),
+                          )),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text("Please wait..."),
+                      )
+                    ],
+                  )
+                : SizedBox.shrink()
+          ],
+        ),
       ),
     );
   }
