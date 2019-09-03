@@ -26,7 +26,7 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(6),
-            color: Color(0xff5C4FC0),
+            color: Color(0xff3B456D),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -34,7 +34,7 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
               ClipPath(
                 clipper: WaveClipper(reverse: true),
                 child: Container(
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: Color(0xff7162ED)),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: Color(0xff3B456D)),
                   height: 120,
                   alignment: Alignment.topCenter,
                   width: double.infinity,

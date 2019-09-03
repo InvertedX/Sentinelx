@@ -49,13 +49,13 @@ class _TrackState extends State<Track> with SingleTickerProviderStateMixin {
       length: 3,
       initialIndex: 0,
       child: Scaffold(
-        backgroundColor: Color(0xff13141b),
+        backgroundColor: ThemeProvider.secondaryBg,
         appBar: AppBar(
           title: Text("Track"),
           bottom: TabBar(
-            labelColor: Colors.white,
+            labelColor: Theme.of(context).accentColor,
             controller: _tabController,
-            unselectedLabelColor: Theme.of(context).primaryColor,
+            unselectedLabelColor: Theme.of(context).primaryColorLight,
             labelPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 16),
             indicatorSize: TabBarIndicatorSize.label,
             indicatorWeight: 2,

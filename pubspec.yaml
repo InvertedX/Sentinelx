@@ -22,7 +22,9 @@ dependencies:
   sembast: ^2.0.1
   provider: ^3.0.0+1
   get_it: ^1.0.3+2
-  qr_flutter: ^2.0.0
+  qr_flutter:
+    git:
+      url: git://github.com/lukef/qr.flutter.git
   intl: ^0.16.0
   flutter_group_sliver: "^0.0.2"
 

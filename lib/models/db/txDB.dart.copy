@@ -1,0 +1,116 @@
+import 'dart:async';
+
+import 'package:path/path.dart';
+import 'package:sembast/sembast.dart';
+import 'package:sembast/sembast_io.dart';
+import 'package:sembast/utils/value_utils.dart';
+import 'package:sentinelx/channels/SystemChannel.dart';
+import 'package:sentinelx/models/tx.dart';
+import 'package:sentinelx/models/wallet.dart';
+import 'package:sentinelx/shared_state/appState.dart';
+
+class TxDB {
+  static String db = 'txes.db';
+  static TxDB _singleton = TxDB._privateConstructor();
+
+  static const String STORE_NAME = 'txs';
+
+  static Future<Database> get _db async => await TxDB.instance(AppState().selectedWallet.getTxDb()).database;
+  static final txStore = stringMapStoreFactory.store(STORE_NAME);
+
+
+  TxDB._privateConstructor();
+
+  String dbPath;
+  static TxDB instance(param) {
+    if (param != db) {
+      db = param;
+      _singleton = TxDB._privateConstructor();
+    }
+    return _singleton;
+  }
+
+  Completer<Database> _dbOpenCompleter;
+
+  Database _database;
+
+  Future<Database> get database async {
+    if (_dbOpenCompleter == null) {
+      _dbOpenCompleter = Completer();
+      openDatabase();
+    }
+    return _dbOpenCompleter.future;
+  }
+
+
+  static Future insertOrUpdate(List<dynamic> items, Address addressObj, bool isXpub) async {
+    var db = await _db;
+    List<dynamic> _tobe_added = [];
+    Map<String, Tx> _toUpdate = new Map();
+
+    for (var i = 0; i < items.length; i++) {
+      Map<String, dynamic> jsonTx = items[i];
+      var finder = Finder(filter: Filter.equals('hash', jsonTx['hash']));
+      var _found = await txStore.find(db, finder: finder);
+      if (_found.length == 0) {
+        print("_____ADD_____");
+        _tobe_added.add(items[i]);
+      } else {
+        Tx tx = Tx.fromJson(cloneMap(_found.first.value));
+        print("__________________UPDATE __________________");
+        tx.update(jsonTx, isXpub);
+        bool associate = true;
+        tx.associatedWallets.forEach((assoc) {
+          if (assoc == addressObj.address) {
+            associate = false;
+          }
+        });
+        if (associate) {
+          tx.associatedWallets.add(addressObj.address);
+        }
+        _toUpdate[_found.first.key] = tx;
+      }
+    }
+
+    if (_toUpdate.length != 0) {
+//      await db.transaction((txn) async {
+      List<String> keys = _toUpdate.keys.toList();
+      for (var i = 0; i < keys.length; i++) {
+        print("UPDATE GOIN IN ${keys[i]}");
+        print("UPDATE GOIN IN ${_toUpdate[keys[i]].toJson()}");
+        await txStore.record(keys[i]).put(db, _toUpdate[keys[i]].toJson(),merge: true);
+      }
+//      });
+    }
+
+    if (_tobe_added.length != 0) {
+      await db.transaction((txn) async {
+        for (var i = 0; i < _tobe_added.length; i++) {
+          var item = Tx.fromJson(_tobe_added[i]);
+          item.associatedWallets.add(addressObj.address);
+          print("....ADD GOIN IN ....  ${item.toJson()}");
+          await txStore.add(txn, item.toJson());
+        }
+      });
+    }
+  }
+
+  static Future<List<Tx>> getTxes() async {
+    final recordSnapshots = await txStore.find(await _db);
+    return recordSnapshots.map((snapshot) {
+      final tx = Tx.fromJson(snapshot.value);
+      tx.key = snapshot.key;
+      return tx;
+    }).toList();
+  }
+
+
+  Future openDatabase() async {
+    final appDocumentDir = await SystemChannel().getDataDir();
+    print(appDocumentDir);
+    final dbPath = join(appDocumentDir.path, TxDB.db);
+    print("dbPath ${dbPath}");
+    final database = await databaseFactoryIo.openDatabase(dbPath);
+    _dbOpenCompleter.complete(database);
+  }
+}

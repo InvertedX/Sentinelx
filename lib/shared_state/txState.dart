@@ -56,7 +56,6 @@ class TxState extends ChangeNotifier {
 
     filtered.forEach((item) {
       var formatter = new DateFormat("d MMM yyyy");
-      print("date ${formatter.format(item)}");
     });
     return filtered;
   }

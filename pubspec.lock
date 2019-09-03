@@ -119,10 +119,12 @@ packages:
   qr_flutter:
     dependency: "direct main"
     description:
-      name: qr_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.0+55"
+      path: "."
+      ref: HEAD
+      resolved-ref: c9f8a0cfeaec741cedb86ec4e1d1d03bd32db488
+      url: "git://github.com/lukef/qr.flutter.git"
+    source: git
+    version: "3.0.1"
   quiver:
     dependency: transitive
     description:
@@ -207,4 +209,4 @@ packages:
     version: "2.0.8"
 sdks:
   dart: ">=2.2.0 <3.0.0"
-  flutter: ">=1.2.0"
+  flutter: ">=1.5.0"
