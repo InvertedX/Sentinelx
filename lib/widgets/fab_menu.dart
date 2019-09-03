@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
 import 'package:sentinelx/screens/Track/track_screen.dart';
+import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 class FabMenu extends StatefulWidget {
@@ -19,34 +20,13 @@ class _FabMenuState extends State<FabMenu> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 200))
-      ..addListener(() {
-        setState(() {});
-      });
-    _animateIcon = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
-    _buttonColor = ColorTween(
-      begin: Color(0xff5666fa),
-      end: Colors.red,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Interval(
-        0.00,
-        1.00,
-        curve: Curves.easeInOutQuint,
-      ),
-    ));
-    _translateButton = Tween<double>(
-      begin: _fabHeight,
-      end: -14.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Interval(
-        0.0,
-        0.75,
-        curve: _curve,
-      ),
-    ));
     super.initState();
+
+      _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 200))
+        ..addListener(() {
+          setState(() {});
+        });
+
   }
 
   @override
@@ -113,7 +93,7 @@ class _FabMenuState extends State<FabMenu> with SingleTickerProviderStateMixin {
         tooltip: 'Recive address',
         child: Icon(
           SentinelxIcons.qrcode,
-          size: 13,
+          size: 14,
         ),
         mini: true,
         elevation: 0,
@@ -123,6 +103,9 @@ class _FabMenuState extends State<FabMenu> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    if(_buttonColor == null){
+      init();
+    }
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
@@ -145,5 +128,31 @@ class _FabMenuState extends State<FabMenu> with SingleTickerProviderStateMixin {
         toggle(),
       ],
     );
+  }
+
+  void init() {
+    _animateIcon = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
+    _buttonColor = ColorTween(
+      begin: Theme.of(context).accentColor,
+      end: Colors.red,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Interval(
+        0.00,
+        1.00,
+        curve: Curves.easeInOutQuint,
+      ),
+    ));
+    _translateButton = Tween<double>(
+      begin: _fabHeight,
+      end: -14.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Interval(
+        0.0,
+        0.75,
+        curve: _curve,
+      ),
+    ));
   }
 }

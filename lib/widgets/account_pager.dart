@@ -26,7 +26,7 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
     return Container(
       padding: EdgeInsets.symmetric(vertical: 12),
       height: 230,
-      color: Color(0xff202433),
+      color: Theme.of(context).primaryColorDark,
       child: Consumer<Wallet>(
         builder: (context, model, child) {
           wallet = model;

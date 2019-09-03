@@ -36,10 +36,8 @@ class SentinelX extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(builder: (context, model, child) {
-      print(" model.theme ${model.theme}");
       return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
         theme: model.theme,
         home: Home(),
       );

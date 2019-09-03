@@ -48,13 +48,13 @@ class _ReceiveState extends State<Receive> with SingleTickerProviderStateMixin {
       length: AppState().selectedWallet.xpubs.length,
       initialIndex: 0,
       child: Scaffold(
-          backgroundColor: Theme.of(context).backgroundColor ,
+          backgroundColor: Theme.of(context).backgroundColor,
           appBar: AppBar(
             title: Text("Receive"),
             bottom: TabBar(
-              labelColor: Colors.white,
+              labelColor: Theme.of(context).accentColor,
               controller: _tabController,
-              unselectedLabelColor: Theme.of(context).primaryColor,
+              unselectedLabelColor: Theme.of(context).primaryColorLight,
               labelPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 16),
               indicatorSize: TabBarIndicatorSize.label,
               indicatorWeight: 2,
@@ -129,92 +129,94 @@ class _QRWidgetState extends State<QRWidget> {
   Widget build(BuildContext context) {
     return Container(
       height: double.infinity,
+      margin: EdgeInsets.only(bottom: 42),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(top: 16),
-            height: 240,
-            width: 240,
-            child: RepaintBoundary(
-              key: repaintKey,
-              child: QrImage(
-                data: _qrData,
-                size: 240.0,
-                version: QrVersions.auto,
-                backgroundColor: Colors.white,
+          Column(
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(top: 16),
+                height: 240,
+                width: 240,
+                child: RepaintBoundary(
+                  key: repaintKey,
+                  child: QrImage(
+                    data: _qrData,
+                    size: 240.0,
+                    version: QrVersions.auto,
+                    backgroundColor: Colors.white,
+                  ),
+                ),
               ),
-            ),
-          ),
-          InkWell(
-            borderRadius: BorderRadius.circular(12),
-            splashColor: Color(0xff3B456D),
-            onTap: () {},
-            child: Container(
-              decoration: BoxDecoration(
+              InkWell(
                 borderRadius: BorderRadius.circular(12),
-              ),
-              padding: EdgeInsets.all(12),
-              child: Text(
-                "$_address",
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ),
-//          OutlineButton.icon(onPressed: () {}, icon: Icon(Icons.share), label: Text("Share")),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 30,horizontal: 24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text("Request amount"),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          onChanged: _onChangeBtc,
-                          decoration: InputDecoration(
-                            labelText: 'BTC',
-                          ),
-                        ),
-                      ),
+                splashColor: Color(0xff3B456D),
+                onTap: () {},
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: EdgeInsets.all(12),
+                  child: Text(
+                    "$_address",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
                     ),
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          onChanged: _onChangeSat,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
-                          decoration: InputDecoration(
-                            labelText: 'Sat',
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(  horizontal: 12),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text("Request amount"),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            onChanged: _onChangeBtc,
+                            decoration: InputDecoration(
+                              labelText: 'BTC',
+                            ),
                           ),
                         ),
                       ),
-                    )
-                  ],
-                ),
-              ],
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            onChanged: _onChangeSat,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
+                            decoration: InputDecoration(
+                              labelText: 'Sat',
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-          Row(
-//            children: <Widget>[OutlineButton.icon(onPressed: () {
-//              _getWidgetImage();
-//            }, icon: Icon(Icons.share), label: Text("Share"))],
-          )
         ],
       ),
     );

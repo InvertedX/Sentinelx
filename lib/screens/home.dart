@@ -1,16 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:sentinelx/channels/ApiChannel.dart';
-import 'package:sentinelx/models/db/txDB.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
-import 'package:sentinelx/utils/format_util.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
-import 'package:flutter_group_sliver/flutter_group_sliver.dart';
 import 'package:sentinelx/widgets/fab_menu.dart';
 import 'package:sentinelx/widgets/tx_widget.dart';
 
@@ -28,13 +22,12 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SentinelX'),
+        title: Text('SentinelX',style: TextStyle(fontWeight: FontWeight.w400),),
         centerTitle: true,
         primary: true,
-        elevation: 18
-        ,
+        elevation: 18,
       ),
-      backgroundColor: Color(0xff161925),
+      backgroundColor: Theme.of(context).backgroundColor,
       body: RefreshIndicator(
           child: CustomScrollView(
             slivers: <Widget>[
@@ -48,45 +41,40 @@ class _HomeState extends State<Home> {
               SliverToBoxAdapter(
                 child: Container(
                   alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.only(top: 16,left: 16),
-                  height: 40,
+                  margin: EdgeInsets.symmetric(vertical: 16,horizontal: 16),
                   child: Text(
                     "Transactions",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600,color: Colors.grey[400]),
+                    style: Theme.of(context).textTheme.subhead,
                   ),
                 ),
               ),
-              SliverGroupBuilder(
-                decoration: BoxDecoration(
-                    //              color: Color(0xff0B0D14),
-                    borderRadius: BorderRadius.circular(12)),
-                margin: EdgeInsets.all(4),
-                child: Consumer<TxState>(
-                  builder: (context, model, child) {
-                    return SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        Tx tx = model.txList[index];
-                        if (tx is ListSection) {
-                          return Container(
-                            padding: EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-                            child: Text(tx.section,style: TextStyle(color: Colors.grey[400],fontWeight: FontWeight.w500)),
-                          );
-                        } else {
-                          return Container(
-                            child: TxWidget(tx),
-                          );
-                        }
-                      },
-                      childCount: model.txList.length,
-                    ));
-                  },
-                ),
+              Consumer<TxState>(
+                builder: (context, model, child) {
+                  return SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      Tx tx = model.txList[index];
+                      if (tx is ListSection) {
+                        return Container(
+                          color: Theme.of(context).primaryColorDark,
+                          padding: EdgeInsets.symmetric(vertical: 18, horizontal: 12),
+                          child:
+                              Text(tx.section, style: TextStyle(color: Colors.grey[400], fontWeight: FontWeight.w500)),
+                        );
+                      } else {
+                        return Container(
+                          child: TxWidget(tx),
+                        );
+                      }
+                    },
+                    childCount: model.txList.length,
+                  ));
+                },
               ),
             ],
           ),
           onRefresh: () => refreshTx()),
-      floatingActionButton:  FabMenu(),
+      floatingActionButton: FabMenu(),
     );
   }
 
@@ -114,4 +102,3 @@ class _HomeState extends State<Home> {
     return true;
   }
 }
-

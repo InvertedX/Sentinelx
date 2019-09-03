@@ -49,7 +49,7 @@ class _TrackState extends State<Track> with SingleTickerProviderStateMixin {
       length: 3,
       initialIndex: 0,
       child: Scaffold(
-        backgroundColor: ThemeProvider.secondaryBg,
+        backgroundColor: Theme.of(context).primaryColor,
         appBar: AppBar(
           title: Text("Track"),
           bottom: TabBar(
@@ -99,65 +99,4 @@ class _TrackState extends State<Track> with SingleTickerProviderStateMixin {
     String label, xpubOrAddress;
 //    await validateAndSaveXpub(label, xpubOrAddress);
   }
-//
-//  validateAndSaveAddress(String label, String xpubOrAddress) async {
-//    try {
-//      bool valid = await CryptoChannel().validateAddress(xpubOrAddress);
-//      if (!valid) {
-//        _showError('Invalid Bitcoin address');
-//      }
-//    } catch (exc) {
-//      _showError('Invalid Bitcoin address');
-//    }
-//  }
-//
-//  validateAndSaveXpub(String label, String xpubOrAddress) async {
-//    if (_tabController.index == 2 && (xpubOrAddress.startsWith("xpub") || xpubOrAddress.startsWith("tpub"))) {
-//      return validateAndSaveSegWit(label, xpubOrAddress, "49");
-//    } else if (xpubOrAddress.startsWith("ypub") || xpubOrAddress.startsWith("upub")) {
-//      return validateAndSaveSegWit(label, xpubOrAddress, "49");
-//    } else if (xpubOrAddress.startsWith("zpub") || xpubOrAddress.startsWith("vpub")) {
-//      return validateAndSaveSegWit(label, xpubOrAddress, "84");
-//    } else {
-//      try {
-//        bool valid = await CryptoChannel().validateXPUB(xpubOrAddress);
-//        if (!valid) {
-//          _showError("Invalid xpub");
-//        } else {
-//          XPUBModel xpubModel = XPUBModel(xpub: xpubOrAddress, bip: "BIP44", label: label);
-//          Wallet wallet = AppState().selectedWallet;
-//          wallet.xpubs.add(xpubModel);
-//          await wallet.saveState();
-//          _showSuccessSnackBar("Xpub added successfully");
-//          Navigator.of(context).pop();
-//        }
-//      } catch (exc) {
-//        _showError("Invalid xpub");
-//      }
-//    }
-//  }
-//
-//  validateAndSaveSegWit(String label, String xpub, String bip) async {
-//    try {
-//      setState(() {
-//        loading = true;
-//      });
-//      bool success = await ApiChannel().addHDAccount(xpub, "bip$bip");
-//      if (success) {
-//        XPUBModel xpubModel = XPUBModel(xpub: xpub, bip: "BIP$bip", label: label);
-//        Wallet wallet = AppState().selectedWallet;
-//        wallet.xpubs.add(xpubModel);
-//        await wallet.saveState();
-//        setState(() {
-//          loading = false;
-//        });
-//        _showSuccessSnackBar("wallet added successfully");
-//      }
-//    } catch (ex) {
-//      setState(() {
-//        loading = false;
-//      });
-//    }
-//  }
-//
 }

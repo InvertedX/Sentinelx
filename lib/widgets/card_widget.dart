@@ -29,7 +29,7 @@ class _CardWidgetState extends State<CardWidget> {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(6),
-            color: Color(0xff3B456D),
+            color: Theme.of(context).primaryColor,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -37,7 +37,7 @@ class _CardWidgetState extends State<CardWidget> {
               ClipPath(
                 clipper: WaveClipper(reverse: true),
                 child: Container(
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: Color(0xff3B456D)),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: Theme.of(context).primaryColor),
                   height: 120,
                   width: double.infinity,
                 ),

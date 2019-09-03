@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ThemeProvider extends ChangeNotifier {
+
   static Color secondaryBg = Color(0xff262626);
+  static Color whiteText = Color(0xffD4D4D4);
 
   static ThemeData darkTheme = new ThemeData(
       brightness: Brightness.dark,
       primaryColor: Color(0xff262626),
-      accentColor: Color(0xff04CE90),
+      primaryColorDark:  Color(0xff212121),
+      accentColor: Colors.greenAccent,
       backgroundColor: Color(0xff262626),
       textTheme: TextTheme(
-        headline: TextStyle(fontSize: 72.0, color: Color(0xffD4D4D4)),
-        title: TextStyle(fontSize: 36.0, color: Color(0xffD4D4D4)),
-        body1: TextStyle(fontSize: 14.0, color: Color(0xffD4D4D4)),
+        headline: TextStyle( color: Color(0xffD4D4D4)),
+        title: TextStyle(color: Color(0xffD4D4D4)),
+        subhead: TextStyle(color: Color(0xffD4D4D4)),
+        body2: TextStyle(color: Color(0xffD4D4D4)),
+        body1: TextStyle( color: Color(0xffD4D4D4)),
       ),
       canvasColor: Colors.transparent,
       pageTransitionsTheme: PageTransitionsTheme(
@@ -38,8 +43,8 @@ class ThemeProvider extends ChangeNotifier {
   ThemeData theme = darkTheme;
 
   ThemeProvider() {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: darkTheme.primaryColor, statusBarBrightness: Brightness.light));
+//    SystemChrome.setSystemUIOverlayStyle(
+//        SystemUiOverlayStyle(statusBarColor: darkTheme.primaryColorDark, statusBarBrightness: Brightness.light));
   }
 
   toggleTheme() {
