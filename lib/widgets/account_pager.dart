@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
+import 'package:sentinelx/screens/Track/track_screen.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/widgets/balance_card_widget.dart';
 import 'package:sentinelx/widgets/card_widget.dart';
@@ -31,19 +32,46 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
         builder: (context, model, child) {
           wallet = model;
           return PageView.builder(
-            itemBuilder: _pageBuilder,
-            physics: BouncingScrollPhysics(),
-            pageSnapping: true,
-            onPageChanged: _onPageChange,
-            controller: _pageController,
-            itemCount: model.xpubs.length + 1,
-          );
+              itemBuilder: (BuildContext context, int index) {
+                return _pageBuilder(context, index, model.xpubs.length);
+              },
+              physics: BouncingScrollPhysics(),
+              pageSnapping: true,
+              onPageChanged: _onPageChange,
+              controller: _pageController,
+              itemCount: model.xpubs.length + 2);
         },
       ),
     );
   }
 
-  Widget _pageBuilder(BuildContext context, int index) {
+  Widget _pageBuilder(BuildContext context, int index, int xpubLength) {
+    if (index > xpubLength) {
+      return Container(
+        height: 200,
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child:
+              Card(
+              color: Theme.of(context).primaryColor,
+              child: InkWell(
+                onTap: (){
+                  Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
+                    return  Track();
+                  }));
+                },
+                child: Center(child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.add),
+                    Text("Track new",style: Theme.of(context).textTheme.caption,)
+                  ],
+                )),
+              ),
+            ),
+        ),
+      );
+    }
     if (index == 0) {
       return Container(
         height: 200,
@@ -66,6 +94,7 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
   void _onPageChange(int index) {
     Provider.of<AppState>(context).setPageIndex(index);
   }
+
   @override
   void dispose() {
     _pageController.dispose();

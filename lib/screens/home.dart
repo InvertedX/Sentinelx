@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/tx.dart';
+import 'package:sentinelx/screens/Receive/receive_screen.dart';
+import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
-import 'package:sentinelx/widgets/fab_menu.dart';
+import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/tx_widget.dart';
 
 import 'Track/track_screen.dart';
@@ -74,7 +76,15 @@ class _HomeState extends State<Home> {
             ],
           ),
           onRefresh: () => refreshTx()),
-      floatingActionButton: FabMenu(),
+      floatingActionButton:  FloatingActionButton(
+          child: Icon(SentinelxIcons.qrcode,color: Colors.white,size: 18,),
+          backgroundColor: Theme.of(context).accentColor,
+          onPressed: (){
+            Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
+              return  Receive();
+            }));
+          },
+      ),
     );
   }
 

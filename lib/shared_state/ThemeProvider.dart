@@ -10,7 +10,7 @@ class ThemeProvider extends ChangeNotifier {
       brightness: Brightness.dark,
       primaryColor: Color(0xff262626),
       primaryColorDark:  Color(0xff212121),
-      accentColor: Colors.greenAccent,
+      accentColor: Color(0xff04CE90),
       backgroundColor: Color(0xff262626),
       textTheme: TextTheme(
         headline: TextStyle( color: Color(0xffD4D4D4)),
