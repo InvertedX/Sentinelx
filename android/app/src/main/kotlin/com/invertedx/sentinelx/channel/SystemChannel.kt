@@ -10,9 +10,6 @@ class SystemChannel(private val applicationContext: Context) : MethodChannel.Met
 
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
-        if (methodCall == null || result == null) {
-            return
-        }
         when (methodCall.method) {
             "documentPath" -> {
                 val dir = applicationContext.getDir("sentinelx", Context.MODE_PRIVATE);

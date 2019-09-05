@@ -20,7 +20,7 @@ class TxList extends StatelessWidget {
             );
           } else {
             return Container(
-              child: TxWidget(tx),
+//              child: TxWidget(tx),
             );
           }
         },

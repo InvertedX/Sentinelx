@@ -27,7 +27,7 @@ class Wallet extends ChangeNotifier {
   static final _walletStore = intMapStoreFactory.store(STORE_NAME);
 
   Future initTxDb() async {
-    print("initTxDbinitTxDb");
+    print("init txDB");
     txDB = TxDB.instance(this.getTxDb());
     await txDB.database;
     this.loadAllTxes();

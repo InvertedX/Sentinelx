@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
 import 'package:sentinelx/models/db/txDB.dart';
 import 'package:sentinelx/models/tx.dart';
+import 'package:sentinelx/models/unspent.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
@@ -35,8 +36,8 @@ class AppState extends ChangeNotifier {
   Future refreshTx(int index) async {
     try {
       String xpub = this.selectedWallet.xpubs[index - 1].xpub;
-      loaderState.setLoadingStateAndXpub(States.LOADING,xpub);
-       var response = await ApiChannel().getXpubOrAddress(xpub);
+      loaderState.setLoadingStateAndXpub(States.LOADING, xpub);
+      var response = await ApiChannel().getXpubOrAddress(xpub);
       Map<String, dynamic> json = jsonDecode(response);
       if (json.containsKey("addresses")) {
         List<dynamic> items = json['addresses'];
@@ -51,14 +52,29 @@ class AppState extends ChangeNotifier {
           if (json.containsKey("txs")) {
             List<dynamic> txes = json['txs'];
             TxDB.insertOrUpdate(txes, addressObj, true);
-            loaderState.setLoadingStateAndXpub(States.COMPLETED,"all");
+            loaderState.setLoadingStateAndXpub(States.COMPLETED, "all");
             return;
           }
         }
       }
-      loaderState.setLoadingStateAndXpub(States.COMPLETED,"all");
+      loaderState.setLoadingStateAndXpub(States.COMPLETED, "all");
     } catch (e) {
-      loaderState.setLoadingStateAndXpub(States.COMPLETED,"all");
+      loaderState.setLoadingStateAndXpub(States.COMPLETED, "all");
+      print("E ${e}");
+    }
+  }
+
+  Future getUnspent() async {
+    try {
+      List<String> xpubsAndAddresses = selectedWallet.xpubs.map((item) => item.xpub).toList();
+      var response = await ApiChannel().getUnspent(xpubsAndAddresses);
+      Map<String, dynamic> json = jsonDecode(response);
+      if (json.containsKey("unspent_outputs")) {
+        List<dynamic> items = json['unspent_outputs'];
+        List<Unspent> unspent  = items.map((item)=>Unspent.fromJson(item)).toList();
+        await TxDB.insertOrUpdateUnspent(unspent);
+      }
+    } catch (e) {
       print("E ${e}");
     }
   }
@@ -71,9 +87,9 @@ class AppState extends ChangeNotifier {
       this.selectedWallet.txState.addTxes(await TxDB.getAllTxes(this.selectedWallet.xpubs));
       return;
     }
-    if(( this.selectedWallet.xpubs.length < pageIndex)){
+    if ((this.selectedWallet.xpubs.length < pageIndex)) {
       return;
-    }else{
+    } else {
       String xpub = this.selectedWallet.xpubs[index - 1].xpub;
       this.selectedWallet.txState.addTxes(await TxDB.getTxes(xpub));
     }

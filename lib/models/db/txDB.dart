@@ -6,6 +6,7 @@ import 'package:sembast/sembast_io.dart';
 import 'package:sembast/utils/value_utils.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/tx.dart';
+import 'package:sentinelx/models/unspent.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/appState.dart';
@@ -15,9 +16,11 @@ class TxDB {
   static TxDB _singleton = TxDB._privateConstructor();
 
   static const String STORE_NAME = 'txs';
+  static const String UNSPENT_STORE = 'unspent';
 
   static Future<Database> get _db async => await TxDB.instance(AppState().selectedWallet.getTxDb()).database;
   static final txStore = stringMapStoreFactory.store(STORE_NAME);
+  static final unspentStore = stringMapStoreFactory.store(UNSPENT_STORE);
 
   TxDB._privateConstructor();
 
@@ -54,6 +57,17 @@ class TxDB {
     });
   }
 
+  static Future insertOrUpdateUnspent(List<Unspent> items) async {
+    print("items ${items}");
+    var db = await _db;
+    await unspentStore.delete(db);
+    await db.transaction((txn) async {
+      for (var i = 0; i < items.length; i++) {
+        await unspentStore.add(txn, items[i].toJson());
+      }
+    });
+  }
+
   static Future<List<Tx>> getTxes(String xpubOraddress) async {
     StoreRef txStore = stringMapStoreFactory.store(xpubOraddress);
     final recordSnapshots = await txStore.find(await _db);
@@ -72,8 +86,8 @@ class TxDB {
       recordSnapshots.forEach((record) {
         final tx = Tx.fromJson(record.value);
         tx.key = record.key;
-        var txExist = txes.firstWhere((item) => item.hash == tx.hash,orElse:  () => null);
-        if(txExist == null){
+        var txExist = txes.firstWhere((item) => item.hash == tx.hash, orElse: () => null);
+        if (txExist == null) {
           txes.add(tx);
         }
       });

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:sentinelx/channels/ApiChannel.dart';
+import 'package:sentinelx/models/txDetailsResponse.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
@@ -18,7 +20,15 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
   static const platform = MethodChannel('crypto.channel');
+ @override
+  void initState() {
+    Future.delayed(Duration(milliseconds: 800),(){
+      refreshTx();
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +45,6 @@ class _HomeState extends State<Home> {
       backgroundColor: Theme.of(context).backgroundColor,
       body: RefreshIndicator(
           child: CustomScrollView(
-            physics: BouncingScrollPhysics(),
             slivers: <Widget>[
               SliverFixedExtentList(
                   itemExtent: 220.0,
@@ -69,7 +78,10 @@ class _HomeState extends State<Home> {
                         );
                       } else {
                         return Container(
-                          child: TxWidget(tx),
+                          child: TxWidget(
+                            tx: tx,
+                            callback: onTxClick,
+                          ),
                         );
                       }
                     },
@@ -103,7 +115,18 @@ class _HomeState extends State<Home> {
     print("Result ${results}");
   }
 
-//
+  void onTxClick(Tx tx) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Card(
+            elevation: 12,
+            child: Container(
+              child: TxDetails(tx),
+            ),
+          );
+        });
+  }
 
   void Clear() async {
     await AppState().selectedWallet.clear();
@@ -114,9 +137,77 @@ class _HomeState extends State<Home> {
       for (int i = 0; i < AppState().selectedWallet.xpubs.length; i++) {
         await AppState().refreshTx(i);
       }
+      await refreshUnspent();
       return true;
     }
     await AppState().refreshTx(AppState().pageIndex);
     return true;
+  }
+
+  Future<bool> refreshUnspent() async {
+    if (AppState().pageIndex == 0) {
+      for (int i = 0; i < AppState().selectedWallet.xpubs.length; i++) {
+        await AppState().refreshTx(i);
+      }
+      await AppState().getUnspent();
+      return true;
+    }
+    await AppState().refreshTx(AppState().pageIndex);
+    return true;
+  }
+}
+
+class TxDetails extends StatefulWidget {
+
+  Tx tx;
+  TxDetails(this.tx);
+
+  @override
+  _TxDetailsState createState() => _TxDetailsState();
+}
+
+class _TxDetailsState extends State<TxDetails> {
+
+  String fees  = "";
+  String feeRate  = "";
+
+  @override
+  void initState() {
+    loadTx();
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+
+    return Wrap(
+      children: <Widget>[
+        _buildRow("Date","DS"),
+      ],
+    );
+  }
+
+  Widget _buildRow(String title,String value ){
+    return   Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 2),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12),
+            child: Text(title,style: Theme.of(context).textTheme.subtitle,),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12),
+            child: Text(value),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void loadTx() async {
+    TxDetailsResponse txDetailsResponse =   await ApiChannel().getTx(widget.tx.hash);
+
   }
 }

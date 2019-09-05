@@ -13,9 +13,6 @@ import org.json.JSONObject
 class ApiChannel(applicationContext: Context) : MethodChannel.MethodCallHandler {
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
-        if (methodCall == null || result == null) {
-            return
-        }
         when (methodCall.method) {
             "getTxData" -> {
                 val xpubOrAddress = methodCall.argument<String>("xpubOrAddress")
@@ -38,6 +35,28 @@ class ApiChannel(applicationContext: Context) : MethodChannel.MethodCallHandler 
                         })
             }
 
+            "unspent" -> {
+                val params = methodCall.argument<String>("params")
+                if (params == null) {
+                    result.notImplemented()
+                    return
+                }
+                ApiService().getUnspent(params)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            if (it != null) {
+                                Log.i("API", it.toString())
+                                val obj: JSONObject = JSONObject(it)
+                                result.success(obj.toString());
+                            } else {
+                                result.success(false)
+                            }
+                        }, {
+                            it.printStackTrace()
+                            result.error("APIError", "Error", it.message)
+                        })
+            }
             "addHDAccount" -> {
                 val xpub = methodCall.argument<String>("xpub")
                 val bip = methodCall.argument<String>("bip")
@@ -57,6 +76,28 @@ class ApiChannel(applicationContext: Context) : MethodChannel.MethodCallHandler 
                                 } else {
                                     result.success(false)
                                 }
+                            } else {
+                                result.success(false)
+                            }
+                        }, {
+                            it.printStackTrace()
+                            result.error("APIError", "Error", it.message)
+                        })
+            }
+
+            "getTx" -> {
+                val txid = methodCall.argument<String>("txid")
+                if (txid == null) {
+                    result.notImplemented()
+                    return
+                }
+                ApiService().getTx(txid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            if (it != null) {
+                                val obj: JSONObject = JSONObject(it)
+                                result.success(obj.toString());
                             } else {
                                 result.success(false)
                             }
