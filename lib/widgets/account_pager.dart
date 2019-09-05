@@ -51,24 +51,23 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
         height: 200,
         child: Padding(
           padding: const EdgeInsets.all(4.0),
-          child:
-              Card(
-              color: Theme.of(context).primaryColor,
-              child: InkWell(
-                onTap: (){
-                  Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
-                    return  Track();
-                  }));
-                },
-                child: Center(child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.add),
-                    Text("Track new",style: Theme.of(context).textTheme.caption,)
-                  ],
-                )),
-              ),
+          child: Card(
+            color: Theme.of(context).primaryColor,
+            child: InkWell(
+              onTap: navigate,
+              child: Center(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.add),
+                  Text(
+                    "Track new",
+                    style: Theme.of(context).textTheme.caption,
+                  )
+                ],
+              )),
             ),
+          ),
         ),
       );
     }
@@ -99,5 +98,13 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  void navigate() async {
+    int result = await Navigator.of(context).push(new MaterialPageRoute<int>(builder: (BuildContext context) {
+      return Track();
+    }));
+    AppState().setPageIndex(result);
+    await AppState().refreshTx(result - 1);
   }
 }

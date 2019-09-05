@@ -24,7 +24,10 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SentinelX',style: TextStyle(fontWeight: FontWeight.w400),),
+        title: Text(
+          'SentinelX',
+          style: TextStyle(fontWeight: FontWeight.w400),
+        ),
         centerTitle: true,
         primary: true,
         elevation: 18,
@@ -32,6 +35,7 @@ class _HomeState extends State<Home> {
       backgroundColor: Theme.of(context).backgroundColor,
       body: RefreshIndicator(
           child: CustomScrollView(
+            physics: BouncingScrollPhysics(),
             slivers: <Widget>[
               SliverFixedExtentList(
                   itemExtent: 220.0,
@@ -43,7 +47,7 @@ class _HomeState extends State<Home> {
               SliverToBoxAdapter(
                 child: Container(
                   alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.symmetric(vertical: 16,horizontal: 16),
+                  margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                   child: Text(
                     "Transactions",
                     style: Theme.of(context).textTheme.subhead,
@@ -76,29 +80,33 @@ class _HomeState extends State<Home> {
             ],
           ),
           onRefresh: () => refreshTx()),
-      floatingActionButton:  FloatingActionButton(
-          child: Icon(SentinelxIcons.qrcode,color: Colors.white,size: 18,),
-          backgroundColor: Theme.of(context).accentColor,
-          onPressed: (){
-            Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
-              return  Receive();
-            }));
-          },
+      floatingActionButton: FloatingActionButton(
+        child: Icon(
+          SentinelxIcons.qrcode,
+          color: Colors.white,
+          size: 18,
+        ),
+        backgroundColor: Theme.of(context).accentColor,
+        onPressed: () {
+          Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
+            return Receive();
+          }));
+        },
       ),
     );
   }
 
-  Future onPress(BuildContext context) async {
-    Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
-      return Track();
+  Future onPress() async {
+    final results = await Navigator.of(context).push(new MaterialPageRoute<dynamic>(builder: (BuildContext context) {
+      return new Track();
     }));
+    print("Result ${results}");
   }
 
 //
 
   void Clear() async {
     await AppState().selectedWallet.clear();
-    print("ClEAER");
   }
 
   Future<bool> refreshTx() async {

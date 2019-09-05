@@ -24,7 +24,8 @@ class TabTrackXpubState extends State<TabTrackXpub> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 22),
+      padding:const  EdgeInsets.symmetric(vertical: 12, horizontal: 22),
+      margin: const EdgeInsets.only(top: 54 ),
       child: Column(
         children: <Widget>[
           Container(

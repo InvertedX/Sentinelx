@@ -11,6 +11,7 @@ import 'package:sentinelx/screens/Track/track_screen.dart';
 import 'package:sentinelx/screens/home.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
 
@@ -25,6 +26,7 @@ Future main() async {
       ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
       Provider<Wallet>.value(value: AppState().selectedWallet),
       ChangeNotifierProvider<TxState>.value(value: AppState().selectedWallet.txState),
+      ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),
     ],
     child: SentinelX(),
   ));

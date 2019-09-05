@@ -8,8 +8,7 @@ import 'package:sentinelx/models/db/txDB.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
-import 'package:sentinelx/shared_state/balance.dart';
-import 'package:sentinelx/shared_state/txState.dart';
+import 'package:sentinelx/shared_state/loaderState.dart';
 
 class AppState extends ChangeNotifier {
   AppState._privateConstructor();
@@ -26,6 +25,7 @@ class AppState extends ChangeNotifier {
   Wallet selectedWallet;
   ThemeProvider theme = ThemeProvider();
   int pageIndex = 0;
+  LoaderState loaderState = LoaderState();
 
   selectWallet(Wallet wallet) {
     this.selectedWallet = wallet;
@@ -35,7 +35,8 @@ class AppState extends ChangeNotifier {
   Future refreshTx(int index) async {
     try {
       String xpub = this.selectedWallet.xpubs[index - 1].xpub;
-      var response = await ApiChannel().getXpubOrAddress(xpub);
+      loaderState.setLoadingStateAndXpub(States.LOADING,xpub);
+       var response = await ApiChannel().getXpubOrAddress(xpub);
       Map<String, dynamic> json = jsonDecode(response);
       if (json.containsKey("addresses")) {
         List<dynamic> items = json['addresses'];
@@ -50,20 +51,29 @@ class AppState extends ChangeNotifier {
           if (json.containsKey("txs")) {
             List<dynamic> txes = json['txs'];
             TxDB.insertOrUpdate(txes, addressObj, true);
+            loaderState.setLoadingStateAndXpub(States.COMPLETED,"all");
             return;
           }
         }
       }
+      loaderState.setLoadingStateAndXpub(States.COMPLETED,"all");
     } catch (e) {
+      loaderState.setLoadingStateAndXpub(States.COMPLETED,"all");
       print("E ${e}");
     }
   }
 
   void setPageIndex(int index) async {
     pageIndex = index;
+    print("this.selectedWallet.xpubs.length ${this.selectedWallet.xpubs.length}");
+    print("tpageIndex ${pageIndex}");
     if (pageIndex == 0) {
       this.selectedWallet.txState.addTxes(await TxDB.getAllTxes(this.selectedWallet.xpubs));
-    } else {
+      return;
+    }
+    if(( this.selectedWallet.xpubs.length < pageIndex)){
+      return;
+    }else{
       String xpub = this.selectedWallet.xpubs[index - 1].xpub;
       this.selectedWallet.txState.addTxes(await TxDB.getTxes(xpub));
     }

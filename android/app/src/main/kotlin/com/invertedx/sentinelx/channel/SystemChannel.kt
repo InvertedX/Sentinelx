@@ -9,7 +9,7 @@ import io.flutter.plugin.common.MethodChannel
 class SystemChannel(private val applicationContext: Context) : MethodChannel.MethodCallHandler {
 
 
-    override fun onMethodCall(methodCall: MethodCall?, result: MethodChannel.Result?) {
+    override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
         if (methodCall == null || result == null) {
             return
         }

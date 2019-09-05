@@ -1,5 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:sentinelx/channels/CryptoChannel.dart';
+import 'package:sentinelx/models/wallet.dart';
+import 'package:sentinelx/models/xpub.dart';
+import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 class TabTrackAddress extends StatefulWidget {
@@ -21,23 +26,56 @@ class TabTrackAddressState extends State<TabTrackAddress> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(padding: EdgeInsets.symmetric(vertical: 12, horizontal: 22),
-      child: Column(children: <Widget>[
-        Container(margin: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-          child: Row(children: <Widget>[
-            Icon(SentinelxIcons.bitcoin, size: 32, color: Colors.grey[400],),
-            Container(margin: EdgeInsets.only(left: 12),
-                child: Text("Track Single bitcoin address", style: TextStyle(color: Colors.grey[400]),))
-          ],),),
-        Column(children: <Widget>[
-          Container(margin: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-            child: TextField(controller: _labelEditController, decoration: InputDecoration(labelText: "Label",),),),
-          Container(margin: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-            child: TextField(controller: _xpubEditController,
-              decoration: InputDecoration(labelText: "Enter bitcoin address",),
-              maxLines: 3,),),
-        ],)
-      ],),);
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 22),
+      margin: const EdgeInsets.only(top: 54 ),
+      child: Column(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  SentinelxIcons.bitcoin,
+                  size: 32,
+                  color: Colors.grey[400],
+                ),
+                Container(
+                    margin: EdgeInsets.only(left: 12),
+                    child: Text(
+                      "Track Single bitcoin address",
+                      style: TextStyle(color: Colors.grey[400]),
+                    ))
+              ],
+            ),
+          ),
+          Column(
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+                child: TextField(
+                  controller: _labelEditController,
+                  maxLength: 10,
+                  decoration: InputDecoration(
+                    labelText: "Label",
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+                child: TextField(
+                  controller: _xpubEditController,
+                  decoration: InputDecoration(
+                    labelText: "Enter bitcoin address",
+                  ),
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 
   validateAndSaveAddress() async {
@@ -47,6 +85,19 @@ class TabTrackAddressState extends State<TabTrackAddress> {
       bool valid = await CryptoChannel().validateAddress(xpubOrAddress);
       if (!valid) {
         _showError('Invalid Bitcoin address');
+      } else {
+        XPUBModel xpubModel = XPUBModel(xpub: xpubOrAddress, bip: "ADDR", label: label);
+        Wallet wallet = AppState().selectedWallet;
+        wallet.xpubs.add(xpubModel);
+        await wallet.saveState();
+        int index = wallet.xpubs.indexOf(xpubModel);
+        _showSuccessSnackBar("Address added successfully");
+        AppState().setPageIndex(index);
+        Timer(Duration(milliseconds: 700), () {
+          if (Navigator.canPop(context)) {
+            Navigator.pop<int>(context, index);
+          }
+        });
       }
     } catch (exc) {
       _showError('Invalid Bitcoin address');
@@ -54,18 +105,18 @@ class TabTrackAddressState extends State<TabTrackAddress> {
   }
 
   void _showSuccessSnackBar(String msg) {
-    final snackBar = SnackBar(content: Text(msg), backgroundColor: Color(0xff5BD38D),);
+    final snackBar = SnackBar(
+      content: Text(msg),
+      backgroundColor: Color(0xff5BD38D),
+    );
     Scaffold.of(context).showSnackBar(snackBar);
   }
 
   void _showError(String msg) {
-    final snackBar = SnackBar(content: Text(msg), backgroundColor: Color(0xffD55968),);
-    Scaffold.of(context).showSnackBar(snackBar);
-  }
-
-  void save() {
-    final snackBar = SnackBar(content: Text("SDDS"), backgroundColor: Color(0xff5BD38D),);
-//    _scaffoldKey.currentState.sho
+    final snackBar = SnackBar(
+      content: Text(msg),
+      backgroundColor: Color(0xffD55968),
+    );
     Scaffold.of(context).showSnackBar(snackBar);
   }
 }

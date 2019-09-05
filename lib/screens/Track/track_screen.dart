@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
@@ -33,8 +35,11 @@ class _TrackState extends State<Track> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    super.initState();
     _tabController = new TabController(vsync: this, length: _tabs.length);
+    Future.delayed(const Duration(milliseconds: 1000), () {
+
+    });
+    super.initState();
   }
 
   @override
@@ -68,11 +73,15 @@ class _TrackState extends State<Track> with SingleTickerProviderStateMixin {
           TabTrackXpub(_trackXpub),
           TabTrackSegwit(_trackSegwit),
         ]),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: save,
-          heroTag: "ADD",
-          icon: Icon(Icons.save),
-          label: Text("Save"),
+        floatingActionButton: Theme(
+          data: ThemeData.light(),
+          child: FloatingActionButton.extended(
+            onPressed: save,
+            heroTag: "ADD",
+            backgroundColor:  Theme.of(context).accentColor,
+            icon: Icon(Icons.save),
+            label: Text("Save"),
+          ),
         ),
       ),
     );
