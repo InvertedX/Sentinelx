@@ -8,6 +8,7 @@ import 'package:sentinelx/screens/Receive/receive_screen.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
+import 'package:sentinelx/utils/format_util.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/tx_widget.dart';
@@ -20,11 +21,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   static const platform = MethodChannel('crypto.channel');
- @override
+  final GlobalKey<ScaffoldState> _ScaffoldKey = new GlobalKey<ScaffoldState>();
+
+  @override
   void initState() {
-    Future.delayed(Duration(milliseconds: 800),(){
+    Future.delayed(Duration(milliseconds: 800), () {
       refreshTx();
     });
     super.initState();
@@ -33,6 +35,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _ScaffoldKey,
       appBar: AppBar(
         title: Text(
           'SentinelX',
@@ -122,7 +125,7 @@ class _HomeState extends State<Home> {
           return Card(
             elevation: 12,
             child: Container(
-              child: TxDetails(tx),
+              child: TxDetails(tx, _ScaffoldKey),
             ),
           );
         });
@@ -158,48 +161,100 @@ class _HomeState extends State<Home> {
 }
 
 class TxDetails extends StatefulWidget {
-
   Tx tx;
-  TxDetails(this.tx);
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  TxDetails(this.tx, this.scaffoldKey);
 
   @override
   _TxDetailsState createState() => _TxDetailsState();
 }
 
 class _TxDetailsState extends State<TxDetails> {
-
-  String fees  = "";
-  String feeRate  = "";
+  String fees = "";
+  String feeRate = "";
+  bool isLoading = true;
 
   @override
   void initState() {
     loadTx();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Wrap(
       children: <Widget>[
-        _buildRow("Date","DS"),
+        Container(
+          color: Theme.of(context).accentColor,
+          child: Center(
+              child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 22,horizontal: 32),
+            child: Text("${satToBtc(widget.tx.result)} BTC",
+                style: Theme.of(context).textTheme.headline.copyWith(color: Colors.white), textAlign: TextAlign.center),
+          )),
+        ),
+        Divider(),
+        _buildRow("Date", "${formatDateAndTime(widget.tx.time)}"),
+        _buildRow("Fees", fees),
+        _buildRow("Feerate", feeRate),
+        Divider(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                child: Text(
+                  "Tx hash",
+                  style: Theme.of(context).textTheme.subtitle,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+                child: InkWell(
+                    onTap: () => _copy(widget.tx.hash),
+                    child: Text(
+                      "${widget.tx.hash}",
+                      maxLines: 2,
+                      style: TextStyle(fontSize: 12),
+                    )),
+              ),
+            ],
+          ),
+        )
       ],
     );
   }
 
-  Widget _buildRow(String title,String value ){
-    return   Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 2),
+  Widget _buildRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12),
-            child: Text(title,style: Theme.of(context).textTheme.subtitle,),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.subtitle,
+            ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12),
-            child: Text(value),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            child: (isLoading && value == "")
+                ? SizedBox(
+                    child: CircularProgressIndicator(strokeWidth: 1),
+                    height: 12,
+                    width: 12,
+                  )
+                : Text(
+                    value,
+                    maxLines: 2,
+                  ),
           ),
         ],
       ),
@@ -207,7 +262,27 @@ class _TxDetailsState extends State<TxDetails> {
   }
 
   void loadTx() async {
-    TxDetailsResponse txDetailsResponse =   await ApiChannel().getTx(widget.tx.hash);
+    setState(() {
+      isLoading = true;
+    });
+    TxDetailsResponse txDetailsResponse = await ApiChannel().getTx(widget.tx.hash);
+    print("HERE");
+    setState(() {
+      isLoading = false;
+      feeRate = "${txDetailsResponse.feerate} sats";
+      fees = "${txDetailsResponse.fees} sats";
+    });
+  }
 
+  _copy(String string) {
+    Clipboard.setData(new ClipboardData(text: string));
+    widget.scaffoldKey.currentState.showSnackBar(
+      new SnackBar(
+        content: new Text("Copied"),
+        duration: Duration(milliseconds: 800),
+        behavior: SnackBarBehavior.fixed,
+      ),
+    );
+    Navigator.of(context).pop();
   }
 }
