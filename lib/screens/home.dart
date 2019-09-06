@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -188,7 +189,7 @@ class _TxDetailsState extends State<TxDetails> {
           color: Theme.of(context).accentColor,
           child: Center(
               child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 22,horizontal: 32),
+            padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 32),
             child: Text("${satToBtc(widget.tx.result)} BTC",
                 style: Theme.of(context).textTheme.headline.copyWith(color: Colors.white), textAlign: TextAlign.center),
           )),
@@ -224,6 +225,12 @@ class _TxDetailsState extends State<TxDetails> {
               ),
             ],
           ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 22),
+          child: Center(
+              child: FlatButton.icon(
+                  onPressed: () {}, icon: Icon(Icons.open_in_browser), label: Text("Open in explorer"))),
         )
       ],
     );
