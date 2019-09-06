@@ -36,6 +36,11 @@ class TxState extends ChangeNotifier {
     return dateTime.year == d2.year && dateTime.month == d2.month && dateTime.day == d2.day;
   }
 
+  clear(){
+    this.txList.clear();
+    notifyListeners();
+  }
+
   List<DateTime> createDateSet(List<Tx> txes) {
     List<DateTime> timeStamps = txes.map((item) {
       return DateTime.fromMillisecondsSinceEpoch(item.time * 1000);

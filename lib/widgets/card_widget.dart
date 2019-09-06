@@ -7,9 +7,6 @@ import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/wave_clipper.dart';
 
 class CardWidget extends StatefulWidget {
-//  XPUBModel model;
-//
-//  CardWidget(this.model);
 
   @override
   _CardWidgetState createState() => _CardWidgetState();
@@ -18,7 +15,6 @@ class CardWidget extends StatefulWidget {
 class _CardWidgetState extends State<CardWidget> {
   @override
   Widget build(BuildContext context) {
-//    final counter =;
 
     const List<String> choices = const <String>["Refresh", "Delete"];
 

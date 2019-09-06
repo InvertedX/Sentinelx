@@ -10,8 +10,13 @@ class ThemeProvider extends ChangeNotifier {
       brightness: Brightness.dark,
       primaryColor: Color(0xff262626),
       primaryColorDark:  Color(0xff212121),
+      secondaryHeaderColor:  Colors.grey[900],
       accentColor: Color(0xff04CE90),
       backgroundColor: Color(0xff262626),
+      iconTheme: IconThemeData(
+        color:   Color(0xffD4D4D4),
+        opacity: 0.8
+      ),
       textTheme: TextTheme(
         headline: TextStyle( color: Color(0xffD4D4D4)),
         title: TextStyle(color: Color(0xffD4D4D4)),

@@ -128,6 +128,9 @@ class Wallet extends ChangeNotifier {
 
   Future clear() {
     this.xpubs = [];
+    this.balanceModel = new BalanceModel();
+    this.txState.clear();
+    this.txDB.clear();
     notifyListeners();
     return this.saveState();
   }

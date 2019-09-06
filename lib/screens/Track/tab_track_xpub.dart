@@ -83,7 +83,7 @@ class TabTrackXpubState extends State<TabTrackXpub> {
         await wallet.saveState();
         _showSuccessSnackBar("Xpub added successfully");
         if (Navigator.canPop(context)) {
-          Navigator.pop(context);
+          Navigator.pop<int>(context,wallet.xpubs.indexOf(xpubModel));
         }
 
       }

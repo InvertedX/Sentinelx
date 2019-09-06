@@ -6,6 +6,8 @@ import 'package:sentinelx/channels/ApiChannel.dart';
 import 'package:sentinelx/models/txDetailsResponse.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
+import 'package:sentinelx/screens/settings.dart';
+import 'package:sentinelx/screens/txDetails.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
@@ -24,9 +26,11 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   static const platform = MethodChannel('crypto.channel');
   final GlobalKey<ScaffoldState> _ScaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicator = new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
+
     Future.delayed(Duration(milliseconds: 800), () {
       refreshTx();
     });
@@ -42,12 +46,23 @@ class _HomeState extends State<Home> {
           'SentinelX',
           style: TextStyle(fontWeight: FontWeight.w400),
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
+                return Settings();
+              }));
+            },
+          )
+        ],
         centerTitle: true,
         primary: true,
         elevation: 18,
       ),
       backgroundColor: Theme.of(context).backgroundColor,
       body: RefreshIndicator(
+       key: _refreshIndicator,
           child: CustomScrollView(
             slivers: <Widget>[
               SliverFixedExtentList(
@@ -104,6 +119,9 @@ class _HomeState extends State<Home> {
         ),
         backgroundColor: Theme.of(context).accentColor,
         onPressed: () {
+          if(AppState().selectedWallet.xpubs.length == 0){
+            return;
+          }
           Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
             return Receive();
           }));
@@ -113,10 +131,9 @@ class _HomeState extends State<Home> {
   }
 
   Future onPress() async {
-    final results = await Navigator.of(context).push(new MaterialPageRoute<dynamic>(builder: (BuildContext context) {
+    await Navigator.of(context).push(new MaterialPageRoute<dynamic>(builder: (BuildContext context) {
       return new Track();
     }));
-    print("Result ${results}");
   }
 
   void onTxClick(Tx tx) {
@@ -132,11 +149,14 @@ class _HomeState extends State<Home> {
         });
   }
 
-  void Clear() async {
+  void clear() async {
     await AppState().selectedWallet.clear();
   }
 
   Future<bool> refreshTx() async {
+    if(AppState().selectedWallet.xpubs.length == 0){
+      return true;
+    }
     if (AppState().pageIndex == 0) {
       for (int i = 0; i < AppState().selectedWallet.xpubs.length; i++) {
         await AppState().refreshTx(i);
@@ -158,138 +178,5 @@ class _HomeState extends State<Home> {
     }
     await AppState().refreshTx(AppState().pageIndex);
     return true;
-  }
-}
-
-class TxDetails extends StatefulWidget {
-  Tx tx;
-  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  TxDetails(this.tx, this.scaffoldKey);
-
-  @override
-  _TxDetailsState createState() => _TxDetailsState();
-}
-
-class _TxDetailsState extends State<TxDetails> {
-  String fees = "";
-  String feeRate = "";
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    loadTx();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      children: <Widget>[
-        Container(
-          color: Theme.of(context).accentColor,
-          child: Center(
-              child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 32),
-            child: Text("${satToBtc(widget.tx.result)} BTC",
-                style: Theme.of(context).textTheme.headline.copyWith(color: Colors.white), textAlign: TextAlign.center),
-          )),
-        ),
-        Divider(),
-        _buildRow("Date", "${formatDateAndTime(widget.tx.time)}"),
-        _buildRow("Fees", fees),
-        _buildRow("Feerate", feeRate),
-        Divider(),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                child: Text(
-                  "Tx hash",
-                  style: Theme.of(context).textTheme.subtitle,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                child: InkWell(
-                    onTap: () => _copy(widget.tx.hash),
-                    child: Text(
-                      "${widget.tx.hash}",
-                      maxLines: 2,
-                      style: TextStyle(fontSize: 12),
-                    )),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 22),
-          child: Center(
-              child: FlatButton.icon(
-                  onPressed: () {}, icon: Icon(Icons.open_in_browser), label: Text("Open in explorer"))),
-        )
-      ],
-    );
-  }
-
-  Widget _buildRow(String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.subtitle,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-            child: (isLoading && value == "")
-                ? SizedBox(
-                    child: CircularProgressIndicator(strokeWidth: 1),
-                    height: 12,
-                    width: 12,
-                  )
-                : Text(
-                    value,
-                    maxLines: 2,
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void loadTx() async {
-    setState(() {
-      isLoading = true;
-    });
-    TxDetailsResponse txDetailsResponse = await ApiChannel().getTx(widget.tx.hash);
-    print("HERE");
-    setState(() {
-      isLoading = false;
-      feeRate = "${txDetailsResponse.feerate} sats";
-      fees = "${txDetailsResponse.fees} sats";
-    });
-  }
-
-  _copy(String string) {
-    Clipboard.setData(new ClipboardData(text: string));
-    widget.scaffoldKey.currentState.showSnackBar(
-      new SnackBar(
-        content: new Text("Copied"),
-        duration: Duration(milliseconds: 800),
-        behavior: SnackBarBehavior.fixed,
-      ),
-    );
-    Navigator.of(context).pop();
   }
 }

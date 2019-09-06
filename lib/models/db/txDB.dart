@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
@@ -100,5 +101,11 @@ class TxDB {
     final dbPath = join(appDocumentDir.path, TxDB.db);
     final database = await databaseFactoryIo.openDatabase(dbPath);
     _dbOpenCompleter.complete(database);
+  }
+
+  Future clear() async {
+    final appDocumentDir = await SystemChannel().getDataDir();
+    final dbPath = join(appDocumentDir.path, TxDB.db);
+    File(dbPath).writeAsStringSync("");
   }
 }

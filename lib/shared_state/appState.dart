@@ -10,6 +10,7 @@ import 'package:sentinelx/models/unspent.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
+import 'package:sentinelx/models/db/txDB.dart';
 
 class AppState extends ChangeNotifier {
   AppState._privateConstructor();
@@ -93,5 +94,10 @@ class AppState extends ChangeNotifier {
       String xpub = this.selectedWallet.xpubs[index - 1].xpub;
       this.selectedWallet.txState.addTxes(await TxDB.getTxes(xpub));
     }
+  }
+
+
+  Future clearWalletData() async{
+    await selectedWallet.clear();
   }
 }

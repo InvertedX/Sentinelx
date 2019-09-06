@@ -31,6 +31,7 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
       child: Consumer<Wallet>(
         builder: (context, model, child) {
           wallet = model;
+          final count  =  model.xpubs.length  == 0 ? 1:  model.xpubs.length+ 2;
           return PageView.builder(
               itemBuilder: (BuildContext context, int index) {
                 return _pageBuilder(context, index, model.xpubs.length);
@@ -39,14 +40,14 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
               pageSnapping: true,
               onPageChanged: _onPageChange,
               controller: _pageController,
-              itemCount: model.xpubs.length + 2);
+              itemCount: count);
         },
       ),
     );
   }
 
   Widget _pageBuilder(BuildContext context, int index, int xpubLength) {
-    if (index > xpubLength) {
+    if (index > xpubLength || xpubLength==0) {
       return Container(
         height: 200,
         child: Padding(
@@ -71,7 +72,7 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
         ),
       );
     }
-    if (index == 0) {
+    if (index == 0 && AppState().selectedWallet.xpubs.length != 0) {
       return Container(
         height: 200,
         child: Padding(

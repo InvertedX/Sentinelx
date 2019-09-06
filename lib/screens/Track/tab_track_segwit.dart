@@ -130,7 +130,7 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
         _showSuccessSnackBar("wallet added successfully");
         Timer(Duration(milliseconds: 700), (){
           if (Navigator.canPop(context)) {
-            Navigator.pop(context);
+            Navigator.pop<int>(context,wallet.xpubs.indexOf(xpubModel));
           }
         });
 
