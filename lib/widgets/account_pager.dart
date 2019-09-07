@@ -20,6 +20,9 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
   void initState() {
     super.initState();
     _pageController = new PageController(initialPage: 0, keepPage: true, viewportFraction: 0.89);
+    Future.delayed(Duration(milliseconds: 50),(){
+      _pageController.jumpToPage(AppState().pageIndex);
+    });
   }
 
   @override
