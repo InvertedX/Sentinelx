@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/txDetailsResponse.dart';
+import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/utils/format_util.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TxDetails extends StatefulWidget {
   Tx tx;
@@ -73,7 +75,7 @@ class _TxDetailsState extends State<TxDetails> {
           padding: const EdgeInsets.symmetric(vertical: 22),
           child: Center(
               child: FlatButton.icon(
-                  onPressed: () {}, icon: Icon(Icons.open_in_browser), label: Text("Open in explorer"))),
+                  onPressed: ()=>openInExplorer(context), icon: Icon(Icons.open_in_browser), label: Text("Open in explorer"))),
         )
       ],
     );
@@ -139,5 +141,20 @@ class _TxDetailsState extends State<TxDetails> {
       ),
     );
     Navigator.of(context).pop();
+  }
+
+  void openInExplorer(BuildContext context) async {
+    var testnet = true;
+    var url = '';
+    if(testnet){
+      url = "https://blockstream.info/testnet/${widget.tx.hash}";
+    }else{
+      url = "https://oxt.me/transaction/${widget.tx.hash}";
+    }
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+       Scaffold.of(context).showSnackBar(SnackBar(content: Text("Unable to open browser"),));
+    }
   }
 }
