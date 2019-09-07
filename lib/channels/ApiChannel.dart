@@ -37,7 +37,9 @@ class ApiChannel {
   Future<TxDetailsResponse> getTx(String txid) async {
     try {
       String response = await platform.invokeMethod("getTx", {'txid': txid});
-      TxDetailsResponse txDetailsResponse = TxDetailsResponse.fromJson(jsonDecode(response));
+      Map<String,dynamic> decoded = jsonDecode(response);
+      print("GOT RES ${decoded}");
+      TxDetailsResponse txDetailsResponse = TxDetailsResponse.fromJson(decoded);
       return txDetailsResponse;
     } catch (error) {
       throw error;

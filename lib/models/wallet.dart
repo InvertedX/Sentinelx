@@ -129,8 +129,8 @@ class Wallet extends ChangeNotifier {
   Future clear() {
     this.xpubs = [];
     this.balanceModel = new BalanceModel();
-    this.txState.clear();
     this.txDB.clear();
+    this.txState.clear();
     notifyListeners();
     return this.saveState();
   }
@@ -138,4 +138,5 @@ class Wallet extends ChangeNotifier {
   String getTxDb() {
     return "txstore-wallet-${this.id}.db";
   }
+
 }

@@ -131,7 +131,7 @@ class _QRWidgetState extends State<QRWidget> {
       height: double.infinity,
       margin: EdgeInsets.only(bottom: 42),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
@@ -151,20 +151,24 @@ class _QRWidgetState extends State<QRWidget> {
                   ),
                 ),
               ),
-              InkWell(
-                borderRadius: BorderRadius.circular(12),
-                splashColor: Color(0xff3B456D),
-                onTap: () {},
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: EdgeInsets.all(12),
-                  child: Text(
-                    "$_address",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                child: InkWell(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: _address));
+                    Scaffold.of(context).showSnackBar(SnackBar(content: Text("Address copied to clipboard")));
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: EdgeInsets.all(12),
+                    child: Text(
+                      "$_address",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),

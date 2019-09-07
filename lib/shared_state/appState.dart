@@ -8,6 +8,7 @@ import 'package:sentinelx/models/db/txDB.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/unspent.dart';
 import 'package:sentinelx/models/wallet.dart';
+import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/models/db/txDB.dart';
@@ -36,7 +37,7 @@ class AppState extends ChangeNotifier {
 
   Future refreshTx(int index) async {
     try {
-      String xpub = this.selectedWallet.xpubs[index - 1].xpub;
+      String xpub = this.selectedWallet.xpubs[index].xpub;
       loaderState.setLoadingStateAndXpub(States.LOADING, xpub);
       var response = await ApiChannel().getXpubOrAddress(xpub);
       Map<String, dynamic> json = jsonDecode(response);
@@ -52,7 +53,8 @@ class AppState extends ChangeNotifier {
           AppState().selectedWallet.updateXpubState(addressObj, balance);
           if (json.containsKey("txs")) {
             List<dynamic> txes = json['txs'];
-            TxDB.insertOrUpdate(txes, addressObj, true);
+            await TxDB.insertOrUpdate(txes, addressObj, true);
+            this.selectedWallet.txState.addTxes(await TxDB.getAllTxes(this.selectedWallet.xpubs));
             loaderState.setLoadingStateAndXpub(States.COMPLETED, "all");
             return;
           }
@@ -72,7 +74,7 @@ class AppState extends ChangeNotifier {
       Map<String, dynamic> json = jsonDecode(response);
       if (json.containsKey("unspent_outputs")) {
         List<dynamic> items = json['unspent_outputs'];
-        List<Unspent> unspent  = items.map((item)=>Unspent.fromJson(item)).toList();
+        List<Unspent> unspent = items.map((item) => Unspent.fromJson(item)).toList();
         await TxDB.insertOrUpdateUnspent(unspent);
       }
     } catch (e) {
@@ -82,8 +84,7 @@ class AppState extends ChangeNotifier {
 
   void setPageIndex(int index) async {
     pageIndex = index;
-    print("this.selectedWallet.xpubs.length ${this.selectedWallet.xpubs.length}");
-    print("tpageIndex ${pageIndex}");
+    notifyListeners();
     if (pageIndex == 0) {
       this.selectedWallet.txState.addTxes(await TxDB.getAllTxes(this.selectedWallet.xpubs));
       return;
@@ -94,10 +95,22 @@ class AppState extends ChangeNotifier {
       String xpub = this.selectedWallet.xpubs[index - 1].xpub;
       this.selectedWallet.txState.addTxes(await TxDB.getTxes(xpub));
     }
+    notifyListeners();
   }
 
+  void updateTransactions(String address) async {
+    print("lskdlk ${this.pageIndex}");
+    XPUBModel xpubModel = this.selectedWallet.xpubs.firstWhere((item) => item.xpub == address);
+    if (this.pageIndex == this.selectedWallet.xpubs.indexOf(xpubModel)) {
+      this.selectedWallet.txState.addTxes(await TxDB.getTxes(xpubModel.xpub));
+    }
 
-  Future clearWalletData() async{
+    if (this.pageIndex == 0) {
+      print("DSOKDOPSKDOI");
+    }
+  }
+
+  Future clearWalletData() async {
     await selectedWallet.clear();
   }
 }

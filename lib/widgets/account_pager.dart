@@ -105,7 +105,14 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
     int result = await Navigator.of(context).push(new MaterialPageRoute<int>(builder: (BuildContext context) {
       return Track();
     }));
-    AppState().setPageIndex(result);
-    await AppState().refreshTx(result - 1);
+    print("result ${result}");
+    if(result!=null){
+      AppState().setPageIndex(result+1);
+      print("setPageIndex");
+      await AppState().refreshTx(result);
+      print("refresh");
+
+    }
+
   }
 }

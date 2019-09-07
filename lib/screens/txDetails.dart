@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
@@ -31,13 +30,13 @@ class _TxDetailsState extends State<TxDetails> {
     return Wrap(
       children: <Widget>[
         Container(
-          color: Theme.of(context).accentColor,
+          color: Theme.of(context).primaryColor,
           child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 32),
-                child: Text("${satToBtc(widget.tx.result)} BTC",
-                    style: Theme.of(context).textTheme.headline.copyWith(color: Colors.white), textAlign: TextAlign.center),
-              )),
+            padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 32),
+            child: Text("${satToBtc(widget.tx.result)} BTC",
+                style: Theme.of(context).textTheme.headline.copyWith(color: Colors.white), textAlign: TextAlign.center),
+          )),
         ),
         _buildRow("Date", "${formatDateAndTime(widget.tx.time)}"),
         _buildRow("Fees", fees),
@@ -98,14 +97,14 @@ class _TxDetailsState extends State<TxDetails> {
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
             child: (isLoading && value == "")
                 ? SizedBox(
-              child: CircularProgressIndicator(strokeWidth: 1),
-              height: 12,
-              width: 12,
-            )
+                    child: CircularProgressIndicator(strokeWidth: 1),
+                    height: 12,
+                    width: 12,
+                  )
                 : Text(
-              value,
-              maxLines: 2,
-            ),
+                    value,
+                    maxLines: 2,
+                  ),
           ),
         ],
       ),
@@ -113,7 +112,7 @@ class _TxDetailsState extends State<TxDetails> {
   }
 
   void loadTx() async {
-    try{
+    try {
       setState(() {
         isLoading = true;
       });
@@ -123,12 +122,11 @@ class _TxDetailsState extends State<TxDetails> {
         feeRate = "${txDetailsResponse.feerate} sats";
         fees = "${txDetailsResponse.fees} sats";
       });
-    }catch(excption){
+    } catch (exception) {
       setState(() {
         isLoading = false;
       });
     }
-
   }
 
   _copy(String string) {

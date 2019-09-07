@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
@@ -10,9 +9,10 @@ import 'package:sentinelx/screens/settings.dart';
 import 'package:sentinelx/screens/txDetails.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
-import 'package:sentinelx/utils/format_util.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
+import 'package:flutter/material.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/tx_widget.dart';
 
@@ -30,7 +30,6 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-
     Future.delayed(Duration(milliseconds: 800), () {
       refreshTx();
     });
@@ -47,6 +46,21 @@ class _HomeState extends State<Home> {
           style: TextStyle(fontWeight: FontWeight.w400),
         ),
         actions: <Widget>[
+          Consumer<LoaderState>(builder: (context, model, child) {
+            return model.state == States.LOADING
+                ? Container(
+                    color: Theme.of(context).primaryColor,
+                    margin: EdgeInsets.symmetric(vertical: 22,),
+                    child: SizedBox(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 1,
+                          valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                        width: 12,
+                        height: 12),
+                  )
+                : SizedBox.shrink();
+          }),
           IconButton(
             icon: Icon(Icons.menu),
             onPressed: () {
@@ -62,55 +76,57 @@ class _HomeState extends State<Home> {
       ),
       backgroundColor: Theme.of(context).backgroundColor,
       body: RefreshIndicator(
-       key: _refreshIndicator,
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverFixedExtentList(
-                  itemExtent: 220.0,
-                  delegate: SliverChildListDelegate(
-                    [
-                      AccountsPager(),
-                    ],
-                  )),
-              SliverToBoxAdapter(
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                  child: Text(
-                    "Transactions",
-                    style: Theme.of(context).textTheme.subhead,
-                  ),
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverFixedExtentList(
+                itemExtent: 220.0,
+                delegate: SliverChildListDelegate(
+                  [
+                    AccountsPager(),
+                  ],
+                )),
+            SliverToBoxAdapter(
+              child: Container(
+                alignment: Alignment.centerLeft,
+                margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                child: Text(
+                  "Transactions",
+                  style: Theme.of(context).textTheme.subhead,
                 ),
               ),
-              Consumer<TxState>(
-                builder: (context, model, child) {
-                  return SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      Tx tx = model.txList[index];
-                      if (tx is ListSection) {
-                        return Container(
-                          color: Theme.of(context).primaryColorDark,
-                          padding: EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-                          child:
-                              Text(tx.section, style: TextStyle(color: Colors.grey[400], fontWeight: FontWeight.w500)),
-                        );
-                      } else {
-                        return Container(
-                          child: TxWidget(
-                            tx: tx,
-                            callback: onTxClick,
-                          ),
-                        );
-                      }
-                    },
-                    childCount: model.txList.length,
-                  ));
-                },
-              ),
-            ],
-          ),
-          onRefresh: () => refreshTx()),
+            ),
+            Consumer<TxState>(
+              builder: (context, model, child) {
+                return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    Tx tx = model.txList[index];
+                    if (tx is ListSection) {
+                      return Container(
+                        color: Theme.of(context).primaryColorDark,
+                        padding: EdgeInsets.symmetric(vertical: 18, horizontal: 12),
+                        child: Text(tx.section, style: TextStyle(color: Colors.grey[400], fontWeight: FontWeight.w500)),
+                      );
+                    } else {
+                      return Container(
+                        child: TxWidget(
+                          tx: tx,
+                          callback: onTxClick,
+                        ),
+                      );
+                    }
+                  },
+                  childCount: model.txList.length,
+                ));
+              },
+            ),
+          ],
+        ),
+        onRefresh: () async {
+          refreshTx();
+          return Future.value(true);
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(
           SentinelxIcons.qrcode,
@@ -119,7 +135,7 @@ class _HomeState extends State<Home> {
         ),
         backgroundColor: Theme.of(context).accentColor,
         onPressed: () {
-          if(AppState().selectedWallet.xpubs.length == 0){
+          if (AppState().selectedWallet.xpubs.length == 0) {
             return;
           }
           Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
@@ -153,19 +169,18 @@ class _HomeState extends State<Home> {
     await AppState().selectedWallet.clear();
   }
 
-  Future<bool> refreshTx() async {
-    if(AppState().selectedWallet.xpubs.length == 0){
-      return true;
+  void refreshTx() async {
+    if (AppState().selectedWallet.xpubs.length == 0) {
+      return;
     }
     if (AppState().pageIndex == 0) {
       for (int i = 0; i < AppState().selectedWallet.xpubs.length; i++) {
-        await AppState().refreshTx(i);
+        await AppState().refreshTx(0);
       }
-      await refreshUnspent();
-      return true;
+//      await refreshUnspent();
+      return;
     }
-    await AppState().refreshTx(AppState().pageIndex);
-    return true;
+    await AppState().refreshTx(AppState().pageIndex - 1);
   }
 
   Future<bool> refreshUnspent() async {
