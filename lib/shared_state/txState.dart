@@ -12,6 +12,10 @@ class TxState extends ChangeNotifier {
 
   makeSections(List<Tx> txes) {
     List<Tx> output = [];
+    txes.sort((m1, m2) {
+     return m2.time.compareTo(m1.time);
+    });
+
     List<DateTime> sections = createDateSet(txes);
     sections.forEach((section) {
       var formatter = new DateFormat("d MMM yyyy");

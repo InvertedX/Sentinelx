@@ -175,7 +175,7 @@ class _HomeState extends State<Home> {
     }
     if (AppState().pageIndex == 0) {
       for (int i = 0; i < AppState().selectedWallet.xpubs.length; i++) {
-        await AppState().refreshTx(0);
+        await AppState().refreshTx(i);
       }
 //      await refreshUnspent();
       return;

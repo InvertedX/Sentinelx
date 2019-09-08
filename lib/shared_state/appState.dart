@@ -54,7 +54,19 @@ class AppState extends ChangeNotifier {
           if (json.containsKey("txs")) {
             List<dynamic> txes = json['txs'];
             await TxDB.insertOrUpdate(txes, addressObj, true);
-            this.selectedWallet.txState.addTxes(await TxDB.getAllTxes(this.selectedWallet.xpubs));
+            final count = this.selectedWallet.xpubs.length == 0 ? 1 : this.selectedWallet.xpubs.length + 2;
+            print("index--  ${index}");
+            print("index--  ${pageIndex}");
+            if (pageIndex == 0 || pageIndex > this.selectedWallet.xpubs.length - 1) {
+              setPageIndex(0);
+            }else{
+              setPageIndex(pageIndex);
+            }
+//            if(this.pageIndex == 0 || this.selectedWallet.xpubs.length < this.pageIndex ){
+//              this.selectedWallet.txState.addTxes(await TxDB.getAllTxes(this.selectedWallet.xpubs));
+//            }else{
+//              this.selectedWallet.txState.addTxes(await TxDB.getTxes(this.selectedWallet.xpubs[this.pageIndex].xpub));
+//            }
             loaderState.setLoadingStateAndXpub(States.COMPLETED, "all");
             return;
           }
