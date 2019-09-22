@@ -4,8 +4,6 @@ import 'package:sembast/utils/value_utils.dart';
 import 'package:sentinelx/models/db/txDB.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 
-import '../db_test.dart';
-
 class Xpub extends ChangeNotifier {
   String m;
   String path;
