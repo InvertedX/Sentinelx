@@ -1,10 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:sembast/sembast.dart';
+import 'package:sentinelx/models/db/sentinelxDB.dart';
 import 'package:sentinelx/models/db/txDB.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/xpub.dart';
-
-import 'package:sentinelx/models/db/sentinelxDB.dart';
 import 'package:sentinelx/shared_state/balance.dart';
 import 'package:sentinelx/shared_state/txState.dart';
 
@@ -86,6 +85,15 @@ class Wallet extends ChangeNotifier {
     return data;
   }
 
+
+  updateTrackingLabel(int index, String label) async {
+    XPUBModel xpubModel = this.xpubs[index];
+    xpubModel.label = label;
+    this.xpubs[index] = xpubModel;
+    xpubModel.notifyListeners();
+    await this.saveState();
+  }
+
   Wallet.fromJson(Map<String, dynamic> json) {
     if (json.containsKey("balanceModel")) {
       this.balanceModel.fromJSON(json['balanceModel']);
@@ -137,6 +145,14 @@ class Wallet extends ChangeNotifier {
 
   String getTxDb() {
     return "txstore-wallet-${this.id}.db";
+  }
+
+  void removeTracking(int index) {
+    this.xpubs.removeAt(index);
+    this.txState.clear();
+    this.updateTotalBalance();
+    this.saveState();
+    this.notifyListeners();
   }
 
 }

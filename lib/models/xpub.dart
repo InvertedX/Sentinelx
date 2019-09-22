@@ -20,6 +20,7 @@ class XPUBModel extends ChangeNotifier {
     this.final_balance = json['final_balance'];
   }
 
+
   Future<String> generateAddress() async {
     var channel = CryptoChannel();
     //Save

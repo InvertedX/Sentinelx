@@ -1,6 +1,5 @@
 import 'package:sentinelx/models/db/sentinelxDB.dart';
 import 'package:sentinelx/models/db/txDB.dart';
-import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 
