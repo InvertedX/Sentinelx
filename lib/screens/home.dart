@@ -128,6 +128,7 @@ class _HomeState extends State<Home> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: " ",
         child: Icon(
           SentinelxIcons.qrcode,
           color: Colors.white,
