@@ -2,35 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ThemeProvider extends ChangeNotifier {
-
   static Color secondaryBg = Color(0xff262626);
   static Color whiteText = Color(0xffD4D4D4);
 
   static ThemeData darkTheme = new ThemeData(
       brightness: Brightness.dark,
       primaryColor: Color(0xff262626),
-      primaryColorDark:  Color(0xff212121),
-      secondaryHeaderColor:  Colors.grey[900],
+      primaryColorDark: Color(0xff212121),
+      secondaryHeaderColor: Colors.grey[900],
       accentColor: Color(0xff04CE90),
       backgroundColor: Color(0xff262626),
-      iconTheme: IconThemeData(
-        color:   Color(0xffD4D4D4),
-        opacity: 0.8
-      ),
+      iconTheme: IconThemeData(color: Color(0xffD4D4D4), opacity: 0.8),
       textTheme: TextTheme(
-        headline: TextStyle( color: Color(0xffD4D4D4)),
+        headline: TextStyle(color: Color(0xffD4D4D4)),
         title: TextStyle(color: Color(0xffD4D4D4)),
         subhead: TextStyle(color: Color(0xffD4D4D4)),
         body2: TextStyle(color: Color(0xffD4D4D4)),
-        body1: TextStyle( color: Color(0xffD4D4D4)),
+        body1: TextStyle(color: Color(0xffD4D4D4)),
       ),
       canvasColor: Colors.transparent,
-      pageTransitionsTheme: PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-          }
-      ),
+      pageTransitionsTheme: PageTransitionsTheme(builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      }),
       appBarTheme: AppBarTheme(brightness: Brightness.dark, color: Color(0xff262626), elevation: 20));
 
   static ThemeData lightTheme = new ThemeData(
@@ -48,6 +42,10 @@ class ThemeProvider extends ChangeNotifier {
   ThemeData theme = darkTheme;
 
   ThemeProvider() {
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(systemNavigationBarColor: secondaryBg, // navigation bar color
+        ));
+
 //    SystemChrome.setSystemUIOverlayStyle(
 //        SystemUiOverlayStyle(statusBarColor: darkTheme.primaryColorDark, statusBarBrightness: Brightness.light));
   }
