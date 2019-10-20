@@ -31,15 +31,17 @@ class _SettingsState extends State<Settings> {
           children: <Widget>[
             Container(
               color: Theme.of(context).secondaryHeaderColor,
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18), child: Text("App"),
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+              child: Text("App"),
             ),
             ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Icon(Icons.delete_outline),
               ),
-              trailing: loadingErase ? SizedBox(
-                child: CircularProgressIndicator(strokeWidth: 1,), width: 12, height: 12,) : SizedBox.shrink(),
+              trailing: loadingErase ? SizedBox(child: CircularProgressIndicator(strokeWidth: 1,),
+                width: 12,
+                height: 12,) : SizedBox.shrink(),
               title: Text("Erase All trackings",
                 style: Theme.of(context).textTheme.subtitle,
               ),
