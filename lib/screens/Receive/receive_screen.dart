@@ -54,8 +54,7 @@ class _ReceiveState extends State<Receive> with SingleTickerProviderStateMixin {
               indicatorWeight: 2,
               indicatorColor: Theme.of(context).primaryColor,
               tabs: AppState().selectedWallet.xpubs.map((xpub) => Text(xpub.label)).toList(),
-            ),
-          ), body: TabBarView(controller: _tabController, children: buildTabs())),
+            ),), body: TabBarView(controller: _tabController, children: buildTabs())),
     );
   }
 
@@ -131,16 +130,13 @@ class _QRWidgetState extends State<QRWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: double.infinity,
-      child: Column(mainAxisAlignment: MainAxisAlignment.start,
+      height: double.infinity, child: Column(mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Flexible(flex: 2,
-            child: Container(margin: EdgeInsets.only(top: 16),
+          Flexible(flex: 2, child: Container(margin: EdgeInsets.only(top: 16),
               height: 240,
-              width: 240,
-              child: RepaintBoundary(key: repaintKey,
+              width: 240, child: RepaintBoundary(key: repaintKey,
                 child: QrImage(
                   data: _qrData, size: 240.0, version: QrVersions.auto, backgroundColor: Colors.white,),),),),
           Flexible(flex: 3,
@@ -232,14 +228,14 @@ class _AmountEntryState extends State<AmountEntry> {
             onChanged: _onChangeBtc,
             decoration: InputDecoration(labelText: 'BTC',),),),),
         Flexible(child: Padding(padding: const EdgeInsets.all(8.0),
-          child: TextField(controller: satController,
+          child: TextField(
+            controller: satController,
             onChanged: _onChangeSat,
             showCursor: false,
             keyboardType: TextInputType.number,
             inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
             decoration: InputDecoration(labelText: 'Sat',),),),)
-      ],
-    );
+      ],);
   }
 
   void _onChangeBtc(String value) {
