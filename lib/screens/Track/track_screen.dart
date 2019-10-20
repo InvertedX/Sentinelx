@@ -69,9 +69,7 @@ class _TrackState extends State<Track> with SingleTickerProviderStateMixin {
           child: FloatingActionButton.extended(
             onPressed: save,
             heroTag: "actionbtn",
-            backgroundColor: Theme
-                .of(context)
-                .accentColor,
+            backgroundColor: Theme.of(context).accentColor,
             icon: Icon(Icons.save),
             label: Text("Save"),
           ),

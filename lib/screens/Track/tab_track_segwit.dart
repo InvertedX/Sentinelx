@@ -30,7 +30,8 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 22), margin: const EdgeInsets.only(top: 54),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 22),
+      margin: const EdgeInsets.only(top: 54),
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[

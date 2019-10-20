@@ -19,7 +19,7 @@ class TxList extends StatelessWidget {
           } else {
             return Container(
 //              child: TxWidget(tx),
-            );
+                );
           }
         },
         itemCount: model.txList.length);

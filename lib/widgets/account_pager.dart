@@ -84,13 +84,17 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
         ),
       );
     } else {
-      return GestureDetector(onTap: () async {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => XpubDetailsScreen(), settings: RouteSettings(arguments: index - 1)));
-      },
-        child: Container(height: 200,
-          child: Padding(padding: const EdgeInsets.all(8.0),
-            child: ChangeNotifierProvider.value(value: wallet.xpubs[index - 1], child: CardWidget()),),
+      return GestureDetector(
+        onTap: () async {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => XpubDetailsScreen(), settings: RouteSettings(arguments: index - 1)));
+        },
+        child: Container(
+          height: 200,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ChangeNotifierProvider.value(value: wallet.xpubs[index - 1], child: CardWidget()),
+          ),
         ),
       );
     }
@@ -106,14 +110,22 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
     super.dispose();
   }
 
-  void showOptionsModal({BuildContext context,}) {
-    showModalBottomSheet(context: context, builder: (BuildContext bc) {
-      return Card(color: Theme
-          .of(context)
-          .primaryColor,
-        margin: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-        child: Container(child: new Wrap(children: <Widget>[],),),);
-    });
+  void showOptionsModal({
+    BuildContext context,
+  }) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Card(
+            color: Theme.of(context).primaryColor,
+            margin: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[],
+              ),
+            ),
+          );
+        });
   }
 
   void navigate() async {

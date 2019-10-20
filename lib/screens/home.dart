@@ -44,9 +44,12 @@ class _HomeState extends State<Home> {
         ),
         actions: <Widget>[
           Consumer<LoaderState>(builder: (context, model, child) {
-            return model.state == States.LOADING ? Container(color: Theme
-                .of(context)
-                .primaryColor, margin: EdgeInsets.symmetric(vertical: 22,),
+            return model.state == States.LOADING
+                ? Container(
+                    color: Theme.of(context).primaryColor,
+                    margin: EdgeInsets.symmetric(
+                      vertical: 22,
+                    ),
                     child: SizedBox(
                         child: CircularProgressIndicator(
                           strokeWidth: 1,

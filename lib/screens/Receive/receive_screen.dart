@@ -53,7 +53,9 @@ class _ReceiveState extends State<Receive> with SingleTickerProviderStateMixin {
               indicatorSize: TabBarIndicatorSize.label,
               indicatorWeight: 2,
               indicatorColor: Theme.of(context).primaryColor,
-              tabs: AppState().selectedWallet.xpubs.map((xpub) => Text(xpub.label)).toList(),),),
+              tabs: AppState().selectedWallet.xpubs.map((xpub) => Text(xpub.label)).toList(),
+            ),
+          ),
           body: TabBarView(controller: _tabController, children: buildTabs())),
     );
   }
@@ -126,54 +128,114 @@ class _QRWidgetState extends State<QRWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(height: double.infinity, child: Column(mainAxisAlignment: MainAxisAlignment.start,
+    return Container(
+      height: double.infinity,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Flexible(flex: 2,
+          Flexible(
+            flex: 2,
             child: Container(
-              margin: EdgeInsets.only(top: 16), height: 240, width: 240, child: RepaintBoundary(key: repaintKey,
+              margin: EdgeInsets.only(top: 16),
+              height: 240,
+              width: 240,
+              child: RepaintBoundary(
+                key: repaintKey,
                 child: QrImage(
-                  data: _qrData, size: 240.0, version: QrVersions.auto, backgroundColor: Colors.white,),),),),
-          Flexible(flex: 3,
+                  data: _qrData,
+                  size: 240.0,
+                  version: QrVersions.auto,
+                  backgroundColor: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          Flexible(
+            flex: 3,
             child: Scrollbar(
-              child: SingleChildScrollView(physics: BouncingScrollPhysics(), child: Container(height: MediaQuery
-                  .of(context)
-                  .size
-                  .height / 2,
-                child: Column(mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Column(children: <
-                        Widget>[
-                      InkWell(onTap: () {
-                        Clipboard.setData(ClipboardData(text: _address));
-                        Scaffold.of(context).showSnackBar(SnackBar(content: Text("Address copied to clipboard",)));
-                      },
-                        child: Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(12),),
-                          padding: EdgeInsets.all(12),
-                          child: Text("$_address", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16,),),),),
-                      PopupMenuButton<String>(onSelected: (String s) {
-                        Share.share(_address);
-                      }, icon: Icon(Icons.share), itemBuilder: (BuildContext context) {
-                        return [
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Container(
+                  height: MediaQuery.of(context).size.height / 2,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Column(
+                          children: <Widget>[
+                            InkWell(
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(text: _address));
+                                Scaffold.of(context).showSnackBar(SnackBar(
+                                    content: Text(
+                                  "Address copied to clipboard",
+                                )));
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: EdgeInsets.all(12),
+                                child: Text(
+                                  "$_address",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            PopupMenuButton<String>(
+                              onSelected: (String s) {
+                                Share.share(_address);
+                              },
+                              icon: Icon(Icons.share),
+                              itemBuilder: (BuildContext context) {
+                                return [
 //                                  PopupMenuItem<String>(
 //                                    value: "qr",
 //                                    child: Text("Share QR"),
 //                                  ),
-                          PopupMenuItem<String>(value: "addr", child: Text("Share address"),),
-                        ];
-                      },),
-                    ],),),
-                    Container(child: Column(mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 26), child: Text("Request amount"),), Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 22.0), child: AmountEntry(onAmountChange),)
-                      ],),),
-                  ],),),),),),
-        ],),);
+                                  PopupMenuItem<String>(
+                                    value: "addr",
+                                    child: Text("Share address"),
+                                  ),
+                                ];
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 26),
+                              child: Text("Request amount"),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 22.0),
+                              child: AmountEntry(onAmountChange),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   onAmountChange(String amount) {
@@ -218,23 +280,40 @@ class _AmountEntryState extends State<AmountEntry> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
-        Flexible(child: Padding(padding: const EdgeInsets.all(8.0),
-          child: TextField(controller: btcController,
-            keyboardType: TextInputType.number,
-            onChanged: _onChangeBtc,
-            decoration: InputDecoration(labelText: 'BTC',),),),),
-        Flexible(child: Padding(padding: const EdgeInsets.all(8.0),
-          child: TextField(
-            controller: satController,
-            onChanged: _onChangeSat,
-            showCursor: false,
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
-            decoration: InputDecoration(labelText: 'Sat',),),),)
-      ],);
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: btcController,
+              keyboardType: TextInputType.number,
+              onChanged: _onChangeBtc,
+              decoration: InputDecoration(
+                labelText: 'BTC',
+              ),
+            ),
+          ),
+        ),
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: satController,
+              onChanged: _onChangeSat,
+              showCursor: false,
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
+              decoration: InputDecoration(
+                labelText: 'Sat',
+              ),
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   void _onChangeBtc(String value) {
@@ -255,7 +334,7 @@ class _AmountEntryState extends State<AmountEntry> {
     btcController.text = "${btcValue.toStringAsFixed(8)}";
     satController.text = satFormatter.format(amount);
     satController.selection =
-    new TextSelection(baseOffset: satController.text.length, extentOffset: satController.text.length);
+        new TextSelection(baseOffset: satController.text.length, extentOffset: satController.text.length);
     this.widget.onAmountChange("$amount");
   }
 }
