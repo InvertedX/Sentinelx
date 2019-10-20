@@ -75,15 +75,12 @@ class QRWidget extends StatefulWidget {
 class _QRWidgetState extends State<QRWidget> {
   String _address = "";
   String _qrData = "";
-  TextEditingController _btcEditController, _satEditController;
 
   final GlobalKey repaintKey = new GlobalKey();
 
   @override
   void initState() {
     generateAddress();
-    _btcEditController = TextEditingController();
-    _satEditController = TextEditingController();
     super.initState();
   }
 
@@ -133,8 +130,9 @@ class _QRWidgetState extends State<QRWidget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Flexible(flex: 2, child: Container(margin: EdgeInsets.only(top: 16),
-              height: 240, width: 240, child: RepaintBoundary(key: repaintKey,
+          Flexible(flex: 2,
+            child: Container(
+              margin: EdgeInsets.only(top: 16), height: 240, width: 240, child: RepaintBoundary(key: repaintKey,
                 child: QrImage(
                   data: _qrData, size: 240.0, version: QrVersions.auto, backgroundColor: Colors.white,),),),),
           Flexible(flex: 3,
