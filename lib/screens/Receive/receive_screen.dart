@@ -53,8 +53,8 @@ class _ReceiveState extends State<Receive> with SingleTickerProviderStateMixin {
               indicatorSize: TabBarIndicatorSize.label,
               indicatorWeight: 2,
               indicatorColor: Theme.of(context).primaryColor,
-              tabs: AppState().selectedWallet.xpubs.map((xpub) => Text(xpub.label)).toList(),
-            ),), body: TabBarView(controller: _tabController, children: buildTabs())),
+              tabs: AppState().selectedWallet.xpubs.map((xpub) => Text(xpub.label)).toList(),),),
+          body: TabBarView(controller: _tabController, children: buildTabs())),
     );
   }
 
@@ -129,14 +129,12 @@ class _QRWidgetState extends State<QRWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: double.infinity, child: Column(mainAxisAlignment: MainAxisAlignment.start,
+    return Container(height: double.infinity, child: Column(mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Flexible(flex: 2, child: Container(margin: EdgeInsets.only(top: 16),
-              height: 240,
-              width: 240, child: RepaintBoundary(key: repaintKey,
+              height: 240, width: 240, child: RepaintBoundary(key: repaintKey,
                 child: QrImage(
                   data: _qrData, size: 240.0, version: QrVersions.auto, backgroundColor: Colors.white,),),),),
           Flexible(flex: 3,
@@ -162,8 +160,11 @@ class _QRWidgetState extends State<QRWidget> {
                         Share.share(_address);
                       }, icon: Icon(Icons.share), itemBuilder: (BuildContext context) {
                         return [
-                          PopupMenuItem<String>(value: "qr", child: Text("Share QR"),),
-                          PopupMenuItem<String>(value: "qr", child: Text("Share address"),),
+//                                  PopupMenuItem<String>(
+//                                    value: "qr",
+//                                    child: Text("Share QR"),
+//                                  ),
+                          PopupMenuItem<String>(value: "addr", child: Text("Share address"),),
                         ];
                       },),
                     ],),),
