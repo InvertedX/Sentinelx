@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
 import 'package:sentinelx/models/db/txDB.dart';
@@ -11,7 +11,6 @@ import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
-import 'package:sentinelx/models/db/txDB.dart';
 
 class AppState extends ChangeNotifier {
   AppState._privateConstructor();
@@ -39,8 +38,7 @@ class AppState extends ChangeNotifier {
     try {
       String xpub = this.selectedWallet.xpubs[index].xpub;
       loaderState.setLoadingStateAndXpub(States.LOADING, xpub);
-      var response = await ApiChannel().getXpubOrAddress(xpub);
-      Map<String, dynamic> json = jsonDecode(response);
+      Map<String, dynamic> json = await compute(xpubsAndAddressesCall, xpub);
       if (json.containsKey("addresses")) {
         List<dynamic> items = json['addresses'];
         var balance = 0;
@@ -49,24 +47,17 @@ class AppState extends ChangeNotifier {
         }
         if (items.length == 1) {
           Map<String, dynamic> address = items.first;
-          var addressObj = Address.fromJson(address);
+          var addressObj = await compute(isolateParseAddress, address);
           AppState().selectedWallet.updateXpubState(addressObj, balance);
           if (json.containsKey("txs")) {
             List<dynamic> txes = json['txs'];
             await TxDB.insertOrUpdate(txes, addressObj, true);
             final count = this.selectedWallet.xpubs.length == 0 ? 1 : this.selectedWallet.xpubs.length + 2;
-            print("index--  ${index}");
-            print("index--  ${pageIndex}");
             if (pageIndex == 0 || pageIndex > this.selectedWallet.xpubs.length - 1) {
               setPageIndex(0);
-            }else{
+            } else {
               setPageIndex(pageIndex);
             }
-//            if(this.pageIndex == 0 || this.selectedWallet.xpubs.length < this.pageIndex ){
-//              this.selectedWallet.txState.addTxes(await TxDB.getAllTxes(this.selectedWallet.xpubs));
-//            }else{
-//              this.selectedWallet.txState.addTxes(await TxDB.getTxes(this.selectedWallet.xpubs[this.pageIndex].xpub));
-//            }
             loaderState.setLoadingStateAndXpub(States.COMPLETED, "all");
             return;
           }
@@ -111,18 +102,25 @@ class AppState extends ChangeNotifier {
   }
 
   void updateTransactions(String address) async {
-    print("lskdlk ${this.pageIndex}");
     XPUBModel xpubModel = this.selectedWallet.xpubs.firstWhere((item) => item.xpub == address);
     if (this.pageIndex == this.selectedWallet.xpubs.indexOf(xpubModel)) {
       this.selectedWallet.txState.addTxes(await TxDB.getTxes(xpubModel.xpub));
     }
 
-    if (this.pageIndex == 0) {
-      print("DSOKDOPSKDOI");
-    }
+    if (this.pageIndex == 0) {}
   }
 
   Future clearWalletData() async {
     await selectedWallet.clear();
+  }
+
+  static Future<Map<String, dynamic>> xpubsAndAddressesCall(xpub) async {
+    var response = await ApiChannel().getXpubOrAddress(xpub);
+    Map<String, dynamic> json = jsonDecode(response);
+    return json;
+  }
+
+  static Future<Address> isolateParseAddress(Map<String, dynamic> items) async {
+    return Address.fromJson(items);
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:sentinelx/models/txDetailsResponse.dart';
 
@@ -37,9 +37,7 @@ class ApiChannel {
   Future<TxDetailsResponse> getTx(String txid) async {
     try {
       String response = await platform.invokeMethod("getTx", {'txid': txid});
-      Map<String,dynamic> decoded = jsonDecode(response);
-      print("GOT RES ${decoded}");
-      TxDetailsResponse txDetailsResponse = TxDetailsResponse.fromJson(decoded);
+      TxDetailsResponse txDetailsResponse = await compute(parseTx, response);
       return txDetailsResponse;
     } catch (error) {
       throw error;
@@ -51,4 +49,9 @@ class ApiChannel {
     String response = await platform.invokeMethod("unspent", {'params': joined});
     return response;
   }
+}
+
+TxDetailsResponse parseTx(String response) {
+  final parsed = json.decode(response).cast<Map<String, dynamic>>();
+  return TxDetailsResponse.fromJson(parsed);
 }
