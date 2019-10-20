@@ -1,25 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:sentinelx/channels/ApiChannel.dart';
+import 'package:intl/intl.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:sentinelx/channels/CryptoChannel.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
-import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
-import 'package:sentinelx/screens/Track/tab_track_address.dart';
-import 'package:sentinelx/screens/Track/tab_track_segwit.dart';
-import 'package:sentinelx/screens/Track/tab_track_xpub.dart';
-import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
-import 'package:sentinelx/widgets/sentinelx_icons.dart';
-import 'package:qr_flutter/qr_flutter.dart';
-import 'package:qr_flutter/qr_flutter.dart';
-import 'dart:ui' as ui;
+import 'package:share/share.dart';
 
 class Receive extends StatefulWidget {
   @override
@@ -29,6 +22,7 @@ class Receive extends StatefulWidget {
 class _ReceiveState extends State<Receive> with SingleTickerProviderStateMixin {
   TabController _tabController;
   bool loading = false;
+  List<QRWidget> tabItems = [];
 
   @override
   void initState() {
@@ -61,11 +55,13 @@ class _ReceiveState extends State<Receive> with SingleTickerProviderStateMixin {
               indicatorColor: Theme.of(context).primaryColor,
               tabs: AppState().selectedWallet.xpubs.map((xpub) => Text(xpub.label)).toList(),
             ),
-          ),
-          body: TabBarView(
-              controller: _tabController,
-              children: AppState().selectedWallet.xpubs.map((xpub) => QRWidget(xpub)).toList())),
+          ), body: TabBarView(controller: _tabController, children: buildTabs())),
     );
+  }
+
+  buildTabs() {
+    tabItems = AppState().selectedWallet.xpubs.map((xpub) => QRWidget(xpub)).toList();
+    return tabItems;
   }
 }
 
@@ -121,6 +117,13 @@ class _QRWidgetState extends State<QRWidget> {
           });
           break;
         }
+      default:
+        {
+          this.setState(() {
+            _address = widget.xpub.xpub;
+            _qrData = _address.toUpperCase();
+          });
+        }
         _qrData = _address.toUpperCase();
     }
   }
@@ -129,106 +132,57 @@ class _QRWidgetState extends State<QRWidget> {
   Widget build(BuildContext context) {
     return Container(
       height: double.infinity,
-      margin: EdgeInsets.only(bottom: 42),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Column(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(top: 16),
-                height: 240,
-                width: 240,
-                child: RepaintBoundary(
-                  key: repaintKey,
-                  child: QrImage(
-                    data: _qrData,
-                    size: 240.0,
-                    version: QrVersions.auto,
-                    backgroundColor: Colors.white,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                child: InkWell(
-                  onTap: () {
-                    Clipboard.setData(ClipboardData(text: _address));
-                    Scaffold.of(context).showSnackBar(SnackBar(content: Text("Address copied to clipboard")));
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: EdgeInsets.all(12),
-                    child: Text(
-                      "$_address",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.symmetric(  horizontal: 12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text("Request amount"),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            keyboardType: TextInputType.number,
-                            onChanged: _onChangeBtc,
-                            decoration: InputDecoration(
-                              labelText: 'BTC',
-                            ),
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            onChanged: _onChangeSat,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
-                            decoration: InputDecoration(
-                              labelText: 'Sat',
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+          Flexible(flex: 2,
+            child: Container(margin: EdgeInsets.only(top: 16),
+              height: 240,
+              width: 240,
+              child: RepaintBoundary(key: repaintKey,
+                child: QrImage(
+                  data: _qrData, size: 240.0, version: QrVersions.auto, backgroundColor: Colors.white,),),),),
+          Flexible(flex: 3,
+            child: Scrollbar(
+              child: SingleChildScrollView(physics: BouncingScrollPhysics(), child: Container(height: MediaQuery
+                  .of(context)
+                  .size
+                  .height / 2,
+                child: Column(mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Column(children: <
+                        Widget>[
+                      InkWell(onTap: () {
+                        Clipboard.setData(ClipboardData(text: _address));
+                        Scaffold.of(context).showSnackBar(SnackBar(content: Text("Address copied to clipboard",)));
+                      },
+                        child: Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(12),),
+                          padding: EdgeInsets.all(12),
+                          child: Text("$_address", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16,),),),),
+                      PopupMenuButton<String>(onSelected: (String s) {
+                        Share.share(_address);
+                      }, icon: Icon(Icons.share), itemBuilder: (BuildContext context) {
+                        return [
+                          PopupMenuItem<String>(value: "qr", child: Text("Share QR"),),
+                          PopupMenuItem<String>(value: "qr", child: Text("Share address"),),
+                        ];
+                      },),
+                    ],),),
+                    Container(child: Column(mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 26), child: Text("Request amount"),), Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 22.0), child: AmountEntry(onAmountChange),)
+                      ],),),
+                  ],),),),),),
+        ],),);
   }
 
-  void _onChangeSat(String value) {
-    double amount = double.parse(value);
-    setState(() {
+  onAmountChange(String amount) {
+    this.setState(() {
       _qrData = "bitcoin:${_address.toUpperCase()}?amount=$amount";
     });
   }
@@ -240,21 +194,73 @@ class _QRWidgetState extends State<QRWidget> {
       ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       var pngBytes = byteData.buffer.asUint8List();
       var bs64 = base64Encode(pngBytes);
-      debugPrint(bs64.length.toString());
       final tempDir = await SystemChannel().getDataDir();
       final file = await new File('${tempDir.path}/qr.jpg').create();
       file.writeAsBytesSync(pngBytes);
-
       return pngBytes;
     } catch (e) {
       debugPrint(e);
     }
   }
+}
+
+class AmountEntry extends StatefulWidget {
+  Function(String amount) onAmountChange;
+  AmountEntry(this.onAmountChange);
+
+  @override
+  _AmountEntryState createState() => _AmountEntryState();
+}
+
+class _AmountEntryState extends State<AmountEntry> {
+  TextEditingController satController = new TextEditingController();
+
+  TextEditingController btcController = new TextEditingController();
+
+  final satFormatter = new NumberFormat("##,###,###");
+
+  final formatter = new NumberFormat("# ### ");
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        Flexible(child: Padding(padding: const EdgeInsets.all(8.0),
+          child: TextField(controller: btcController,
+            keyboardType: TextInputType.number,
+            onChanged: _onChangeBtc,
+            decoration: InputDecoration(labelText: 'BTC',),),),),
+        Flexible(child: Padding(padding: const EdgeInsets.all(8.0),
+          child: TextField(controller: satController,
+            onChanged: _onChangeSat,
+            showCursor: false,
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
+            decoration: InputDecoration(labelText: 'Sat',),),),)
+      ],
+    );
+  }
 
   void _onChangeBtc(String value) {
     double amount = double.parse(value);
-    setState(() {
-      _qrData = "bitcoin:${_address.toUpperCase()}?amount=$amount";
-    });
+    double satvalue = amount * 1e8;
+    satController.text = satFormatter.format(satvalue);
+    if (value.isEmpty) {
+      satController.text = "";
+    }
+    this.widget.onAmountChange("$satvalue");
+  }
+
+  void _onChangeSat(String value) {
+    double amount = double.parse(value);
+    num btcValue = amount / 1e8;
+    print(amount);
+    print(btcValue);
+    btcController.text = "${btcValue.toStringAsFixed(8)}";
+    satController.text = satFormatter.format(amount);
+    satController.selection =
+    new TextSelection(baseOffset: satController.text.length, extentOffset: satController.text.length);
+    this.widget.onAmountChange("$amount");
   }
 }
