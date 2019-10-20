@@ -1,18 +1,15 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:sentinelx/channels/ApiChannel.dart';
-import 'package:sentinelx/models/txDetailsResponse.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
 import 'package:sentinelx/screens/settings.dart';
 import 'package:sentinelx/screens/txDetails.dart';
-import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
-import 'package:flutter/material.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/tx_widget.dart';
 
@@ -49,8 +46,7 @@ class _HomeState extends State<Home> {
           Consumer<LoaderState>(builder: (context, model, child) {
             return model.state == States.LOADING
                 ? Container(
-                    color: Theme.of(context).primaryColor,
-                    margin: EdgeInsets.symmetric(vertical: 22,),
+                    color: Theme.of(context).primaryColor, margin: EdgeInsets.symmetric(vertical: 22,),
                     child: SizedBox(
                         child: CircularProgressIndicator(
                           strokeWidth: 1,

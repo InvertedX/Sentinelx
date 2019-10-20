@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
@@ -9,9 +8,7 @@ import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 class TabTrackSegwit extends StatefulWidget {
-
-  TabTrackSegwit(Key key): super(key :key);
-
+  TabTrackSegwit(Key key) : super(key: key);
 
   @override
   TabTrackSegwitState createState() => TabTrackSegwitState();
@@ -33,8 +30,7 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 22),
-      margin: const EdgeInsets.only(top: 54 ),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 22), margin: const EdgeInsets.only(top: 54),
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -128,12 +124,11 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
           loading = false;
         });
         _showSuccessSnackBar("wallet added successfully");
-        Timer(Duration(milliseconds: 700), (){
+        Timer(Duration(milliseconds: 700), () {
           if (Navigator.canPop(context)) {
-            Navigator.pop<int>(context,wallet.xpubs.indexOf(xpubModel));
+            Navigator.pop<int>(context, wallet.xpubs.indexOf(xpubModel));
           }
         });
-
       }
     } catch (ex) {
       setState(() {

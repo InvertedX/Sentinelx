@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/services.dart';
 
 class CryptoChannel {
@@ -13,10 +11,10 @@ class CryptoChannel {
 
   CryptoChannel._internal();
 
-  Future<bool> getAddress(String xpub, int account_index, int change_index) async {
+  Future<bool> getAddress(String xpub, int accountIndex, int changeIndex) async {
     try {
       await platform.invokeMethod<String>(
-          "generateAddress", {'xpub': xpub, 'change_index': change_index, 'account_index': account_index});
+          "generateAddress", {'xpub': xpub, 'change_index': changeIndex, 'account_index': accountIndex});
       return true;
     } catch (exception) {
       print(exception);

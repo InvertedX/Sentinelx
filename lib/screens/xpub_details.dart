@@ -127,17 +127,14 @@ class _XpubDetailsScreenState extends State<XpubDetailsScreen> {
       case "BIP44":
         {
           return "m/44' /0'/0'/0/${xpubModel.account_index}";
-          break;
         }
       case "BIP84":
         {
           return "m/84' /0'/0'/0/${xpubModel.account_index}";
-          break;
         }
       case "BIP49":
         {
           return "m/49' /0'/0'/0/${xpubModel.account_index}";
-          break;
         }
       default:
         {

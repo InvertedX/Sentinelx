@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/wallet.dart';
-import 'package:sentinelx/models/xpub.dart';
-import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/balance.dart';
 import 'package:sentinelx/utils/format_util.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
@@ -21,7 +19,7 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
   @override
   Widget build(BuildContext context) {
 //    final counter =;
- final  Wallet wallet = Provider.of<Wallet>(context);
+    final Wallet wallet = Provider.of<Wallet>(context);
     return Stack(
       children: <Widget>[
         Container(
@@ -34,8 +32,9 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
             children: [
               ClipPath(
                 clipper: WaveClipper(reverse: true),
-                child: Container(
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: Theme.of(context).primaryColor),
+                child: Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), color: Theme
+                    .of(context)
+                    .primaryColor),
                   height: 120,
                   alignment: Alignment.topCenter,
                   width: double.infinity,
@@ -58,8 +57,9 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
                   children: <Widget>[
                     Container(
                       child: Icon(SentinelxIcons.bitcoin),
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).accentColor ),
+                      padding: EdgeInsets.all(12), decoration: BoxDecoration(shape: BoxShape.circle, color: Theme
+                        .of(context)
+                        .accentColor),
                     ),
                     Text(
                       "Total",
@@ -77,8 +77,7 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
                   alignment: Alignment.centerLeft,
                   child: ChangeNotifierProvider<BalanceModel>.value(
                     value: wallet.balanceModel,
-                    child: Consumer<BalanceModel>(
-                      builder: (context,model,c){
+                    child: Consumer<BalanceModel>(builder: (context, model, c) {
                         return Text(
                           "BTC ${satToBtc(model.balance)}",
                           maxLines: 1,
@@ -90,8 +89,7 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
                     ),
                   ),
                 ),
-              ),
-              Spacer(flex:1)
+              ), Spacer(flex: 1)
             ],
           ),
         ),

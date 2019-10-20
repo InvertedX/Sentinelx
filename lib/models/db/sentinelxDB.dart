@@ -4,11 +4,8 @@ import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
-import 'package:sentinelx/models/wallet.dart';
-import 'package:sentinelx/shared_state/appState.dart';
 
 Future<Database> get dtata async => await SentinelxDB.instance.database;
-
 
 class SentinelxDB {
   static final SentinelxDB _singleton = SentinelxDB._();

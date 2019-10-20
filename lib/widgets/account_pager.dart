@@ -20,7 +20,7 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
   void initState() {
     super.initState();
     _pageController = new PageController(initialPage: 0, keepPage: true, viewportFraction: 0.89);
-    Future.delayed(Duration(milliseconds: 50),(){
+    Future.delayed(Duration(milliseconds: 50), () {
       _pageController.jumpToPage(AppState().pageIndex);
     });
   }
@@ -34,7 +34,7 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
       child: Consumer<Wallet>(
         builder: (context, model, child) {
           wallet = model;
-          final count  =  model.xpubs.length  == 0 ? 1:  model.xpubs.length+ 2;
+          final count = model.xpubs.length == 0 ? 1 : model.xpubs.length + 2;
           return PageView.builder(
               itemBuilder: (BuildContext context, int index) {
                 return _pageBuilder(context, index, model.xpubs.length);
@@ -50,7 +50,7 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
   }
 
   Widget _pageBuilder(BuildContext context, int index, int xpubLength) {
-    if (index > xpubLength || xpubLength==0) {
+    if (index > xpubLength || xpubLength == 0) {
       return Container(
         height: 200,
         child: Padding(
@@ -120,14 +120,11 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
     int result = await Navigator.of(context).push(new MaterialPageRoute<int>(builder: (BuildContext context) {
       return Track();
     }));
-    print("result ${result}");
-    if(result!=null){
-      AppState().setPageIndex(result+1);
+    if (result != null) {
+      AppState().setPageIndex(result + 1);
       print("setPageIndex");
       await AppState().refreshTx(result);
       print("refresh");
-
     }
-
   }
 }

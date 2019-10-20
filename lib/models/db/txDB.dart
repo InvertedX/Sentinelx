@@ -4,11 +4,9 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
-import 'package:sembast/utils/value_utils.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/unspent.dart';
-import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 
@@ -59,7 +57,6 @@ class TxDB {
   }
 
   static Future insertOrUpdateUnspent(List<Unspent> items) async {
-    print("items ${items}");
     var db = await _db;
     await unspentStore.delete(db);
     await db.transaction((txn) async {

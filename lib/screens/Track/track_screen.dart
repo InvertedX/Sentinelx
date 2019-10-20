@@ -2,16 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sentinelx/channels/ApiChannel.dart';
-import 'package:sentinelx/channels/CryptoChannel.dart';
-import 'package:sentinelx/models/wallet.dart';
-import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/screens/Track/tab_track_address.dart';
 import 'package:sentinelx/screens/Track/tab_track_segwit.dart';
 import 'package:sentinelx/screens/Track/tab_track_xpub.dart';
-import 'package:sentinelx/shared_state/ThemeProvider.dart';
-import 'package:sentinelx/shared_state/appState.dart';
-import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 class Track extends StatefulWidget {
   @override
@@ -36,9 +29,7 @@ class _TrackState extends State<Track> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     _tabController = new TabController(vsync: this, length: _tabs.length);
-    Future.delayed(const Duration(milliseconds: 1000), () {
-
-    });
+    Future.delayed(const Duration(milliseconds: 1000), () {});
     super.initState();
   }
 
@@ -78,7 +69,9 @@ class _TrackState extends State<Track> with SingleTickerProviderStateMixin {
           child: FloatingActionButton.extended(
             onPressed: save,
             heroTag: "actionbtn",
-            backgroundColor:  Theme.of(context).accentColor,
+            backgroundColor: Theme
+                .of(context)
+                .accentColor,
             icon: Icon(Icons.save),
             label: Text("Save"),
           ),
@@ -90,22 +83,23 @@ class _TrackState extends State<Track> with SingleTickerProviderStateMixin {
   save() async {
     await SystemChannels.textInput.invokeMethod('TextInput.hide');
     int index = _tabController.index;
-    switch(index){
-      case 0:{
-        _trackAddress.currentState.validateAndSaveAddress();
-        break;
-      }
-      case 1:{
-        _trackXpub.currentState.validateAndSaveXpub();
-        break;
-      }
-      case 2:{
-        _trackSegwit.currentState.validateAndSaveSegWit();
-        break;
-      }
-
+    switch (index) {
+      case 0:
+        {
+          _trackAddress.currentState.validateAndSaveAddress();
+          break;
+        }
+      case 1:
+        {
+          _trackXpub.currentState.validateAndSaveXpub();
+          break;
+        }
+      case 2:
+        {
+          _trackSegwit.currentState.validateAndSaveSegWit();
+          break;
+        }
     }
-    String label, xpubOrAddress;
 //    await validateAndSaveXpub(label, xpubOrAddress);
   }
 }

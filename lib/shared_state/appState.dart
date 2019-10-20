@@ -52,7 +52,7 @@ class AppState extends ChangeNotifier {
           if (json.containsKey("txs")) {
             List<dynamic> txes = json['txs'];
             await TxDB.insertOrUpdate(txes, addressObj, true);
-            final count = this.selectedWallet.xpubs.length == 0 ? 1 : this.selectedWallet.xpubs.length + 2;
+//            final count = this.selectedWallet.xpubs.length == 0 ? 1 : this.selectedWallet.xpubs.length + 2;
             if (pageIndex == 0 || pageIndex > this.selectedWallet.xpubs.length - 1) {
               setPageIndex(0);
             } else {
@@ -66,7 +66,7 @@ class AppState extends ChangeNotifier {
       loaderState.setLoadingStateAndXpub(States.COMPLETED, "all");
     } catch (e) {
       loaderState.setLoadingStateAndXpub(States.COMPLETED, "all");
-      print("E ${e}");
+      print("E $e");
     }
   }
 
@@ -81,7 +81,7 @@ class AppState extends ChangeNotifier {
         await TxDB.insertOrUpdateUnspent(unspent);
       }
     } catch (e) {
-      print("E ${e}");
+      print("E $e");
     }
   }
 

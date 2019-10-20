@@ -10,7 +10,7 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   bool loadingErase = false;
-  GlobalKey<ScaffoldState> scaffoldKey =GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,8 +31,7 @@ class _SettingsState extends State<Settings> {
           children: <Widget>[
             Container(
               color: Theme.of(context).secondaryHeaderColor,
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
-              child: Text("Wallet"),
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18), child: Text("App"),
             ),
             ListTile(
               leading: Padding(
@@ -40,14 +39,8 @@ class _SettingsState extends State<Settings> {
                 child: Icon(Icons.delete_outline),
               ),
               trailing: loadingErase ? SizedBox(
-                child: CircularProgressIndicator(
-                  strokeWidth: 1,
-                ),
-                width: 12,
-                height: 12,
-              ): SizedBox.shrink(),
-              title: Text(
-                "Erase wallet",
+                child: CircularProgressIndicator(strokeWidth: 1,), width: 12, height: 12,) : SizedBox.shrink(),
+              title: Text("Erase All trackings",
                 style: Theme.of(context).textTheme.subtitle,
               ),
               subtitle: Text("Clear all data from the device"),

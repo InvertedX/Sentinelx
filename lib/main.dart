@@ -1,19 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:sentinelx/channels/ApiChannel.dart';
 import 'package:sentinelx/models/db/database.dart';
-import 'package:sentinelx/models/db/txDB.dart';
-import 'package:sentinelx/models/tx.dart';
-import 'package:sentinelx/screens/Track/track_screen.dart';
 import 'package:sentinelx/screens/home.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
-import 'package:sentinelx/widgets/account_pager.dart';
 
 import 'models/wallet.dart';
 
