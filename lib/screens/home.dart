@@ -200,10 +200,14 @@ class _HomeState extends State<Home> {
     var first = await SystemChannel().isFirstRun();
     print("first ${first}");
     if (first) {
-      var selection = await showConfirmModel(context: context, title: Text("Select network?", style: Theme
-          .of(context)
-          .textTheme
-          .subhead), textPositive: new Text('TestNet ',), textNegative: new Text('MainNet'),);
+      var selection = await showConfirmModel(
+        context: context,
+        title: Text("Select network?", style: Theme.of(context).textTheme.subhead),
+        textPositive: new Text(
+          'TestNet ',
+        ),
+        textNegative: new Text('MainNet'),
+      );
       if (selection) {
         await SystemChannel().setNetwork(true);
       } else {
