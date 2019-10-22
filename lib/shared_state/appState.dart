@@ -11,6 +11,7 @@ import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
+import 'package:sentinelx/utils/utils.dart';
 
 class AppState extends ChangeNotifier {
   AppState._privateConstructor();
@@ -38,7 +39,9 @@ class AppState extends ChangeNotifier {
     try {
       String xpub = this.selectedWallet.xpubs[index].xpub;
       loaderState.setLoadingStateAndXpub(States.LOADING, xpub);
-      Map<String, dynamic> json = await compute(xpubsAndAddressesCall, xpub);
+
+      String response = await ApiChannel().getXpubOrAddress(xpub);
+      Map<String, dynamic> json = await compute(parseJsonResponse, response);
       if (json.containsKey("addresses")) {
         List<dynamic> items = json['addresses'];
         var balance = 0;
@@ -47,7 +50,7 @@ class AppState extends ChangeNotifier {
         }
         if (items.length == 1) {
           Map<String, dynamic> address = items.first;
-          var addressObj = await compute(isolateParseAddress, address);
+          var addressObj = await compute(parse, address);
           AppState().selectedWallet.updateXpubState(addressObj, balance);
           if (json.containsKey("txs")) {
             List<dynamic> txes = json['txs'];
@@ -114,13 +117,7 @@ class AppState extends ChangeNotifier {
     await selectedWallet.clear();
   }
 
-  static Future<Map<String, dynamic>> xpubsAndAddressesCall(xpub) async {
-    var response = await ApiChannel().getXpubOrAddress(xpub);
-    Map<String, dynamic> json = jsonDecode(response);
-    return json;
-  }
-
-  static Future<Address> isolateParseAddress(Map<String, dynamic> items) async {
-    return Address.fromJson(items);
+  static Address parse(Map<String, dynamic> addressObjs) {
+    return Address.fromJson(addressObjs);
   }
 }
