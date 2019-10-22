@@ -12,7 +12,6 @@ import 'package:sentinelx/channels/CryptoChannel.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/appState.dart';
-import 'package:share/share.dart';
 
 class Receive extends StatefulWidget {
   @override
@@ -26,7 +25,8 @@ class _ReceiveState extends State<Receive> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    _tabController = new TabController(vsync: this, length: AppState().selectedWallet.xpubs.length);
+    _tabController = new TabController(
+        vsync: this, length: AppState().selectedWallet.xpubs.length);
     super.initState();
   }
 
@@ -53,7 +53,11 @@ class _ReceiveState extends State<Receive> with SingleTickerProviderStateMixin {
               indicatorSize: TabBarIndicatorSize.label,
               indicatorWeight: 2,
               indicatorColor: Theme.of(context).primaryColor,
-              tabs: AppState().selectedWallet.xpubs.map((xpub) => Text(xpub.label)).toList(),
+              tabs: AppState()
+                  .selectedWallet
+                  .xpubs
+                  .map((xpub) => Text(xpub.label))
+                  .toList(),
             ),
           ),
           body: TabBarView(controller: _tabController, children: buildTabs())),
@@ -61,13 +65,15 @@ class _ReceiveState extends State<Receive> with SingleTickerProviderStateMixin {
   }
 
   buildTabs() {
-    tabItems = AppState().selectedWallet.xpubs.map((xpub) => QRWidget(xpub)).toList();
+    tabItems =
+        AppState().selectedWallet.xpubs.map((xpub) => QRWidget(xpub)).toList();
     return tabItems;
   }
 }
 
 class QRWidget extends StatefulWidget {
   XPUBModel xpub;
+
   QRWidget(this.xpub);
 
   @override
@@ -90,7 +96,8 @@ class _QRWidgetState extends State<QRWidget> {
     switch (widget.xpub.bip) {
       case "BIP84":
         {
-          String address = await CryptoChannel().generateAddressBIP84(widget.xpub.xpub, widget.xpub.account_index);
+          String address = await CryptoChannel().generateAddressBIP84(
+              widget.xpub.xpub, widget.xpub.account_index);
           this.setState(() {
             _address = address;
             _qrData = _address.toUpperCase();
@@ -99,7 +106,8 @@ class _QRWidgetState extends State<QRWidget> {
         }
       case "BIP44":
         {
-          String address = await CryptoChannel().generateAddressXpub(widget.xpub.xpub, widget.xpub.account_index);
+          String address = await CryptoChannel()
+              .generateAddressXpub(widget.xpub.xpub, widget.xpub.account_index);
           this.setState(() {
             _address = address;
             _qrData = _address.toUpperCase();
@@ -108,7 +116,8 @@ class _QRWidgetState extends State<QRWidget> {
         }
       case "BIP49":
         {
-          String address = await CryptoChannel().generateAddressBIP49(widget.xpub.xpub, widget.xpub.account_index);
+          String address = await CryptoChannel().generateAddressBIP49(
+              widget.xpub.xpub, widget.xpub.account_index);
           this.setState(() {
             _address = address;
             _qrData = _address.toUpperCase();
@@ -170,7 +179,8 @@ class _QRWidgetState extends State<QRWidget> {
                           children: <Widget>[
                             InkWell(
                               onTap: () {
-                                Clipboard.setData(ClipboardData(text: _address));
+                                Clipboard.setData(
+                                    ClipboardData(text: _address));
                                 Scaffold.of(context).showSnackBar(SnackBar(
                                     content: Text(
                                   "Address copied to clipboard",
@@ -191,8 +201,8 @@ class _QRWidgetState extends State<QRWidget> {
                               ),
                             ),
                             PopupMenuButton<String>(
-                              onSelected: (String s) {
-                                Share.share(_address);
+                              onSelected: (String type) async {
+                                await SystemChannel().shareText(_address);
                               },
                               icon: Icon(Icons.share),
                               itemBuilder: (BuildContext context) {
@@ -217,11 +227,13 @@ class _QRWidgetState extends State<QRWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 26),
+                              padding:
+                              const EdgeInsets.symmetric(horizontal: 26),
                               child: Text("Request amount"),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 22.0),
+                              padding:
+                              const EdgeInsets.symmetric(horizontal: 22.0),
                               child: AmountEntry(onAmountChange),
                             )
                           ],
@@ -246,9 +258,11 @@ class _QRWidgetState extends State<QRWidget> {
 
   Future<Uint8List> _getWidgetImage() async {
     try {
-      RenderRepaintBoundary boundary = repaintKey.currentContext.findRenderObject();
+      RenderRepaintBoundary boundary =
+      repaintKey.currentContext.findRenderObject();
       ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      ByteData byteData =
+      await image.toByteData(format: ui.ImageByteFormat.png);
       var pngBytes = byteData.buffer.asUint8List();
       var bs64 = base64Encode(pngBytes);
       final tempDir = await SystemChannel().getDataDir();
@@ -263,6 +277,7 @@ class _QRWidgetState extends State<QRWidget> {
 
 class AmountEntry extends StatefulWidget {
   Function(String amount) onAmountChange;
+
   AmountEntry(this.onAmountChange);
 
   @override
@@ -305,7 +320,9 @@ class _AmountEntryState extends State<AmountEntry> {
               onChanged: _onChangeSat,
               showCursor: false,
               keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly],
+              inputFormatters: <TextInputFormatter>[
+                WhitelistingTextInputFormatter.digitsOnly
+              ],
               decoration: InputDecoration(
                 labelText: 'Sat',
               ),
@@ -333,8 +350,9 @@ class _AmountEntryState extends State<AmountEntry> {
     print(btcValue);
     btcController.text = "${btcValue.toStringAsFixed(8)}";
     satController.text = satFormatter.format(amount);
-    satController.selection =
-        new TextSelection(baseOffset: satController.text.length, extentOffset: satController.text.length);
+    satController.selection = new TextSelection(
+        baseOffset: satController.text.length,
+        extentOffset: satController.text.length);
     this.widget.onAmountChange("$amount");
   }
 }

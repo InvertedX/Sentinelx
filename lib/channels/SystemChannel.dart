@@ -47,4 +47,27 @@ class SystemChannel {
       return false;
     }
   }
+
+  Future<bool> openURL(String url) async {
+    try {
+      bool run = await platform.invokeMethod<bool>("openURL", url);
+      return run;
+    } catch (exception) {
+      print(exception);
+      return false;
+    }
+  }
+
+
+  Future<bool> shareText(String share) async {
+    try {
+      bool run = await platform.invokeMethod<bool>("share", share);
+      return run;
+    } catch (exception) {
+      print(exception);
+      return false;
+    }
+  }
+
+
 }

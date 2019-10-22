@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
+import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/txDetailsResponse.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/utils/format_util.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class TxDetails extends StatefulWidget {
   Tx tx;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   TxDetails(this.tx, this.scaffoldKey);
 
   @override
@@ -37,7 +38,12 @@ class _TxDetailsState extends State<TxDetails> {
               child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 32),
             child: Text("${satToBtc(widget.tx.result)} BTC",
-                style: Theme.of(context).textTheme.headline.copyWith(color: Colors.white), textAlign: TextAlign.center),
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .headline
+                    .copyWith(color: Colors.white),
+                textAlign: TextAlign.center),
           )),
         ),
         _buildRow("Date", "${formatDateAndTime(widget.tx.time)}"),
@@ -52,14 +58,16 @@ class _TxDetailsState extends State<TxDetails> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                padding:
+                const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                 child: Text(
                   "Tx hash",
                   style: Theme.of(context).textTheme.subtitle,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+                padding:
+                const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
                 child: InkWell(
                     onTap: () => _copy(widget.tx.hash),
                     child: Text(
@@ -75,7 +83,9 @@ class _TxDetailsState extends State<TxDetails> {
           padding: const EdgeInsets.symmetric(vertical: 22),
           child: Center(
               child: FlatButton.icon(
-                  onPressed: ()=>openInExplorer(context), icon: Icon(Icons.open_in_browser), label: Text("Open in explorer"))),
+                  onPressed: () => openInExplorer(context),
+                  icon: Icon(Icons.open_in_browser),
+                  label: Text("Open in explorer"))),
         )
       ],
     );
@@ -118,7 +128,8 @@ class _TxDetailsState extends State<TxDetails> {
       setState(() {
         isLoading = true;
       });
-      TxDetailsResponse txDetailsResponse = await ApiChannel().getTx(widget.tx.hash);
+      TxDetailsResponse txDetailsResponse =
+      await ApiChannel().getTx(widget.tx.hash);
       setState(() {
         isLoading = false;
         feeRate = "${txDetailsResponse.feerate} sats";
@@ -144,17 +155,18 @@ class _TxDetailsState extends State<TxDetails> {
   }
 
   void openInExplorer(BuildContext context) async {
-    var testnet = true;
     var url = '';
-    if(testnet){
+    if (AppState().isTestnet) {
       url = "https://blockstream.info/testnet/${widget.tx.hash}";
-    }else{
+    } else {
       url = "https://oxt.me/transaction/${widget.tx.hash}";
     }
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-       Scaffold.of(context).showSnackBar(SnackBar(content: Text("Unable to open browser"),));
+    try {
+      await SystemChannel().openURL(url);
+    } catch (er) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("Unable to open browser"),
+      ));
     }
   }
 }

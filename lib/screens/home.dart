@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/tx.dart';
@@ -23,7 +26,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _ScaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<RefreshIndicatorState> _refreshIndicator = new GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicator =
+  new GlobalKey<RefreshIndicatorState>();
+  static const stream = const EventChannel('TOR');
 
   @override
   void initState() {
@@ -65,10 +70,15 @@ class _HomeState extends State<Home> {
           IconButton(
             icon: Icon(Icons.menu),
             onPressed: () {
-              Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
-                return Settings();
-              }));
+              Navigator.of(context).push(
+                  new MaterialPageRoute<Null>(builder: (BuildContext context) {
+                    return Settings();
+                  }));
             },
+          ),
+          IconButton(
+            icon: Icon(Icons.chrome_reader_mode),
+            onPressed: () {},
           )
         ],
         centerTitle: true,
@@ -144,16 +154,18 @@ class _HomeState extends State<Home> {
           if (AppState().selectedWallet.xpubs.length == 0) {
             return;
           }
-          Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
-            return Receive();
-          }));
+          Navigator.of(context).push(
+              new MaterialPageRoute<Null>(builder: (BuildContext context) {
+                return Receive();
+              }));
         },
       ),
     );
   }
 
   Future onPress() async {
-    await Navigator.of(context).push(new MaterialPageRoute<dynamic>(builder: (BuildContext context) {
+    await Navigator.of(context)
+        .push(new MaterialPageRoute<dynamic>(builder: (BuildContext context) {
       return new Track();
     }));
   }
@@ -201,13 +213,21 @@ class _HomeState extends State<Home> {
     return true;
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void askNetwork() async {
     var first = await SystemChannel().isFirstRun();
-    print("first ${first}");
     if (first) {
       var selection = await showConfirmModel(
         context: context,
-        title: Text("Select network?", style: Theme.of(context).textTheme.subhead),
+        title:
+        Text("Select network?", style: Theme
+            .of(context)
+            .textTheme
+            .subhead),
         textPositive: new Text(
           'TestNet ',
         ),
