@@ -47,18 +47,19 @@ class _HomeState extends State<Home> {
           Consumer<LoaderState>(builder: (context, model, child) {
             return model.state == States.LOADING
                 ? Container(
-                    color: Theme.of(context).primaryColor,
-                    margin: EdgeInsets.symmetric(
-                      vertical: 22,
-                    ),
-                    child: SizedBox(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1,
-                          valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                        width: 12,
-                        height: 12),
-                  )
+              color: Theme.of(context).primaryColor,
+              margin: EdgeInsets.symmetric(
+                vertical: 22,
+              ),
+              child: SizedBox(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 1,
+                    valueColor:
+                    new AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                  width: 12,
+                  height: 12),
+            )
                 : SizedBox.shrink();
           }),
           IconButton(
@@ -99,25 +100,29 @@ class _HomeState extends State<Home> {
               builder: (context, model, child) {
                 return SliverList(
                     delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    Tx tx = model.txList[index];
-                    if (tx is ListSection) {
-                      return Container(
-                        color: Theme.of(context).primaryColorDark,
-                        padding: EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-                        child: Text(tx.section, style: TextStyle(color: Colors.grey[400], fontWeight: FontWeight.w500)),
-                      );
-                    } else {
-                      return Container(
-                        child: TxWidget(
-                          tx: tx,
-                          callback: onTxClick,
-                        ),
-                      );
-                    }
-                  },
-                  childCount: model.txList.length,
-                ));
+                          (BuildContext context, int index) {
+                        Tx tx = model.txList[index];
+                        if (tx is ListSection) {
+                          return Container(
+                            color: Theme.of(context).primaryColorDark,
+                            padding:
+                            EdgeInsets.symmetric(vertical: 18, horizontal: 12),
+                            child: Text(tx.section,
+                                style: TextStyle(
+                                    color: Colors.grey[400],
+                                    fontWeight: FontWeight.w500)),
+                          );
+                        } else {
+                          return Container(
+                            child: TxWidget(
+                              tx: tx,
+                              callback: onTxClick,
+                            ),
+                          );
+                        }
+                      },
+                      childCount: model.txList.length,
+                    ));
               },
             ),
           ],
@@ -213,6 +218,8 @@ class _HomeState extends State<Home> {
       } else {
         await SystemChannel().setNetwork(false);
       }
+    } else {
+      AppState().isTestnet = await SystemChannel().isTestNet();
     }
   }
 }
