@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
 import 'package:sentinelx/screens/settings.dart';
@@ -10,6 +10,7 @@ import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
+import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/tx_widget.dart';
 
@@ -21,7 +22,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  static const platform = MethodChannel('crypto.channel');
   final GlobalKey<ScaffoldState> _ScaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refreshIndicator = new GlobalKey<RefreshIndicatorState>();
 
@@ -30,6 +30,7 @@ class _HomeState extends State<Home> {
     Future.delayed(Duration(milliseconds: 800), () {
       refreshTx();
     });
+    askNetwork();
     super.initState();
   }
 
@@ -193,5 +194,21 @@ class _HomeState extends State<Home> {
     }
     await AppState().refreshTx(AppState().pageIndex);
     return true;
+  }
+
+  void askNetwork() async {
+    var first = await SystemChannel().isFirstRun();
+    print("first ${first}");
+    if (first) {
+      var selection = await showConfirmModel(context: context, title: Text("Select network?", style: Theme
+          .of(context)
+          .textTheme
+          .subhead), textPositive: new Text('TestNet ',), textNegative: new Text('MainNet'),);
+      if (selection) {
+        await SystemChannel().setNetwork(true);
+      } else {
+        await SystemChannel().setNetwork(false);
+      }
+    }
   }
 }

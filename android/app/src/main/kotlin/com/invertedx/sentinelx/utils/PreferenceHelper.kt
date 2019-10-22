@@ -128,6 +128,7 @@ abstract class Preferences(private var context: Context, private val name: Strin
 
 class SentinalPrefs(context: Context) : Preferences(context) {
     var isTestNet by booleanPref()
+    var firstRunComplete by booleanPref()
 }
 
 

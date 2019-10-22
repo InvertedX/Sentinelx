@@ -18,7 +18,6 @@ class SystemChannel {
     return Directory(path);
   }
 
-
   Future<bool> setNetwork(bool isTestNet) async {
     try {
       await platform.invokeMethod<String>("setNetwork", {'mode': isTestNet});
@@ -29,4 +28,23 @@ class SystemChannel {
     }
   }
 
+  Future<bool> isTestNet() async {
+    try {
+      String network = await platform.invokeMethod<String>("getNetWork");
+      return (network == "TESTNET");
+    } catch (exception) {
+      print(exception);
+      return false;
+    }
+  }
+
+  Future<bool> isFirstRun() async {
+    try {
+      bool run = await platform.invokeMethod<bool>("isFirstRun");
+      return run;
+    } catch (exception) {
+      print(exception);
+      return false;
+    }
+  }
 }
