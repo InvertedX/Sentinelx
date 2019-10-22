@@ -1,6 +1,7 @@
 package com.invertedx.sentinelx
 
 import android.util.Log
+import com.invertedx.sentinelx.utils.SentinalPrefs
 import org.bitcoinj.core.NetworkParameters
 import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.params.TestNet3Params
