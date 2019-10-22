@@ -27,25 +27,6 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterView, "system.channel").setMethodCallHandler(SystemChannel(applicationContext, this))
         MethodChannel(flutterView, "crypto.channel").setMethodCallHandler(CryptoChannel(applicationContext))
         MethodChannel(flutterView, "api.channel").setMethodCallHandler(ApiChannel(applicationContext))
-
-
-        EventChannel(flutterView, "TOR").setStreamHandler(
-                object : EventChannel.StreamHandler {
-                    override fun onListen(args: Any?, events: EventChannel.EventSink) {
-                        Handler().postDelayed({
-                            events.success("TEST1")
-                        }, 2000)
-                        Handler().postDelayed({
-                            events.success("TEST1")
-                        }, 5000)
-                    }
-
-                    override fun onCancel(args: Any) {
-                        timerSubscription.dispose();
-                        i("CANCEL")
-                    }
-                }
-        )
     }
 
     private fun setUpPrefs() {

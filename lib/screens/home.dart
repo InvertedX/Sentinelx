@@ -76,10 +76,6 @@ class _HomeState extends State<Home> {
                   }));
             },
           ),
-          IconButton(
-            icon: Icon(Icons.chrome_reader_mode),
-            onPressed: () {},
-          )
         ],
         centerTitle: true,
         primary: true,
