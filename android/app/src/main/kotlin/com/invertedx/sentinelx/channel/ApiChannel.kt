@@ -10,7 +10,7 @@ import io.reactivex.schedulers.Schedulers
 import org.json.JSONObject
 
 
-class ApiChannel(applicationContext: Context) : MethodChannel.MethodCallHandler {
+class ApiChannel(private val applicationContext: Context) : MethodChannel.MethodCallHandler {
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
         when (methodCall.method) {
@@ -20,7 +20,7 @@ class ApiChannel(applicationContext: Context) : MethodChannel.MethodCallHandler 
                     result.notImplemented()
                     return
                 }
-                ApiService().getTxAndXPUBData(xpubOrAddress)
+                ApiService(applicationContext).getTxAndXPUBData(xpubOrAddress)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
@@ -41,7 +41,7 @@ class ApiChannel(applicationContext: Context) : MethodChannel.MethodCallHandler 
                     result.notImplemented()
                     return
                 }
-                ApiService().getUnspent(params)
+                ApiService(applicationContext).getUnspent(params)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
@@ -64,7 +64,7 @@ class ApiChannel(applicationContext: Context) : MethodChannel.MethodCallHandler 
                     result.notImplemented()
                     return
                 }
-                ApiService().addHDAccount(xpub, bip)
+                ApiService(applicationContext).addHDAccount(xpub, bip)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
@@ -91,7 +91,7 @@ class ApiChannel(applicationContext: Context) : MethodChannel.MethodCallHandler 
                     result.notImplemented()
                     return
                 }
-                ApiService().getTx(txid)
+                ApiService(applicationContext).getTx(txid)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
