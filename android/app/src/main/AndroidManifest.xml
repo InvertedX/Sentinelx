@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.invertedx.sentinelx">
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
@@ -8,10 +9,13 @@
          FlutterApplication and put your custom class here. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="sentinelx"
-        android:icon="@mipmap/ic_launcher">
+        android:label="Sentinel x"
+        android:icon="@mipmap/ic_launcher"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -31,5 +35,18 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <receiver android:name=".tor.TorBroadCastReceiver" />
+        <service
+            android:name=".tor.TorService"
+            android:enabled="true"
+            android:stopWithTask="true" />
+        <receiver
+            android:name="com.msopentech.thali.android.toronionproxy.ConnectionChangeReceiver"
+            android:label="NetworkChangeReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
