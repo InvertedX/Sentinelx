@@ -11,9 +11,11 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+    <!--usesCleartextTraffic is required for tor routing-->
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="Sentinel x"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         tools:ignore="GoogleAppIndexingWarning">
         <activity

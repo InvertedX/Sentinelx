@@ -2,7 +2,6 @@ package com.invertedx.sentinelx
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import com.invertedx.sentinelx.channel.ApiChannel
@@ -14,31 +13,25 @@ import com.invertedx.sentinelx.utils.SentinalPrefs
 import io.flutter.app.FlutterActivity
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
-import io.reactivex.disposables.Disposable
 import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.params.TestNet3Params
 
 
 class MainActivity : FlutterActivity() {
 
+    private lateinit var networkChannel: NetworkChannel;
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         GeneratedPluginRegistrant.registerWith(this)
 
-        try{
-            val startIntent = Intent(applicationContext, TorService::class.java)
-            startIntent.action = TorService.START_SERVICE
-            startService(startIntent)
-        }catch (ex:Exception){
-        }
         setUpPrefs()
         createNotificationChannels()
-
+        networkChannel = NetworkChannel(applicationContext, this);
         MethodChannel(flutterView, "system.channel").setMethodCallHandler(SystemChannel(applicationContext, this))
         MethodChannel(flutterView, "crypto.channel").setMethodCallHandler(CryptoChannel(applicationContext))
         MethodChannel(flutterView, "api.channel").setMethodCallHandler(ApiChannel(applicationContext))
-        MethodChannel(flutterView, "network.channel").setMethodCallHandler(NetworkChannel(applicationContext, this))
-
+        MethodChannel(flutterView, "network.channel").setMethodCallHandler(networkChannel);
 
 
     }
@@ -49,6 +42,11 @@ class MainActivity : FlutterActivity() {
         if (prefs.firstRunComplete!!) {
             SentinelxApp.setNetWorkParam(if (prefs.isTestNet!!) TestNet3Params.get() else MainNetParams.get())
         }
+    }
+
+    override fun onDestroy() {
+        networkChannel.dispose()
+        super.onDestroy()
     }
 
 

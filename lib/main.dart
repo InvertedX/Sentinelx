@@ -5,6 +5,7 @@ import 'package:sentinelx/screens/home.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
+import 'package:sentinelx/shared_state/networkState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
 
 import 'models/wallet.dart';
@@ -15,6 +16,7 @@ Future main() async {
   return runApp(MultiProvider(
     providers: [
       Provider<AppState>.value(value: AppState()),
+      ChangeNotifierProvider<NetworkState>.value(value: NetworkState()),
       ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
       Provider<Wallet>.value(value: AppState().selectedWallet),
       ChangeNotifierProvider<TxState>.value(value: AppState().selectedWallet.txState),

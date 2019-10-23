@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/tx.dart';
@@ -28,14 +27,13 @@ class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _ScaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refreshIndicator =
   new GlobalKey<RefreshIndicatorState>();
-  static const stream = const EventChannel('TOR');
 
   @override
   void initState() {
     Future.delayed(Duration(milliseconds: 800), () {
       refreshTx();
     });
-    askNetwork();
+    setUp();
     super.initState();
   }
 
@@ -238,4 +236,9 @@ class _HomeState extends State<Home> {
       AppState().isTestnet = await SystemChannel().isTestNet();
     }
   }
+
+  void setUp() {
+    askNetwork();
+  }
+
 }

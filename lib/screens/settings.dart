@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/shared_state/networkState.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 
 class Settings extends StatefulWidget {
@@ -11,6 +13,7 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   bool loadingErase = false;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,6 +37,7 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text("App"),
             ),
+            Divider(),
             ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -56,7 +60,43 @@ class _SettingsState extends State<Settings> {
               onTap: () {
                 deleteConfirmModal();
               },
-            )
+            ),
+            Divider(),
+            Container(
+              color: Theme
+                  .of(context)
+                  .secondaryHeaderColor,
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+              child: Text("Network"),
+            ),
+            Divider(),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.delete_outline),
+              ),
+//              trailing: loadingErase
+//                  ? SizedBox(
+//                      child: CircularProgressIndicator(
+//                        strokeWidth: 1,
+//                      ),
+//                      width: 12,
+//                      height: 12,
+//                    )
+//                  : SizedBox.shrink(),
+              title: Text(
+                "Start Tor",
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .subtitle,
+              ),
+              subtitle: Text("Start Tor service"),
+              onTap: () {
+                Provider.of<NetworkState>(context).startTor();
+              },
+            ),
+            Divider(),
           ],
         ),
       ),
@@ -66,7 +106,11 @@ class _SettingsState extends State<Settings> {
   void deleteConfirmModal() async {
     bool confirm = await showConfirmModel(
       context: context,
-      title: Text("Are you sure want to  continue?", style: Theme.of(context).textTheme.subhead),
+      title: Text("Are you sure want to  continue?",
+          style: Theme
+              .of(context)
+              .textTheme
+              .subhead),
       iconPositive: new Icon(
         Icons.check_circle,
         color: Colors.greenAccent[200],
