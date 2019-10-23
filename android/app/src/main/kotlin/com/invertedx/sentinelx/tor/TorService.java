@@ -11,7 +11,6 @@ import android.support.v4.app.NotificationCompat;
  import android.util.Log;
 import android.widget.Toast;
 
-import com.invertedx.sentinelx.BuildConfig;
 import com.invertedx.sentinelx.R;
 
 
@@ -52,8 +51,8 @@ public class TorService extends Service {
                 .setSound(null)
                 .setGroupAlertBehavior(GROUP_ALERT_SUMMARY)
                 .setGroup("Tor")
-                .setCategory(NotificationCompat.CATEGORY_PROGRESS)
-                .setGroupSummary(false)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setGroupSummary(true)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .build();
 
@@ -235,7 +234,7 @@ public class TorService extends Service {
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this, TOR_CHANNEL)
                 .setContentTitle(title)
-                .setContentText(content)
+//                .setContentText(content)
                 .setOngoing(true)
                 .setGroupAlertBehavior(GROUP_ALERT_SUMMARY)
                 .setGroup("Tor")

@@ -24,16 +24,12 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         GeneratedPluginRegistrant.registerWith(this)
-        print("------- - -- - - - -")
 
         try{
-            print("LSKDL:SKLD")
             val startIntent = Intent(applicationContext, TorService::class.java)
             startIntent.action = TorService.START_SERVICE
             startService(startIntent)
-            print("LSKDL:SKLD")
         }catch (ex:Exception){
-            print("ex$ex")
         }
         setUpPrefs()
         createNotificationChannels()
