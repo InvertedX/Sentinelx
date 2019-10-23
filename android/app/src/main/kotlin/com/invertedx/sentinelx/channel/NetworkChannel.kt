@@ -8,14 +8,17 @@ import com.invertedx.sentinelx.tor.TorService
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 
 class NetworkChannel(private val applicationContext: Context, private val activity: MainActivity) : MethodChannel.MethodCallHandler, EventChannel.StreamHandler {
 
     private val TOR_STREAM = "TOR_EVENT_STREAM"
+    private val TOR_LOG_STREAM = "TOR_LOG_STREAM"
     private val compositeDisposable: CompositeDisposable = CompositeDisposable();
 
     init {
@@ -24,6 +27,26 @@ class NetworkChannel(private val applicationContext: Context, private val activi
          */
         EventChannel(activity.flutterView, TOR_STREAM)
                 .setStreamHandler(this)
+
+        EventChannel(activity.flutterView, TOR_LOG_STREAM)
+                .setStreamHandler(object : EventChannel.StreamHandler {
+                    override fun onListen(arg: Any?, eventSink: EventChannel.EventSink?) {
+                        val logger = Observable.interval(2, TimeUnit.SECONDS, Schedulers.io())
+                                .map { TorManager.getInstance(applicationContext).latestLogs }
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe({
+                                    eventSink?.success(it)
+                                }, {
+
+                                })
+                        compositeDisposable.add(logger)
+
+                    }
+
+                    override fun onCancel(p0: Any?) {
+                    }
+
+                })
 
     }
 
@@ -51,6 +74,7 @@ class NetworkChannel(private val applicationContext: Context, private val activi
                 startIntent.action = TorService.RENEW_IDENTITY
                 applicationContext.startService(startIntent)
             }
+
         }
     }
 

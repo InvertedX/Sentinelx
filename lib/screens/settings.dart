@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
-import 'package:sentinelx/shared_state/networkState.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
+import 'package:sentinelx/widgets/tor_bottomsheet.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -85,15 +84,15 @@ class _SettingsState extends State<Settings> {
 //                    )
 //                  : SizedBox.shrink(),
               title: Text(
-                "Start Tor",
+                "Tor",
                 style: Theme
                     .of(context)
                     .textTheme
                     .subtitle,
               ),
-              subtitle: Text("Start Tor service"),
+              subtitle: Text("Manage Tor service"),
               onTap: () {
-                Provider.of<NetworkState>(context).startTor();
+                showTorBottomSheet(context);
               },
             ),
             Divider(),
