@@ -74,7 +74,6 @@ abstract public class OnionProxyContext {
             File fileTorBin = torResourceInstaller.installResources();
             Log.i(TAG, "installFiles: fileTorBin ".concat(fileTorBin.getAbsolutePath()));
             if (!fileTorBin.getAbsolutePath().contains("app_torfiles")) {
-                    Log.i(TAG, "😍installFiles: flskfd;sds".concat(fileTorBin.getAbsolutePath()));
                     FileUtilities.cleanInstallOneFile(new FileInputStream(fileTorBin), new File(getWorkingDirectory(), TORBINARY_KEY));
             }
             FileUtilities.cleanInstallOneFile(getAssetOrResourceByName(GEO_IP_NAME), geoIpFile);

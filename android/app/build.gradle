@@ -38,9 +38,9 @@ android {
 
     defaultConfig {
         applicationId "com.invertedx.sentinelx"
-        minSdkVersion 21
         multiDexEnabled true
-        targetSdkVersion 29
+        minSdkVersion 21
+        targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
