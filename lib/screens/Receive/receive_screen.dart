@@ -144,9 +144,7 @@ class _QRWidgetState extends State<QRWidget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Flexible(
-            flex: 2,
-            child: Container(
+          Container(
               margin: EdgeInsets.only(top: 16),
               height: 240,
               width: 240,
@@ -160,86 +158,87 @@ class _QRWidgetState extends State<QRWidget> {
                 ),
               ),
             ),
-          ),
-          Flexible(
-            flex: 3,
-            child: Scrollbar(
-              child: SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                child: Container(
-                  height: MediaQuery.of(context).size.height / 2,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Column(
-                          children: <Widget>[
-                            InkWell(
-                              onTap: () {
-                                Clipboard.setData(
-                                    ClipboardData(text: _address));
-                                Scaffold.of(context).showSnackBar(SnackBar(
-                                    content: Text(
-                                  "Address copied to clipboard",
-                                )));
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                padding: EdgeInsets.all(12),
-                                child: Text(
-                                  "$_address",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            PopupMenuButton<String>(
-                              onSelected: (String type) async {
-                                await SystemChannel().shareText(_address);
-                              },
-                              icon: Icon(Icons.share),
-                              itemBuilder: (BuildContext context) {
-                                return [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Column(
+              children: <Widget>[
+                InkWell(
+                  onTap: () {
+                    Clipboard.setData(
+                        ClipboardData(text: _address));
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                          "Address copied to clipboard",
+                        )));
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: EdgeInsets.all(12),
+                    child: Text(
+                      "$_address",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                PopupMenuButton<String>(
+                  onSelected: (String type) async {
+                    await SystemChannel().shareText(_address);
+                  },
+                  icon: Icon(Icons.share),
+                  itemBuilder: (BuildContext context) {
+                    return [
 //                                  PopupMenuItem<String>(
 //                                    value: "qr",
 //                                    child: Text("Share QR"),
 //                                  ),
-                                  PopupMenuItem<String>(
-                                    value: "addr",
-                                    child: Text("Share address"),
-                                  ),
-                                ];
-                              },
-                            ),
-                          ],
-                        ),
+                      PopupMenuItem<String>(
+                        value: "addr",
+                        child: Text("Share address"),
                       ),
-                      Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Padding(
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 26),
-                              child: Text("Request amount"),
-                            ),
-                            Padding(
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 22.0),
-                              child: AmountEntry(onAmountChange),
-                            )
-                          ],
+                    ];
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Scrollbar(
+                child: SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Container(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding:
+                                const EdgeInsets.symmetric(horizontal: 26),
+                                child: Text("Request amount"),
+                              ),
+                              Padding(
+                                padding:
+                                const EdgeInsets.symmetric(horizontal: 22.0),
+                                child: AmountEntry(onAmountChange),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
