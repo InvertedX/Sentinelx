@@ -5,4 +5,20 @@
              Flutter draws its first frame -->
         <item name="android:windowBackground">@drawable/launch_background</item>
     </style>
+
+
+    <declare-styleable name="CodeScannerView">
+        <attr name="maskColor" format="color" />
+        <attr name="frameColor" format="color" />
+        <attr name="autoFocusButtonColor" format="color" />
+        <attr name="flashButtonColor" format="color" />
+        <attr name="autoFocusButtonVisible" format="boolean" />
+        <attr name="flashButtonVisible" format="boolean" />
+        <attr name="frameThickness" format="dimension" />
+        <attr name="frameCornersSize" format="dimension" />
+        <attr name="frameCornersRadius" format="dimension" />
+        <attr name="frameAspectRatioWidth" format="float" />
+        <attr name="frameAspectRatioHeight" format="float" />
+        <attr name="frameSize" format="float" />
+    </declare-styleable>
 </resources>
