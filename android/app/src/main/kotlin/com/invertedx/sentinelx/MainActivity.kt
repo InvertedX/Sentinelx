@@ -2,12 +2,14 @@ package com.invertedx.sentinelx
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import com.invertedx.sentinelx.channel.ApiChannel
 import com.invertedx.sentinelx.channel.CryptoChannel
 import com.invertedx.sentinelx.channel.NetworkChannel
 import com.invertedx.sentinelx.channel.SystemChannel
+import com.invertedx.sentinelx.plugins.QRCameraPlugin
 import com.invertedx.sentinelx.tor.TorService
 import com.invertedx.sentinelx.utils.SentinalPrefs
 import io.flutter.app.FlutterActivity
@@ -32,7 +34,7 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterView, "crypto.channel").setMethodCallHandler(CryptoChannel(applicationContext))
         MethodChannel(flutterView, "api.channel").setMethodCallHandler(ApiChannel(applicationContext))
         MethodChannel(flutterView, "network.channel").setMethodCallHandler(networkChannel);
-
+        QRCameraPlugin.registerWith(this.registrarFor("plugins.sentinelx.qr_camera"));
 
     }
 
