@@ -33,8 +33,8 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterView, "system.channel").setMethodCallHandler(SystemChannel(applicationContext, this))
         MethodChannel(flutterView, "crypto.channel").setMethodCallHandler(CryptoChannel(applicationContext))
         MethodChannel(flutterView, "api.channel").setMethodCallHandler(ApiChannel(applicationContext))
-        MethodChannel(flutterView, "network.channel").setMethodCallHandler(networkChannel);
-        QRCameraPlugin.registerWith(this.registrarFor("plugins.sentinelx.qr_camera"));
+        MethodChannel(flutterView, "network.channel").setMethodCallHandler(networkChannel)
+        QRCameraPlugin.registerWith(this.registrarFor("plugins.sentinelx.qr_camera"), this)
 
     }
 
