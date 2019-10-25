@@ -3,8 +3,9 @@ import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/utils/format_util.dart';
 
 class TxWidget extends StatefulWidget {
-  Tx tx;
-  Function callback;
+  final Tx tx;
+  final Function callback;
+
   TxWidget({this.tx, this.callback});
 
   @override
@@ -12,7 +13,8 @@ class TxWidget extends StatefulWidget {
 }
 
 class _TxWidgetState extends State<TxWidget> {
-  bool isExpandded = false;
+  bool isExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -29,8 +31,13 @@ class _TxWidgetState extends State<TxWidget> {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Icon(widget.tx.result > 0 ? Icons.call_received : Icons.call_made,
-                      color: widget.tx.result > 0 ? Colors.greenAccent : Colors.redAccent),
+                  Icon(
+                      widget.tx.result > 0
+                          ? Icons.call_received
+                          : Icons.call_made,
+                      color: widget.tx.result > 0
+                          ? Colors.greenAccent
+                          : Colors.redAccent),
                   SizedBox(
                     height: 6,
                   ),

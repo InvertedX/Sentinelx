@@ -25,7 +25,10 @@ class ThemeProvider extends ChangeNotifier {
         TargetPlatform.android: CupertinoPageTransitionsBuilder(),
         TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
       }),
-      appBarTheme: AppBarTheme(brightness: Brightness.dark, color: Color(0xff262626), elevation: 20));
+      appBarTheme: AppBarTheme(
+          brightness: Brightness.dark,
+          color: Color(0xff262626),
+          elevation: 20));
 
   static ThemeData lightTheme = new ThemeData(
       brightness: Brightness.light,
@@ -37,27 +40,29 @@ class ThemeProvider extends ChangeNotifier {
         body1: TextStyle(fontSize: 14.0, color: Colors.grey[800]),
       ),
       canvasColor: Colors.transparent,
-      appBarTheme: AppBarTheme(brightness: Brightness.dark, color: Color(0xff4d4c5d), elevation: 20));
+      appBarTheme: AppBarTheme(
+          brightness: Brightness.dark,
+          color: Color(0xff4d4c5d),
+          elevation: 20));
 
   ThemeData theme = darkTheme;
 
   ThemeProvider() {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(systemNavigationBarColor: secondaryBg, // navigation bar color
-        ));
-
-//    SystemChrome.setSystemUIOverlayStyle(
-//        SystemUiOverlayStyle(statusBarColor: darkTheme.primaryColorDark, statusBarBrightness: Brightness.light));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: secondaryBg, // navigation bar color
+    ));
   }
 
   toggleTheme() {
     if (theme.brightness == Brightness.dark) {
       theme = lightTheme;
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: darkTheme.primaryColor));
+      SystemChrome.setSystemUIOverlayStyle(
+          SystemUiOverlayStyle(statusBarColor: darkTheme.primaryColor));
     } else {
       theme = darkTheme;
-      SystemChrome.setSystemUIOverlayStyle(
-          SystemUiOverlayStyle(statusBarColor: darkTheme.primaryColor, statusBarBrightness: Brightness.dark));
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+          statusBarColor: darkTheme.primaryColor,
+          statusBarBrightness: Brightness.dark));
     }
     notifyListeners();
   }

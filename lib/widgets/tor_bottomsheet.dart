@@ -85,6 +85,7 @@ class _TorBottomSheetState extends State<TorBottomSheet> {
   }
 }
 
+
 class TorLogViewer extends StatefulWidget {
   @override
   _TorLogViewerState createState() => _TorLogViewerState();

@@ -3,7 +3,8 @@ import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/shared_state/txState.dart';
 
 class TxList extends StatelessWidget {
-  TxState model;
+  final TxState model;
+
   TxList(this.model);
 
   @override
