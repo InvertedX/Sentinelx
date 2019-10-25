@@ -1,16 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sentinelx/channels/CryptoChannel.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 class TabTrackAddress extends StatefulWidget {
+  final GlobalKey<PushUpCameraWrapperState> cameraKey;
+
   @override
   TabTrackAddressState createState() => TabTrackAddressState();
-  TabTrackAddress(Key key) : super(key: key);
+
+  TabTrackAddress(Key key, this.cameraKey) : super(key: key);
 }
 
 class TabTrackAddressState extends State<TabTrackAddress> {
@@ -22,13 +27,16 @@ class TabTrackAddressState extends State<TabTrackAddress> {
     _labelEditController = TextEditingController();
     _xpubEditController = TextEditingController();
     super.initState();
+    this.widget.cameraKey.currentState.setDecodeListener((val) {
+      _xpubEditController.text = val;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 22),
-      margin: const EdgeInsets.only(top: 54 ),
+      margin: const EdgeInsets.only(top: 54),
       child: Column(
         children: <Widget>[
           Container(
@@ -71,6 +79,19 @@ class TabTrackAddressState extends State<TabTrackAddress> {
                   maxLines: 1,
                 ),
               ),
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                    icon: Icon(
+                      SentinelxIcons.qr_scan,
+                      size: 22,
+                    ),
+                    onPressed: () async {
+                      await SystemChannels.textInput
+                          .invokeMethod('TextInput.hide');
+                      widget.cameraKey.currentState.start();
+                    }),
+              )
             ],
           )
         ],
@@ -86,7 +107,8 @@ class TabTrackAddressState extends State<TabTrackAddress> {
       if (!valid) {
         _showError('Invalid Bitcoin address');
       } else {
-        XPUBModel xpubModel = XPUBModel(xpub: xpubOrAddress, bip: "ADDR", label: label);
+        XPUBModel xpubModel =
+        XPUBModel(xpub: xpubOrAddress, bip: "ADDR", label: label);
         Wallet wallet = AppState().selectedWallet;
         wallet.xpubs.add(xpubModel);
         await wallet.saveState();

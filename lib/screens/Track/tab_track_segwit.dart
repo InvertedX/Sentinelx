@@ -1,14 +1,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 class TabTrackSegwit extends StatefulWidget {
-  TabTrackSegwit(Key key) : super(key: key);
+  final GlobalKey<PushUpCameraWrapperState> cameraKey;
+
+  TabTrackSegwit(Key key, this.cameraKey)
+      : super(key: key);
 
   @override
   TabTrackSegwitState createState() => TabTrackSegwitState();
@@ -25,6 +30,9 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
     _labelEditController = TextEditingController();
     _xpubEditController = TextEditingController();
     super.initState();
+    this.widget.cameraKey.currentState.setDecodeListener((val) {
+      _xpubEditController.text = val;
+    });
   }
 
   @override
@@ -73,24 +81,35 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
                     ),
                     maxLines: 3,
                   ),
+
                 ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                      icon: Icon(SentinelxIcons.qr_scan, size: 22,),
+                      onPressed: () async {
+                        await SystemChannels.textInput.invokeMethod(
+                            'TextInput.hide');
+                        widget.cameraKey.currentState.start();
+                      }),
+                )
               ],
             ),
             loading
                 ? Column(
-                    children: <Widget>[
-                      Container(
-                          margin: EdgeInsets.only(top: 60),
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3,
-                            backgroundColor: Color(0xffFFBC01),
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text("Please wait..."),
-                      )
-                    ],
-                  )
+              children: <Widget>[
+                Container(
+                    margin: EdgeInsets.only(top: 60),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      backgroundColor: Color(0xffFFBC01),
+                    )),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text("Please wait..."),
+                )
+              ],
+            )
                 : SizedBox.shrink()
           ],
         ),
@@ -117,7 +136,8 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
       });
       bool success = await ApiChannel().addHDAccount(xpub, "bip$bip");
       if (success) {
-        XPUBModel xpubModel = XPUBModel(xpub: xpub, bip: "BIP$bip", label: label);
+        XPUBModel xpubModel =
+        XPUBModel(xpub: xpub, bip: "BIP$bip", label: label);
         Wallet wallet = AppState().selectedWallet;
         wallet.xpubs.add(xpubModel);
         await wallet.saveState();
