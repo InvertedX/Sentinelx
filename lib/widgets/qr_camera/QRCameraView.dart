@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sentinelx/channels/SystemChannel.dart';
 
 typedef void ControllerCallback(CameraController controller);
 typedef void OnDecodeComplete(String code);
@@ -49,15 +50,17 @@ class CameraController {
   }
 
   Future<void> startPreview() async {
-    _channel.invokeMethod('start_preview').then((va) {
-      if (_decodeComplete != null) {
-        _decodeComplete(va);
-      }
-    });
+    bool run = await SystemChannel().askCameraPermission();
+    if (run) {
+      _channel.invokeMethod('start_preview').then((va) {
+        if (_decodeComplete != null) {
+          _decodeComplete(va);
+        }
+      });
+    }
   }
 
   Future<void> stopPreview() async {
-    print("STOP CALL");
     return _channel.invokeMethod('stop_preview');
   }
 }

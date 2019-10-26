@@ -70,4 +70,15 @@ class SystemChannel {
   }
 
 
+  Future<bool> askCameraPermission() async {
+    try {
+      bool run = await platform.invokeMethod<bool>("cameraPermission");
+      return run;
+    } catch (exception) {
+      print(exception);
+      return false;
+    }
+  }
+
+
 }

@@ -50,7 +50,9 @@ class _HomeState extends State<Home> {
           Consumer<LoaderState>(builder: (context, model, child) {
             return model.state == States.LOADING
                 ? Container(
-              color: Theme.of(context).primaryColor,
+              color: Theme
+                  .of(context)
+                  .primaryColor,
               margin: EdgeInsets.symmetric(
                 vertical: 22,
               ),
@@ -108,7 +110,9 @@ class _HomeState extends State<Home> {
                         Tx tx = model.txList[index];
                         if (tx is ListSection) {
                           return Container(
-                            color: Theme.of(context).primaryColorDark,
+                            color: Theme
+                                .of(context)
+                                .primaryColorDark,
                             padding:
                             EdgeInsets.symmetric(vertical: 18, horizontal: 12),
                             child: Text(tx.section,
@@ -238,7 +242,17 @@ class _HomeState extends State<Home> {
   }
 
   void setUp() {
+    askPermission();
     askNetwork();
   }
 
+  void askPermission() async {
+    var first = await SystemChannel().askCameraPermission();
+    if (!first) {
+      final snackBar = SnackBar(
+        content: Text("Camera permission is required"),
+      );
+      _ScaffoldKey.currentState.showSnackBar(snackBar);
+    }
+  }
 }
