@@ -2,7 +2,6 @@ package com.invertedx.sentinelx
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import com.invertedx.sentinelx.channel.ApiChannel
@@ -18,10 +17,12 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.params.TestNet3Params
 
+typealias OnPermissionResult = (requestCode: Int, permissions: Array<out String>, grantResults: IntArray) -> Unit
 
 class MainActivity : FlutterActivity() {
 
-    private lateinit var networkChannel: NetworkChannel;
+    private lateinit var networkChannel: NetworkChannel
+    private lateinit var onPermissionResultCallback: OnPermissionResult
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +37,20 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterView, "network.channel").setMethodCallHandler(networkChannel)
         QRCameraPlugin.registerWith(this.registrarFor("plugins.sentinelx.qr_camera"), this)
 
+
     }
 
+
+    fun setOnPermissionResult(callback: OnPermissionResult) {
+        this.onPermissionResultCallback = callback
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (this.onPermissionResultCallback != null) {
+            this.onPermissionResultCallback(requestCode, permissions, grantResults)
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
 
     private fun setUpPrefs() {
         val prefs = SentinalPrefs(this)

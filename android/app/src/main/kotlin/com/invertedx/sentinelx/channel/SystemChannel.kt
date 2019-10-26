@@ -1,8 +1,12 @@
 package com.invertedx.sentinelx.channel
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import com.invertedx.sentinelx.MainActivity
 import com.invertedx.sentinelx.SentinelxApp
 import com.invertedx.sentinelx.utils.SentinalPrefs
@@ -59,12 +63,40 @@ class SystemChannel(private val applicationContext: Context, private val activit
             "share" -> {
                 val sharingIntent = Intent(Intent.ACTION_SEND)
                 sharingIntent.type = "text/plain"
-                print("HERddd")
                 sharingIntent.putExtra(Intent.EXTRA_TEXT, methodCall.arguments as String)
                 sharingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 activity.startActivity(Intent.createChooser(sharingIntent, "Share using"))
-                print("HER")
                 result.success(true)
+            }
+            "cameraPermission" -> {
+                val permission = ContextCompat.checkSelfPermission(activity,
+                        Manifest.permission.CAMERA)
+
+                if (permission == PackageManager.PERMISSION_GRANTED) {
+                    result.success(true)
+                    return
+                }
+
+                ActivityCompat.requestPermissions(activity,
+                        arrayOf(Manifest.permission.CAMERA),
+                        1)
+
+                this.activity.setOnPermissionResult { requestCode, permissions, grantResults ->
+
+                    for (i in 0 until permissions.size) {
+                        val permissionResult = permissions[i]
+                        val grantResult = grantResults[i]
+
+                        if (permissionResult == Manifest.permission.CAMERA) {
+                            if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                                result.success(true)
+
+                            } else {
+                                result.success(false)
+                            }
+                        }
+                    }
+                }
             }
 
         }
