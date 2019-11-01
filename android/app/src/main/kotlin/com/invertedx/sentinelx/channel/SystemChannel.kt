@@ -14,6 +14,14 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.params.TestNet3Params
+import android.support.v4.content.ContextCompat.startActivity
+import android.support.v4.app.ActivityCompat.finishAffinity
+import android.support.v4.content.ContextCompat.startActivity
+import android.app.AlarmManager
+import android.support.v4.content.ContextCompat.getSystemService
+import android.app.PendingIntent
+import com.invertedx.sentinelx.i
+import io.flutter.embedding.android.SplashScreen
 
 
 class SystemChannel(private val applicationContext: Context, private val activity: MainActivity) : MethodChannel.MethodCallHandler {
@@ -51,6 +59,20 @@ class SystemChannel(private val applicationContext: Context, private val activit
                 } else {
                     result.success(true)
                 }
+            }
+            "isLockEnabled" -> {
+                val pref = SentinalPrefs(applicationContext)
+                return if (pref.locked != null) {
+                    result.success(pref.locked!!)
+                } else {
+                    result.success(false)
+                }
+            }
+            "setLock" -> {
+                val pref = SentinalPrefs(applicationContext)
+                val isLocked = methodCall.argument<Boolean>("locked")
+                pref.locked = isLocked
+                result.success(true)
             }
             "openURL" -> {
                 val url = methodCall.arguments as String;
