@@ -26,7 +26,7 @@ class _TorBottomSheetState extends State<TorBottomSheet> {
     return ChangeNotifierProvider.value(
       value: NetworkState(),
       child: Card(
-        margin: EdgeInsets.all(6),
+        margin: EdgeInsets.all(1),
         color: Theme.of(context).primaryColorDark,
         child: Container(
           height: MediaQuery.of(context).size.height / 3,
@@ -46,13 +46,13 @@ class _TorBottomSheetState extends State<TorBottomSheet> {
                       children: <Widget>[
                         Text(
                           "Tor Routing",
-                          style: Theme.of(context).textTheme.title,
+                          style: Theme.of(context).textTheme.title.copyWith(fontSize: 16),
                         ),
                         Consumer<NetworkState>(
                           builder: (context, model, c) {
                             bool isRunning =
                                 model.torStatus == TorStatus.CONNECTED;
-                            return RaisedButton(
+                            return FlatButton(
                               onPressed: () {
                                 if (isRunning) {
                                   NetworkChannel().stopTor();
@@ -74,9 +74,11 @@ class _TorBottomSheetState extends State<TorBottomSheet> {
                 thickness: 2,
               ),
               Container(
-                color: Colors.black.withOpacity(0.3),
-                margin: EdgeInsets.symmetric(horizontal: 12),
+                color: Colors.grey.withOpacity(0.3),
+                margin: EdgeInsets.symmetric(horizontal: 1),
                 child: ExpansionTile(
+                  initiallyExpanded: true,
+                  backgroundColor: Theme.of(context).backgroundColor,
                   title: Text("Logs"),
                   children: [TorLogViewer()],
                 ),
@@ -121,7 +123,7 @@ class _TorLogViewerState extends State<TorLogViewer> {
       height: 120,
       width: double.infinity,
       padding: EdgeInsets.all(4),
-      color: Colors.black54,
+      color: Colors.black45,
       child: SingleChildScrollView(
           controller: _controller,
           child: Container(
