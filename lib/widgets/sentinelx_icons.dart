@@ -33,5 +33,6 @@ class SentinelxIcons {
   static const IconData qrcode = const IconData(0xe802, fontFamily: _kFontFam);
   static const IconData scan_qr = const IconData(0xe803, fontFamily: _kFontFam);
   static const IconData qr_scan = const IconData(0xe804, fontFamily: _kFontFam);
+  static const IconData onion_tor = const IconData(0xe805, fontFamily: _kFontFam);
   static const IconData bitcoin = const IconData(0xf15a, fontFamily: _kFontFam);
 }
