@@ -148,8 +148,9 @@ class _SettingsState extends State<Settings> {
 
   void init() async {
     bool lockState = await SystemChannel().isLockEnabled();
+    print("lockEnabled ${lockState}");
     this.setState(() {
-      lockState = lockState;
+      lockEnabled = lockState;
     });
   }
 
@@ -188,17 +189,53 @@ class _SettingsState extends State<Settings> {
   }
 
   void enableOrChangeLock() async {
+    if (!lockEnabled) {
+      setPassword();
+      return;
+    }
+    bool confirm = await showConfirmModel(
+      context: context,
+      title: Text("Choose option", style: Theme.of(context).textTheme.subhead),
+      iconPositive: new Icon(
+        Icons.dialpad,
+      ),
+      textPositive: new Text(
+        'Change PIN ',
+      ),
+      textNegative: new Text('Disable Lock screen'),
+      iconNegative: new Icon(Icons.clear),
+    );
+
+    if (confirm) {
+      setPassword();
+    } else {
+      try {
+        await SentinelxDB.instance.setEncryption(null);
+      } catch (e) {
+        print("Error $e");
+        debugPrint(e);
+      }
+      Navigator.pushReplacementNamed(context, '/');
+      SentinelState().eventsStream.sink.add(SessionStates.IDLE);
+    }
+  }
+
+  void setPassword() async {
     final text = await Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => LockScreen(lockScreenMode: LockScreenMode.CONFIRM,), fullscreenDialog: true),
+          builder: (context) => LockScreen(
+                lockScreenMode: LockScreenMode.CONFIRM,
+              ),
+          fullscreenDialog: true),
     );
-    print("result $text");
-    try{
+    if(text == null){
+      return;
+    }
+    try {
       await SentinelxDB.instance.setEncryption(text);
-
-    }catch(e){
-      print("TEST $e");
+    } catch (e) {
+      print("Error $e");
     }
     Navigator.pushReplacementNamed(context, '/');
     SentinelState().eventsStream.sink.add(SessionStates.LOCK);

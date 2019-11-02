@@ -62,42 +62,50 @@ class LockScreenState extends State<LockScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
-      body: WillPopScope(
-        onWillPop: onWillPop,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Icon(
-                Icons.lock,
-                size: 32,
-              ),
-              Padding(
-                padding: EdgeInsets.all(12),
-              ),
-              widget.lockScreenMode == LockScreenMode.CONFIRM
-                  ? AnimatedSwitcher(
-                      duration: Duration(milliseconds: 900),
-                      child: confirm
-                          ? Text("Confirm PIN")
-                          : Text("Please enter your PIN"),
-                    )
-                  : Text(
-                      "Locked ",
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
-                    ),
+    return GestureDetector(
+      onVerticalDragEnd: (dragDetails){
+        if(widget.lockScreenMode == LockScreenMode.CONFIRM){
+          if(dragDetails.velocity.pixelsPerSecond.dy> 400){
+            Navigator.pop(context);
+          }
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: WillPopScope(
+          onWillPop: onWillPop,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Icon(
+                  Icons.lock,
+                  size: 32,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(12),
+                ),
+                widget.lockScreenMode == LockScreenMode.CONFIRM
+                    ? AnimatedSwitcher(
+                        duration: Duration(milliseconds: 900),
+                        child: confirm
+                            ? Text("Confirm PIN")
+                            : Text("Please enter your PIN"),
+                      )
+                    : Text(
+                        "Locked ",
+                        textAlign: TextAlign.center,
+                        style:
+                            TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+                      ),
 
-              Transform.translate(
-                offset: Offset(animation.value, 0),
-                child: Container(
-                  margin: EdgeInsets.only(top: 20, left: 60, right: 60),
-                  width: 320,
-                  height: 40,
+                Transform.translate(
+                  offset: Offset(animation.value, 0),
+                  child: Container(
+                    margin: EdgeInsets.only(top: 20, left: 60, right: 60),
+                    width: 320,
+                    height: 40,
 //                child: AnimatedList(
 //                  key: _listKey,
 //                  shrinkWrap: true,
@@ -114,44 +122,45 @@ class LockScreenState extends State<LockScreen>
 //                    );
 //                  },
 //                ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: _buildCircles(),
-                  ),
-                ),
-              ),
-              IntrinsicHeight(
-                child: Slide(
-                  key: slide,
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 20, left: 40, right: 40),
-                    child: Keyboard(
-                      onDeleteCancelTap: onDelete,
-                      onDeleteLongPress: () {
-                        this.setState(() {
-                          enteredPassCode = "";
-                        });
-                      },
-                      onDoneCallback: enteredPassCode.length >= MIN_PIN_LENGTH
-                          ? onDone
-                          : null,
-                      showDoneButton: enteredPassCode.length >= MIN_PIN_LENGTH,
-                      doneIcon: Icon(
-                        this.widget.lockScreenMode == LockScreenMode.LOCK
-                            ? Icons.lock_open
-                            : Icons.check,
-                        size: 34,
-                        color: Colors.greenAccent,
-                      ),
-                      onTap: onTap,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: _buildCircles(),
                     ),
                   ),
                 ),
-              ),
+                IntrinsicHeight(
+                  child: Slide(
+                    key: slide,
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 20, left: 40, right: 40),
+                      child: Keyboard(
+                        onDeleteCancelTap: onDelete,
+                        onDeleteLongPress: () {
+                          this.setState(() {
+                            enteredPassCode = "";
+                          });
+                        },
+                        onDoneCallback: enteredPassCode.length >= MIN_PIN_LENGTH
+                            ? onDone
+                            : null,
+                        showDoneButton: enteredPassCode.length >= MIN_PIN_LENGTH,
+                        doneIcon: Icon(
+                          this.widget.lockScreenMode == LockScreenMode.LOCK
+                              ? Icons.lock_open
+                              : Icons.check,
+                          size: 34,
+                          color: Colors.greenAccent,
+                        ),
+                        onTap: onTap,
+                      ),
+                    ),
+                  ),
+                ),
 //            widget.bottomWidget != null ? widget.bottomWidget : Container()
-            ],
+              ],
+            ),
           ),
         ),
       ),

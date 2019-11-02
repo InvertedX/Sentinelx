@@ -4,7 +4,6 @@ import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 
 initDatabase(String pass) async {
-  // ignore: unnecessary_statements
   await SentinelxDB.instance.init(pass);
   final wallets = await Wallet.getAllWallets();
   AppState appState = AppState();

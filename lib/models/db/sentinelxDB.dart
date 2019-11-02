@@ -38,8 +38,11 @@ class SentinelxDB {
 
   Future setEncryption(String pass) async {
     final appDocumentDir = await SystemChannel().getDataDir();
+
     await AppState().selectedWallet.saveState();
+
     //backup file to create new copy of the db
+    //This db will be encrypted with new password and
     final dbPath = join(appDocumentDir.path, 'sentinalx.bck');
 
     File file = File(dbPath);
@@ -47,8 +50,15 @@ class SentinelxDB {
       await file.delete();
     }
 
-    final codec = getEncryptSembastCodec(password: pass);
-    var database = await databaseFactoryIo.openDatabase(dbPath, codec: codec);
+    //using sembast encryption codec for creating
+    var database;
+
+    if (pass == null) {
+      database = await databaseFactoryIo.openDatabase(dbPath);
+    } else {
+      final codec = getEncryptSembastCodec(password: pass);
+      database = await databaseFactoryIo.openDatabase(dbPath, codec: codec);
+    }
     const String STORE_NAME = 'wallet';
     final _walletStore = intMapStoreFactory.store(STORE_NAME);
 
@@ -58,7 +68,7 @@ class SentinelxDB {
     for (var i = 0; i < wallets.length; i++) {
       await _walletStore.add(database, wallets[i].toJson());
     }
-//    await Future.delayed(Duration(milliseconds: 300));
+
     var contents = await File(dbPath).readAsString();
 
     final mainDb = join(appDocumentDir.path, 'sentinalx.semdb');
@@ -66,7 +76,8 @@ class SentinelxDB {
 
     await SentinelxDB.instance.closeConnection();
 
-    await SystemChannel().setLockEnabled(true);
+    //save lock state to prefs
+    await SystemChannel().setLockEnabled(pass != null);
   }
 
   closeConnection() async {
