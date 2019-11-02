@@ -1,37 +1,75 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
+import 'package:sentinelx/models/wallet.dart';
+import 'package:sentinelx/shared_state/appState.dart';
 
-Future<Database> get dtata async => await SentinelxDB.instance.database;
+import 'encrypt_codec.dart';
 
 class SentinelxDB {
   static final SentinelxDB _singleton = SentinelxDB._();
 
   static SentinelxDB get instance => _singleton;
 
-  Completer<Database> _dbOpenCompleter;
-
   SentinelxDB._();
 
-  Database _database;
+  Database database;
 
-  Future<Database> get database async {
-    if (_dbOpenCompleter == null) {
-      _dbOpenCompleter = Completer();
-      _openDatabase();
-    }
-
-    return _dbOpenCompleter.future;
+  init(password) async {
+    await _openDatabase(password);
   }
 
-  Future _openDatabase() async {
+  Future _openDatabase(String pass) async {
     final appDocumentDir = await SystemChannel().getDataDir();
-    print(appDocumentDir);
-    final dbPath = join(appDocumentDir.path, 'sentinalx.db');
-    final database = await databaseFactoryIo.openDatabase(dbPath);
-    _dbOpenCompleter.complete(database);
+    final dbPath = join(appDocumentDir.path, 'sentinalx.semdb');
+    var database;
+    if (await SystemChannel().isLockEnabled()) {
+      final codec = getEncryptSembastCodec(password: pass);
+      database = await databaseFactoryIo.openDatabase(dbPath, codec: codec);
+    } else {
+      database = await databaseFactoryIo.openDatabase(dbPath);
+    }
+    this.database = database;
+  }
+
+  Future setEncryption(String pass) async {
+    final appDocumentDir = await SystemChannel().getDataDir();
+    await AppState().selectedWallet.saveState();
+    //backup file to create new copy of the db
+    final dbPath = join(appDocumentDir.path, 'sentinalx.bck');
+
+    File file = File(dbPath);
+    if (await file.exists()) {
+      await file.delete();
+    }
+
+    final codec = getEncryptSembastCodec(password: pass);
+    var database = await databaseFactoryIo.openDatabase(dbPath, codec: codec);
+    const String STORE_NAME = 'wallet';
+    final _walletStore = intMapStoreFactory.store(STORE_NAME);
+
+    //Get all wallets to save on a new db
+    List<Wallet> wallets = await Wallet.getAllWallets();
+
+    for (var i = 0; i < wallets.length; i++) {
+      await _walletStore.add(database, wallets[i].toJson());
+    }
+//    await Future.delayed(Duration(milliseconds: 300));
+    var contents = await File(dbPath).readAsString();
+
+    final mainDb = join(appDocumentDir.path, 'sentinalx.semdb');
+    await File(mainDb).writeAsString(contents);
+
+    await SentinelxDB.instance.closeConnection();
+
+    await SystemChannel().setLockEnabled(true);
+  }
+
+  closeConnection() async {
+    await this.database.close();
   }
 }
