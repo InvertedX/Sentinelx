@@ -48,7 +48,7 @@ class _HomeState extends State<Home> {
         automaticallyImplyLeading: false,
         title: Text(
           'Sentinel X',
-          style: TextStyle(fontWeight: FontWeight.w400),
+          style: TextStyle(fontWeight: FontWeight.w400,fontSize: 18),
         ),
         actions: <Widget>[
           Consumer<LoaderState>(builder: (context, model, child) {

@@ -132,7 +132,7 @@ class _SettingsState extends State<Settings> {
                     "Samourai DOJO",
                     style: Theme.of(context).textTheme.subtitle,
                   ),
-                  subtitle: Text("Power you sentinel with Dojo backend"),
+                  subtitle: Text("Power your sentinel with Dojo backend"),
 //                  onTap: () {
 //
 //                  },
