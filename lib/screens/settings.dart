@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:sentinelx/channels/SystemChannel.dart';
+import 'package:sentinelx/models/db/sentinelxDB.dart';
+import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/shared_state/sentinelState.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
+import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/tor_bottomsheet.dart';
 
 class Settings extends StatefulWidget {
@@ -10,20 +15,23 @@ class Settings extends StatefulWidget {
   _SettingsState createState() => _SettingsState();
 }
 
-class _SettingsState extends State<Settings>
-    with SingleTickerProviderStateMixin {
+class _SettingsState extends State<Settings> {
   bool loadingErase = false;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<PushUpCameraWrapperState> bottomUpCamera = GlobalKey();
+  bool lockEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
 
   @override
   Widget build(BuildContext context) {
     return PushUpCameraWrapper(
       key: bottomUpCamera,
-      cameraHeight: MediaQuery
-          .of(context)
-          .size
-          .height / 2,
+      cameraHeight: MediaQuery.of(context).size.height / 2,
       child: Scaffold(
         key: scaffoldKey,
         appBar: AppBar(
@@ -34,20 +42,16 @@ class _SettingsState extends State<Settings>
           centerTitle: true,
           primary: true,
         ),
-        backgroundColor: Theme
-            .of(context)
-            .primaryColorDark,
+        backgroundColor: Theme.of(context).primaryColorDark,
         body: Container(
           margin: EdgeInsets.only(top: 12),
           child: ListView(
             physics: BouncingScrollPhysics(),
             children: <Widget>[
               Container(
-                color: Theme
-                    .of(context)
-                    .secondaryHeaderColor,
+                color: Theme.of(context).secondaryHeaderColor,
                 padding:
-                const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+                    const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
                 child: Text("App"),
               ),
               Divider(),
@@ -58,19 +62,16 @@ class _SettingsState extends State<Settings>
                 ),
                 trailing: loadingErase
                     ? SizedBox(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1,
-                  ),
-                  width: 12,
-                  height: 12,
-                )
+                        child: CircularProgressIndicator(
+                          strokeWidth: 1,
+                        ),
+                        width: 12,
+                        height: 12,
+                      )
                     : SizedBox.shrink(),
                 title: Text(
                   "Erase All trackings",
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .subtitle,
+                  style: Theme.of(context).textTheme.subtitle,
                 ),
                 subtitle: Text("Clear all data from the device"),
                 onTap: () {
@@ -79,42 +80,63 @@ class _SettingsState extends State<Settings>
               ),
               Divider(),
               Container(
-                color: Theme
-                    .of(context)
-                    .secondaryHeaderColor,
+                color: Theme.of(context).secondaryHeaderColor,
                 padding:
-                const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+                    const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+                child: Text("Security"),
+              ),
+              Divider(),
+              ListTile(
+                leading: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Icon(Icons.lock),
+                ),
+                title: Text(
+                  lockEnabled ? "Change Lock PIN" : "Enable Lock Screen",
+                  style: Theme.of(context).textTheme.subtitle,
+                ),
+                subtitle:
+                    Text("Database will be encrypted using the provided PIN"),
+                onTap: enableOrChangeLock,
+              ),
+              Divider(),
+              Container(
+                color: Theme.of(context).secondaryHeaderColor,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
                 child: Text("Network"),
               ),
               Divider(),
               ListTile(
                 leading: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Icon(Icons.delete_outline),
+                  child: Icon(SentinelxIcons.onion_tor),
                 ),
-//              trailing: loadingErase
-//                  ? SizedBox(
-//                      child: CircularProgressIndicator(
-//                        strokeWidth: 1,
-//                      ),
-//                      width: 12,
-//                      height: 12,
-//                    )
-//                  : SizedBox.shrink(),
                 title: Text(
                   "Tor",
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .subtitle,
+                  style: Theme.of(context).textTheme.subtitle,
                 ),
                 subtitle: Text("Manage Tor service"),
                 onTap: () {
-//                  controller.forward();
-//                  print(bottomUpCamera.currentState);
-//                  bottomUpCamera.currentState.start();
                   showTorBottomSheet(context);
                 },
+              ),
+              Opacity(
+                opacity: 0.3,
+                child: ListTile(
+                  leading: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Icon(Icons.router),
+                  ),
+                  title: Text(
+                    "Samourai DOJO",
+                    style: Theme.of(context).textTheme.subtitle,
+                  ),
+                  subtitle: Text("Power you sentinel with Dojo backend"),
+//                  onTap: () {
+//
+//                  },
+                ),
               ),
               Divider(),
             ],
@@ -122,39 +144,20 @@ class _SettingsState extends State<Settings>
         ),
       ),
     );
-//     return Stack(
-//       children: <Widget>[
-//         Align(
-//           alignment: Alignment.bottomCenter,
-//           child: Container(
-//             color: Colors.redAccent,
-//             height:300,
-//             child: AndroidView(
-//               viewType: 'plugins.sentinelx.qr_camera',
-//               onPlatformViewCreated: (int id) {
-//                 CameraController(id)
-//                     .setSize(MediaQuery.of(context).size.height ~/ 2);
-//               },
-//             ),
-//           ),
-//         ),
-//         Transform.translate(
-//          offset: Offset(0,(animation.value * -1).toDouble()),
-//          child:
-//    ),
-//
-//       ],
-//     );
+  }
+
+  void init() async {
+    bool lockState = await SystemChannel().isLockEnabled();
+    this.setState(() {
+      lockState = lockState;
+    });
   }
 
   void deleteConfirmModal() async {
     bool confirm = await showConfirmModel(
       context: context,
       title: Text("Are you sure want to  continue?",
-          style: Theme
-              .of(context)
-              .textTheme
-              .subhead),
+          style: Theme.of(context).textTheme.subhead),
       iconPositive: new Icon(
         Icons.check_circle,
         color: Colors.greenAccent[200],
@@ -182,5 +185,22 @@ class _SettingsState extends State<Settings>
       });
       scaffoldKey.currentState.showSnackBar(snackbar);
     }
+  }
+
+  void enableOrChangeLock() async {
+    final text = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => LockScreen(lockScreenMode: LockScreenMode.CONFIRM,), fullscreenDialog: true),
+    );
+    print("result $text");
+    try{
+      await SentinelxDB.instance.setEncryption(text);
+
+    }catch(e){
+      print("TEST $e");
+    }
+    Navigator.pushReplacementNamed(context, '/');
+    SentinelState().eventsStream.sink.add(SessionStates.LOCK);
   }
 }

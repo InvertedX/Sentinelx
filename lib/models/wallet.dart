@@ -21,13 +21,16 @@ class Wallet extends ChangeNotifier {
   Wallet({this.walletName, this.xpubs});
 
 
-  static Future<Database> get _db async => await SentinelxDB.instance.database;
+  static Future<Database> get _db async =>  SentinelxDB.instance.database;
 
   static final _walletStore = intMapStoreFactory.store(STORE_NAME);
 
-  Future initTxDb() async {
+  Future initTxDb(int id) async {
     print("init txDB");
-    txDB = TxDB.instance(this.getTxDb());
+    if(this.getTxDb().contains("null")){
+      return;
+    }
+    txDB = TxDB.instance("txstore-wallet-$id.semdb");
     await txDB.database;
     this.loadAllTxes();
   }
@@ -144,7 +147,7 @@ class Wallet extends ChangeNotifier {
   }
 
   String getTxDb() {
-    return "txstore-wallet-${this.id}.db";
+    return "txstore-wallet-${this.id}.semdb";
   }
 
   void removeTracking(int index) {

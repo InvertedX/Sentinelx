@@ -26,7 +26,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _ScaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refreshIndicator =
-  new GlobalKey<RefreshIndicatorState>();
+      new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -42,29 +42,28 @@ class _HomeState extends State<Home> {
     return Scaffold(
       key: _ScaffoldKey,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
-          'SentinelX',
+          'Sentinel X',
           style: TextStyle(fontWeight: FontWeight.w400),
         ),
         actions: <Widget>[
           Consumer<LoaderState>(builder: (context, model, child) {
             return model.state == States.LOADING
                 ? Container(
-              color: Theme
-                  .of(context)
-                  .primaryColor,
-              margin: EdgeInsets.symmetric(
-                vertical: 22,
-              ),
-              child: SizedBox(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1,
-                    valueColor:
-                    new AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                  width: 12,
-                  height: 12),
-            )
+                    color: Theme.of(context).primaryColor,
+                    margin: EdgeInsets.symmetric(
+                      vertical: 22,
+                    ),
+                    child: SizedBox(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 1,
+                          valueColor:
+                              new AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                        width: 12,
+                        height: 12),
+                  )
                 : SizedBox.shrink();
           }),
           IconButton(
@@ -72,8 +71,8 @@ class _HomeState extends State<Home> {
             onPressed: () {
               Navigator.of(context).push(
                   new MaterialPageRoute<Null>(builder: (BuildContext context) {
-                    return Settings();
-                  }));
+                return Settings();
+              }));
             },
           ),
         ],
@@ -106,31 +105,29 @@ class _HomeState extends State<Home> {
               builder: (context, model, child) {
                 return SliverList(
                     delegate: SliverChildBuilderDelegate(
-                          (BuildContext context, int index) {
-                        Tx tx = model.txList[index];
-                        if (tx is ListSection) {
-                          return Container(
-                            color: Theme
-                                .of(context)
-                                .primaryColorDark,
-                            padding:
+                  (BuildContext context, int index) {
+                    Tx tx = model.txList[index];
+                    if (tx is ListSection) {
+                      return Container(
+                        color: Theme.of(context).primaryColorDark,
+                        padding:
                             EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-                            child: Text(tx.section,
-                                style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontWeight: FontWeight.w500)),
-                          );
-                        } else {
-                          return Container(
-                            child: TxWidget(
-                              tx: tx,
-                              callback: onTxClick,
-                            ),
-                          );
-                        }
-                      },
-                      childCount: model.txList.length,
-                    ));
+                        child: Text(tx.section,
+                            style: TextStyle(
+                                color: Colors.grey[400],
+                                fontWeight: FontWeight.w500)),
+                      );
+                    } else {
+                      return Container(
+                        child: TxWidget(
+                          tx: tx,
+                          callback: onTxClick,
+                        ),
+                      );
+                    }
+                  },
+                  childCount: model.txList.length,
+                ));
               },
             ),
           ],
@@ -154,8 +151,8 @@ class _HomeState extends State<Home> {
           }
           Navigator.of(context).push(
               new MaterialPageRoute<Null>(builder: (BuildContext context) {
-                return Receive();
-              }));
+            return Receive();
+          }));
         },
       ),
     );
@@ -222,10 +219,7 @@ class _HomeState extends State<Home> {
       var selection = await showConfirmModel(
         context: context,
         title:
-        Text("Select network?", style: Theme
-            .of(context)
-            .textTheme
-            .subhead),
+            Text("Select network?", style: Theme.of(context).textTheme.subhead),
         textPositive: new Text(
           'TestNet ',
         ),

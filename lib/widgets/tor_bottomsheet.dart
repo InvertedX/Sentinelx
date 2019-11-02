@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/NetworkChannel.dart';
+import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/networkState.dart';
 
 showTorBottomSheet(BuildContext context) {
@@ -22,63 +23,66 @@ class _TorBottomSheetState extends State<TorBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(6),
-      color: Theme.of(context).primaryColorDark,
-      child: Container(
-        height: MediaQuery.of(context).size.height / 3,
-        child: Column(
-          children: <Widget>[
-            Center(
-                child: Container(
-                    width: 120,
-                    child: Divider(
-                      thickness: 4,
-                    ))),
-            Column(
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 14),
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        "Tor Routing",
-                        style: Theme.of(context).textTheme.title,
-                      ),
-                      Consumer<NetworkState>(
-                        builder: (context, model, c) {
-                          bool isRunning =
-                              model.torStatus == TorStatus.CONNECTED;
-                          return RaisedButton(
-                            onPressed: () {
-                              if (isRunning) {
-                                NetworkChannel().stopTor();
-                              } else {
-                                NetworkChannel().startTor();
-                              }
-                            },
-                            child: Text(isRunning ? "Stop" : "Start"),
-                          );
-                        },
-                      ),
-                    ],
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  ),
-                )
-              ],
-            ),
-            Divider(
-              thickness: 2,
-            ),
-            Container(
-              color: Colors.black.withOpacity(0.3),
-              margin: EdgeInsets.symmetric(horizontal: 12),
-              child: ExpansionTile(
-                title: Text("Logs"),
-                children: [TorLogViewer()],
+    return ChangeNotifierProvider.value(
+      value: NetworkState(),
+      child: Card(
+        margin: EdgeInsets.all(6),
+        color: Theme.of(context).primaryColorDark,
+        child: Container(
+          height: MediaQuery.of(context).size.height / 3,
+          child: Column(
+            children: <Widget>[
+              Center(
+                  child: Container(
+                      width: 120,
+                      child: Divider(
+                        thickness: 4,
+                      ))),
+              Column(
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 14),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          "Tor Routing",
+                          style: Theme.of(context).textTheme.title,
+                        ),
+                        Consumer<NetworkState>(
+                          builder: (context, model, c) {
+                            bool isRunning =
+                                model.torStatus == TorStatus.CONNECTED;
+                            return RaisedButton(
+                              onPressed: () {
+                                if (isRunning) {
+                                  NetworkChannel().stopTor();
+                                } else {
+                                  NetworkChannel().startTor();
+                                }
+                              },
+                              child: Text(isRunning ? "Stop" : "Start"),
+                            );
+                          },
+                        ),
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                  )
+                ],
               ),
-            )
-          ],
+              Divider(
+                thickness: 2,
+              ),
+              Container(
+                color: Colors.black.withOpacity(0.3),
+                margin: EdgeInsets.symmetric(horizontal: 12),
+                child: ExpansionTile(
+                  title: Text("Logs"),
+                  children: [TorLogViewer()],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
