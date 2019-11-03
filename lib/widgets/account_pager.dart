@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/screens/Track/track_screen.dart';
-import 'package:sentinelx/screens/xpub_details.dart';
+import 'package:sentinelx/screens/watch_list.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/widgets/balance_card_widget.dart';
 import 'package:sentinelx/widgets/card_widget.dart';
@@ -13,15 +13,18 @@ class AccountsPager extends StatefulWidget {
   _AccountsPagerState createState() => _AccountsPagerState();
 }
 
-class _AccountsPagerState extends State<AccountsPager> with SingleTickerProviderStateMixin {
+class _AccountsPagerState extends State<AccountsPager>
+    with SingleTickerProviderStateMixin {
   PageController _pageController;
   Wallet wallet;
+
   @override
   void initState() {
     super.initState();
-    _pageController = new PageController(initialPage: 0, keepPage: true, viewportFraction: 0.89);
+    _pageController = new PageController(
+        initialPage: 0, keepPage: true, viewportFraction: 0.89);
     Future.delayed(Duration(milliseconds: 50), () {
-      if(_pageController.hasClients){
+      if (_pageController.hasClients) {
         _pageController.jumpToPage(AppState().pageIndex);
       }
     });
@@ -60,7 +63,7 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
           child: Card(
             color: Theme.of(context).primaryColor,
             child: InkWell(
-              onTap: navigate,
+              onTap: () => navigate(context),
               child: Center(
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -89,13 +92,22 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
       return GestureDetector(
         onTap: () async {
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => XpubDetailsScreen(), settings: RouteSettings(arguments: index - 1)));
+              builder: (context) => ChangeNotifierProvider.value(
+                    child: WatchList(),
+                    value: wallet,
+                  ),
+              settings: RouteSettings(arguments: index - 1)));
         },
         child: Container(
           height: 200,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ChangeNotifierProvider.value(value: wallet.xpubs[index - 1], child: CardWidget()),
+            child: ChangeNotifierProvider.value(
+                value: wallet.xpubs[index - 1],
+                child: Card(
+                  child: CardWidget(),
+                  color: Theme.of(context).backgroundColor,
+                )),
           ),
         ),
       );
@@ -130,15 +142,21 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
         });
   }
 
-  void navigate() async {
-    int result = await Navigator.of(context).push(new MaterialPageRoute<int>(builder: (BuildContext context) {
+  void navigate(BuildContext context) async {
+    Navigator.of(context)
+        .push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
       return Track();
     }));
-    if (result != null) {
-      AppState().setPageIndex(result + 1);
-      print("setPageIndex");
-      await AppState().refreshTx(result);
-      print("refresh");
-    }
+//
+//
+//    int result = await Navigator.of(context).push(new MaterialPageRoute<int>(builder: (BuildContext context) {
+//      return Track();
+//    }));
+//    if (result != null) {
+//      AppState().setPageIndex(result + 1);
+//      print("setPageIndex");
+//      await AppState().refreshTx(result);
+//      print("refresh");
+//    }
   }
 }

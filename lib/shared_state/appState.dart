@@ -25,7 +25,7 @@ class AppState extends ChangeNotifier {
   }
 
   List<Wallet> wallets = [];
-  Wallet selectedWallet;
+  Wallet selectedWallet = Wallet(walletName: "WalletSTUB",xpubs: []);
   bool isTestnet = false;
   ThemeProvider theme = ThemeProvider();
   int pageIndex = 0;

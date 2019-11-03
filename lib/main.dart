@@ -18,12 +18,22 @@ import 'models/wallet.dart';
 
 Future main() async {
   Provider.debugCheckInvalidValueType = null;
+  await initAppStateWithStub();
   bool enabled = await SystemChannel().isLockEnabled();
   if (!enabled) {
     await initDatabase(null);
   }
-  return runApp(
-    MaterialApp(
+  return runApp(MultiProvider(
+    providers: [
+      Provider<AppState>.value(value: AppState()),
+      ChangeNotifierProvider<NetworkState>.value(value: NetworkState()),
+      ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
+      ChangeNotifierProvider<Wallet>.value(value: AppState().selectedWallet),
+      ChangeNotifierProvider<TxState>.value(
+          value: AppState().selectedWallet.txState),
+      ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),
+    ],
+    child: MaterialApp(
       theme: ThemeProvider.darkTheme,
       debugShowCheckedModeBanner: false,
       routes: <String, WidgetBuilder>{
@@ -32,7 +42,7 @@ Future main() async {
         '/settings': (context) => Settings(),
       },
     ),
-  );
+  ));
 }
 
 class Landing extends StatefulWidget {
@@ -162,7 +172,7 @@ class SentinelX extends StatelessWidget {
       Provider<AppState>.value(value: AppState()),
       ChangeNotifierProvider<NetworkState>.value(value: NetworkState()),
       ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
-      Provider<Wallet>.value(value: AppState().selectedWallet),
+      ChangeNotifierProvider<Wallet>.value(value: AppState().selectedWallet),
       ChangeNotifierProvider<TxState>.value(
           value: AppState().selectedWallet.txState),
       ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),

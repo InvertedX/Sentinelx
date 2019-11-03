@@ -86,7 +86,7 @@ class _HomeState extends State<Home> {
             onPressed: () {
               Navigator.of(context).push(
                   new MaterialPageRoute<Null>(builder: (BuildContext context) {
-                    return Settings();
+                    return Provider.value(child: Settings(),value: AppState(),);
                   }));
             },
           ),
