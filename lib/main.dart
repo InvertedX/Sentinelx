@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/db/database.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/home.dart';
@@ -39,8 +38,7 @@ Future main() async {
           theme: model.theme,
           debugShowCheckedModeBanner: false,
           routes: <String, WidgetBuilder>{
-            '/': (context) => LockWrapper(),
-            '/Landing': (context) => Landing(),
+            '/': (context) => Lock(),
             '/home': (context) => SentinelX(),
 //        '/': (context) => LockScreen(lockScreenMode: LockScreenMode.LOCK),
             '/settings': (context) => Settings(),
@@ -51,13 +49,12 @@ Future main() async {
   ));
 }
 
-class LockWrapper extends StatefulWidget {
-
+class Lock extends StatefulWidget {
   @override
-  _LockWrapperState createState() => _LockWrapperState();
+  _LockState createState() => _LockState();
 }
 
-class _LockWrapperState extends State<LockWrapper> with WidgetsBindingObserver {
+class _LockState extends State<Lock> with WidgetsBindingObserver {
   StreamSubscription sub;
 
   GlobalKey<LockScreenState> _lockScreen = GlobalKey();
@@ -72,7 +69,9 @@ class _LockWrapperState extends State<LockWrapper> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return  LockScreen(
+    return sessionStates == SessionStates.IDLE
+        ? SplashScreen()
+        : LockScreen(
       onPinEntryCallback: validate,
       lockScreenMode: LockScreenMode.LOCK,
       key: _lockScreen,
@@ -82,7 +81,6 @@ class _LockWrapperState extends State<LockWrapper> with WidgetsBindingObserver {
   validate(String code) async {
     try {
       await initDatabase(code);
-
       Navigator.of(context)
           .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
     } catch (e) {
@@ -91,7 +89,7 @@ class _LockWrapperState extends State<LockWrapper> with WidgetsBindingObserver {
   }
 
   void init() async {
-    bool enabled = await SystemChannel().isLockEnabled();
+    bool enabled = await PrefsStore().getBool(PrefsStore.LOCK_STATUS);
 
     if (!enabled) {
       await initDatabase(null);
@@ -99,11 +97,14 @@ class _LockWrapperState extends State<LockWrapper> with WidgetsBindingObserver {
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
       });
+    } else {
+      setState(() {
+        sessionStates = SessionStates.LOCK;
+      });
     }
     if (sub != null)
       sub = SentinelState().eventsStream.stream.listen((val) {
         this.init();
-
       });
   }
 
@@ -129,10 +130,10 @@ class _LockWrapperState extends State<LockWrapper> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.paused) {
-      print("Paused");
+      print("LifeCycle : Paused");
     }
     if (state == AppLifecycleState.resumed) {
-      print("Resumed");
+      print("LifeCycle : resumed");
     }
   }
 
@@ -141,7 +142,9 @@ class _LockWrapperState extends State<LockWrapper> with WidgetsBindingObserver {
       case SessionStates.IDLE:
         {
           return Scaffold(
-            backgroundColor: Theme.of(context).backgroundColor,
+            backgroundColor: Theme
+                .of(context)
+                .backgroundColor,
             body: Container(
               child: Center(
                 child: Text("Sentinel x"),
@@ -161,11 +164,19 @@ class _LockWrapperState extends State<LockWrapper> with WidgetsBindingObserver {
   }
 }
 
-
-class Landing extends StatelessWidget {
+class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      backgroundColor: Theme
+          .of(context)
+          .backgroundColor,
+      body: Center(
+        child: Container(
+          child: Text("Sentinel x"),
+        ),
+      ),
+    );
   }
 }
 
