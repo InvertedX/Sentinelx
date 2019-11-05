@@ -155,6 +155,17 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
       setState(() {
         loading = false;
       });
+      if (ex is PlatformException) {
+        final snackBar = SnackBar(
+          content: Text("Error : ${ex.details as String}"),
+        );
+        Scaffold.of(context).showSnackBar(snackBar);
+      } else {
+        final snackBar = SnackBar(
+          content: Text("Error"),
+        );
+        Scaffold.of(context).showSnackBar(snackBar);
+      }
     }
   }
 

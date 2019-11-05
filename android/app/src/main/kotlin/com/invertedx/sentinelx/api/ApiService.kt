@@ -80,7 +80,7 @@ class ApiService(private val applicationContext: Context) {
                 Log.i("API", "response -> $content")
                 return@fromCallable content
             } catch (ex: Exception) {
-                return@fromCallable "{}"
+                throw  ex
             }
 
         }
@@ -103,7 +103,7 @@ class ApiService(private val applicationContext: Context) {
                 val content = response.body()!!.string()
                 return@fromCallable content
             } catch (ex: Exception) {
-                return@fromCallable "{}"
+                throw  ex;
             }
 
         }
@@ -130,13 +130,9 @@ class ApiService(private val applicationContext: Context) {
                     .build()
 
             val response = client.newCall(request).execute()
-            try {
-                val content = response.body()!!.string()
-                Log.i("API", "response -> $content")
-                return@fromCallable content
-            } catch (ex: Exception) {
-                return@fromCallable "{}"
-            }
+            val content = response.body()!!.string()
+            Log.i("API", "response -> $content")
+            return@fromCallable content
 
         }
     }

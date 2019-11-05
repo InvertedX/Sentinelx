@@ -236,7 +236,11 @@ class _HomeState extends State<Home> {
     }
     if (AppState().pageIndex == 0) {
       for (int i = 0; i < AppState().selectedWallet.xpubs.length; i++) {
-        await AppState().refreshTx(i);
+        try {
+          await AppState().refreshTx(i);
+        } catch (e) {
+          print(e);
+        }
       }
 //      await refreshUnspent();
       return;
@@ -247,12 +251,20 @@ class _HomeState extends State<Home> {
   Future<bool> refreshUnspent() async {
     if (AppState().pageIndex == 0) {
       for (int i = 0; i < AppState().selectedWallet.xpubs.length; i++) {
-        await AppState().refreshTx(i);
+        try {
+          await AppState().refreshTx(i);
+        } catch (e) {
+          print(e);
+        }
       }
       await AppState().getUnspent();
       return true;
     }
-    await AppState().refreshTx(AppState().pageIndex);
+    try {
+      await AppState().refreshTx(AppState().pageIndex);
+    } catch (e) {
+      print(e);
+    }
     return true;
   }
 

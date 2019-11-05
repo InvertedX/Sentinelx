@@ -71,6 +71,7 @@ class AppState extends ChangeNotifier {
     } catch (e) {
       loaderState.setLoadingStateAndXpub(States.COMPLETED, "all");
       print("E $e");
+      throw e;
     }
   }
 

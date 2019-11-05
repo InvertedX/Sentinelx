@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/wallet.dart';
@@ -159,8 +160,21 @@ class _AccountsPagerState extends State<AccountsPager>
     if (result != null) {
       AppState().setPageIndex(result + 1);
       print("setPageIndex");
-      await AppState().refreshTx(result);
-      print("refresh");
+      try {
+        await AppState().refreshTx(result);
+      } catch (ex) {
+        if (ex is PlatformException) {
+          final snackBar = SnackBar(
+            content: Text("Error : ${ex.details as String}"),
+          );
+          Scaffold.of(context).showSnackBar(snackBar);
+        } else {
+          final snackBar = SnackBar(
+            content: Text("Error while refreshing..."),
+          );
+          Scaffold.of(context).showSnackBar(snackBar);
+        }
+      }
     }
   }
 }

@@ -29,7 +29,6 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
                                 result.success(it)
                             }
                         }, {
-
                             it.printStackTrace()
                             result.error("APIError", "Error", it.message)
                         })
@@ -73,8 +72,8 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
                                 val obj: JSONObject = JSONObject(it)
                                 if (obj.has("status") && obj.get("status") == "ok") {
                                     result.success(true)
-                                } else {
-                                    result.success(false)
+                                } else if (obj.has("status") && obj.get("status") == "error" && obj.has("error")) {
+                                    result.error("APIError", "Error", obj.get("error"))
                                 }
                             } else {
                                 result.success(false)
