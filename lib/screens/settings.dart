@@ -306,39 +306,202 @@ class _SettingsState extends State<Settings> {
     showModalBottomSheet(
         context: context,
         builder: (context) {
-          return Container(
-            child: Card(
-              child: Column(
-                children: <Widget>[
-                  RaisedButton(
-                    onPressed: () {
-                      Provider.of<ThemeProvider>(context).toggleTheme();
-                    },
-                    child: Text("DARK"),
+          return Consumer<ThemeProvider>(
+            builder: (context, model, child) {
+              return Container(
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .height / 3,
+                child: SingleChildScrollView(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Theme",
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .subhead,
+                            ),
+                          ),
+                          Row(
+                            children: <Widget>[
+                              InkWell(
+                                onTap: () {
+                                  model.setLight();
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Theme
+                                              .of(context)
+                                              .textTheme
+                                              .title
+                                              .color
+                                              .withOpacity(
+                                              model.isDarkThemeEnabled()
+                                                  ? 0.0
+                                                  : 0.9),
+                                          style: BorderStyle.solid,
+                                          width: model.isDarkThemeEnabled()
+                                              ? 0
+                                              : 0.9),
+                                      borderRadius: BorderRadius.circular(6)),
+                                  child: Wrap(
+                                    direction: Axis.vertical,
+                                    crossAxisAlignment:
+                                    WrapCrossAlignment.center,
+                                    children: [
+                                      Card(
+                                        color:
+                                        Provider
+                                            .of<ThemeProvider>(context)
+                                            .lightTheme
+                                            .backgroundColor,
+                                        elevation: 2,
+                                        child: Container(
+                                          width: 60,
+                                          height: 60,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text("Light",
+                                            style: Theme
+                                                .of(context)
+                                                .textTheme
+                                                .caption),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(4),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  model.setDark();
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Theme
+                                              .of(context)
+                                              .textTheme
+                                              .title
+                                              .color
+                                              .withOpacity(
+                                              model.isDarkThemeEnabled()
+                                                  ? 0.9
+                                                  : 0.0),
+                                          style: BorderStyle.solid,
+                                          width: 1),
+                                      borderRadius: BorderRadius.circular(6)),
+                                  child: Wrap(
+                                    direction: Axis.vertical,
+                                    crossAxisAlignment:
+                                    WrapCrossAlignment.center,
+                                    children: [
+                                      Card(
+                                        color:
+                                        Provider
+                                            .of<ThemeProvider>(context)
+                                            .darkTheme
+                                            .backgroundColor,
+                                        elevation: 2,
+                                        child: Container(
+                                          width: 60,
+                                          height: 60,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text("Dark",
+                                            style: Theme
+                                                .of(context)
+                                                .textTheme
+                                                .caption),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          Divider(),
+                          Text("Accent"),
+                          Container(
+                            height: 80,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              children:
+                              ThemeProvider.accentColors.keys.map((key) {
+                                Color accent = ThemeProvider.accentColors[key];
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: <Widget>[
+                                      InkWell(
+                                        child: ClipOval(
+                                          child: Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                    color: Theme
+                                                        .of(context)
+                                                        .textTheme
+                                                        .caption
+                                                        .color,
+                                                    width:
+                                                    Provider.of<ThemeProvider>(
+                                                        context)
+                                                        .isActiveAccent(
+                                                        accent)
+                                                        ? 2
+                                                        : 0,
+                                                    style: BorderStyle.solid),
+                                                color: accent),
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          Provider.of<ThemeProvider>(
+                                              context).changeAccent(accent);
+                                        },
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(4),
+                                      ),
+                                      Text(
+                                        key,
+                                        style:
+                                        Theme
+                                            .of(context)
+                                            .textTheme
+                                            .caption,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
-                  RaisedButton(
-                    onPressed: () {
-                      Provider.of<ThemeProvider>(context).toggleTheme();
-                    },
-                    child: Text("LIGH"),
-                  ),
-                  RaisedButton(
-                    onPressed: () {
-                      Provider.of<ThemeProvider>(context)
-                          .changeAccent(Colors.greenAccent);
-                    },
-                    child: Text("GREEN"),
-                  ),
-                  RaisedButton(
-                    onPressed: () {
-                      Provider.of<ThemeProvider>(context)
-                          .changeAccent(Colors.redAccent);
-                    },
-                    child: Text("RED"),
-                  )
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           );
         });
 //    Scaffold.of(context)

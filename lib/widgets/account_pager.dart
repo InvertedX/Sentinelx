@@ -109,7 +109,7 @@ class _AccountsPagerState extends State<AccountsPager>
             child: ChangeNotifierProvider.value(
                 value: wallet.xpubs[index - 1],
                 child: Card(
-                  elevation: 5,
+                  elevation: 3,
                   child: CardWidget(),
                 )),
           ),

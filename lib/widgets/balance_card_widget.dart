@@ -21,7 +21,7 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
     return Stack(
       children: <Widget>[
         Card(
-          elevation: 5,
+          elevation: 3,
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(

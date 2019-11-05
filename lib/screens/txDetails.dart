@@ -33,7 +33,9 @@ class _TxDetailsState extends State<TxDetails> {
     return Wrap(
       children: <Widget>[
         Container(
-          color: Theme.of(context).primaryColor,
+          color: Theme
+              .of(context)
+              .primaryColorDark,
           child: Center(
               child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 32),
@@ -47,7 +49,9 @@ class _TxDetailsState extends State<TxDetails> {
           )),
         ),
         _buildRow("Date", "${formatDateAndTime(widget.tx.time)}"),
+        Divider(),
         _buildRow("Fees", fees),
+        Divider(),
         _buildRow("Feerate", feeRate),
         Divider(),
         Padding(

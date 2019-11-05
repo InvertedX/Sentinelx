@@ -8,6 +8,14 @@ class ThemeProvider extends ChangeNotifier {
   ThemeData theme;
   ThemeData darkTheme;
   ThemeData lightTheme;
+  static Map<String, Color> accentColors = {
+    "Red": Colors.redAccent,
+    "Green": Colors.greenAccent,
+    "Blue": Colors.blueAccent,
+    "Amber": Colors.amberAccent,
+    "Lime": Colors.limeAccent,
+    "Teal": Colors.tealAccent,
+  };
 
   ThemeProvider() {
     buildThemes();
@@ -20,16 +28,33 @@ class ThemeProvider extends ChangeNotifier {
   toggleTheme() {
     if (theme.brightness == Brightness.dark) {
       theme = lightTheme;
-//      SystemChrome.setSystemUIOverlayStyle(
-//          SystemUiOverlayStyle(statusBarColor: darkTheme.primaryColor));
     } else {
       theme = darkTheme;
-//      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-//          statusBarColor: darkTheme.primaryColor,
-//          statusBarBrightness: Brightness.dark));
     }
 
     notifyListeners();
+  }
+
+  setDark() {
+    theme = darkTheme;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: darkTheme.primaryColorDark,
+      systemNavigationBarColor: darkTheme.primaryColorDark,
+    ));
+    notifyListeners();
+  }
+
+  setLight() {
+    theme = lightTheme;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: lightTheme.primaryColorDark,
+      systemNavigationBarColor: lightTheme.primaryColorDark,
+    ));
+    notifyListeners();
+  }
+
+  isActiveAccent(Color color) {
+    return accent.value == color.value;
   }
 
   buildThemes() {
@@ -41,7 +66,7 @@ class ThemeProvider extends ChangeNotifier {
         accentColor: accent,
         backgroundColor: Color(0xff262626),
         iconTheme: IconThemeData(color: Color(0xffD4D4D4), opacity: 0.8),
-        cardColor: Color(0xff393939),
+        cardColor: Color(0xff282828),
         textTheme: TextTheme(
           headline: TextStyle(color: Color(0xffD4D4D4)),
           title: TextStyle(color: Color(0xffD4D4D4)),
@@ -64,7 +89,7 @@ class ThemeProvider extends ChangeNotifier {
         primaryColor: Color(0xff4d4c5d),
         primaryColorDark: Color(0xff4d4c5d),
         accentColor: accent,
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xfff9f9f9),
         textTheme: TextTheme(
           headline: TextStyle(color: Colors.grey[800]),
           title: TextStyle(color: Colors.grey[800]),
@@ -81,14 +106,14 @@ class ThemeProvider extends ChangeNotifier {
             elevation: 20));
   }
 
+  isDarkThemeEnabled() {
+    return this.theme.brightness == Brightness.dark;
+  }
+
   void changeAccent(MaterialAccentColor greenAccent) {
     this.accent = greenAccent;
-    print("ACC ${accent}");
     buildThemes();
-    print("ACC ${darkTheme.accentColor}");
     theme = theme.brightness == Brightness.light ? lightTheme : darkTheme;
-    Future.delayed(Duration(milliseconds: 120), () {
-      notifyListeners();
-    });
+    notifyListeners();
   }
 }
