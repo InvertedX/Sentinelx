@@ -29,118 +29,111 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    return PushUpCameraWrapper(
-      key: bottomUpCamera,
-      cameraHeight: MediaQuery.of(context).size.height / 2,
-      child: Scaffold(
-        key: scaffoldKey,
-        appBar: AppBar(
-          title: Text(
-            'Settings',
-            style: TextStyle(fontWeight: FontWeight.w400),
-          ),
-          centerTitle: true,
-          primary: true,
+    return Scaffold(
+      key: scaffoldKey,
+      appBar: AppBar(
+        title: Text(
+          'Settings',
+          style: TextStyle(fontWeight: FontWeight.w400),
         ),
-        backgroundColor: Theme.of(context).primaryColorDark,
-        body: Container(
-          margin: EdgeInsets.only(top: 12),
-          child: ListView(
-            physics: BouncingScrollPhysics(),
-            children: <Widget>[
-              Container(
-                color: Theme.of(context).secondaryHeaderColor,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
-                child: Text("App"),
+        centerTitle: true,
+        primary: true,
+      ),
+      backgroundColor: Theme.of(context).primaryColorDark,
+      body: Container(
+        margin: EdgeInsets.only(top: 12),
+        child: ListView(
+          physics: BouncingScrollPhysics(),
+          children: <Widget>[
+            Container(
+              color: Theme.of(context).secondaryHeaderColor,
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+              child: Text("App"),
+            ),
+            Divider(),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.delete_outline),
               ),
-              Divider(),
-              ListTile(
+              trailing: loadingErase
+                  ? SizedBox(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1,
+                      ),
+                      width: 12,
+                      height: 12,
+                    )
+                  : SizedBox.shrink(),
+              title: Text(
+                "Erase All trackings",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Clear all data from the device"),
+              onTap: () {
+                deleteConfirmModal();
+              },
+            ),
+            Divider(),
+            Container(
+              color: Theme.of(context).secondaryHeaderColor,
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+              child: Text("Security"),
+            ),
+            Divider(),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.lock),
+              ),
+              title: Text(
+                lockEnabled ? "Change Lock PIN" : "Enable Lock Screen",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle:
+                  Text("Database will be encrypted using the provided PIN"),
+              onTap: enableOrChangeLock,
+            ),
+            Divider(),
+            Container(
+              color: Theme.of(context).secondaryHeaderColor,
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+              child: Text("Network"),
+            ),
+            Divider(),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(SentinelxIcons.onion_tor),
+              ),
+              title: Text(
+                "Tor",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Manage Tor service"),
+              onTap: () {
+                showTorBottomSheet(context);
+              },
+            ),
+            Opacity(
+              opacity: 0.3,
+              child: ListTile(
                 leading: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Icon(Icons.delete_outline),
-                ),
-                trailing: loadingErase
-                    ? SizedBox(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1,
-                        ),
-                        width: 12,
-                        height: 12,
-                      )
-                    : SizedBox.shrink(),
-                title: Text(
-                  "Erase All trackings",
-                  style: Theme.of(context).textTheme.subtitle,
-                ),
-                subtitle: Text("Clear all data from the device"),
-                onTap: () {
-                  deleteConfirmModal();
-                },
-              ),
-              Divider(),
-              Container(
-                color: Theme.of(context).secondaryHeaderColor,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
-                child: Text("Security"),
-              ),
-              Divider(),
-              ListTile(
-                leading: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Icon(Icons.lock),
+                  child: Icon(Icons.router),
                 ),
                 title: Text(
-                  lockEnabled ? "Change Lock PIN" : "Enable Lock Screen",
+                  "Samourai DOJO",
                   style: Theme.of(context).textTheme.subtitle,
                 ),
-                subtitle:
-                    Text("Database will be encrypted using the provided PIN"),
-                onTap: enableOrChangeLock,
-              ),
-              Divider(),
-              Container(
-                color: Theme.of(context).secondaryHeaderColor,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
-                child: Text("Network"),
-              ),
-              Divider(),
-              ListTile(
-                leading: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Icon(SentinelxIcons.onion_tor),
-                ),
-                title: Text(
-                  "Tor",
-                  style: Theme.of(context).textTheme.subtitle,
-                ),
-                subtitle: Text("Manage Tor service"),
-                onTap: () {
-                  showTorBottomSheet(context);
-                },
-              ),
-              Opacity(
-                opacity: 0.3,
-                child: ListTile(
-                  leading: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Icon(Icons.router),
-                  ),
-                  title: Text(
-                    "Samourai DOJO",
-                    style: Theme.of(context).textTheme.subtitle,
-                  ),
-                  subtitle: Text("Power your sentinel with Dojo backend"),
+                subtitle: Text("Power your sentinel with Dojo backend"),
 //                  onTap: () {
 //
 //                  },
-                ),
               ),
-              Divider(),
-            ],
-          ),
+            ),
+            Divider(),
+          ],
         ),
       ),
     );
@@ -215,7 +208,8 @@ class _SettingsState extends State<Settings> {
         print("Error $e");
         debugPrint(e);
       }
-      Navigator.pushReplacementNamed(context, '/');
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
       SentinelState().eventsStream.sink.add(SessionStates.IDLE);
     }
   }
@@ -229,7 +223,7 @@ class _SettingsState extends State<Settings> {
               ),
           fullscreenDialog: true),
     );
-    if(text == null){
+    if (text == null) {
       return;
     }
     try {
@@ -237,7 +231,9 @@ class _SettingsState extends State<Settings> {
     } catch (e) {
       print("Error $e");
     }
-    Navigator.pushReplacementNamed(context, '/');
-    SentinelState().eventsStream.sink.add(SessionStates.LOCK);
+    Navigator.of(context)
+        .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+    if (!SentinelState().eventsStream.isClosed)
+      SentinelState().eventsStream.sink.add(SessionStates.LOCK);
   }
 }

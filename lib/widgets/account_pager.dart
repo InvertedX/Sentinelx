@@ -143,20 +143,20 @@ class _AccountsPagerState extends State<AccountsPager>
   }
 
   void navigate(BuildContext context) async {
-    Navigator.of(context)
-        .push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
-      return Track();
-    }));
-//
-//
-//    int result = await Navigator.of(context).push(new MaterialPageRoute<int>(builder: (BuildContext context) {
+//    Navigator.of(context)
+//        .push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
 //      return Track();
 //    }));
-//    if (result != null) {
-//      AppState().setPageIndex(result + 1);
-//      print("setPageIndex");
-//      await AppState().refreshTx(result);
-//      print("refresh");
-//    }
+
+
+    int result = await Navigator.of(context).push(new MaterialPageRoute<int>(builder: (BuildContext context) {
+      return Track();
+    }));
+    if (result != null) {
+      AppState().setPageIndex(result + 1);
+      print("setPageIndex");
+      await AppState().refreshTx(result);
+      print("refresh");
+    }
   }
 }

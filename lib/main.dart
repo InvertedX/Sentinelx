@@ -37,7 +37,9 @@ Future main() async {
       theme: ThemeProvider.darkTheme,
       debugShowCheckedModeBanner: false,
       routes: <String, WidgetBuilder>{
-        '/': (context) => Landing(),
+        '/': (context) => LockWrapper(),
+        '/Landing': (context) => Landing(),
+        '/home': (context) => SentinelX(),
 //        '/': (context) => LockScreen(lockScreenMode: LockScreenMode.LOCK),
         '/settings': (context) => Settings(),
       },
@@ -45,14 +47,13 @@ Future main() async {
   ));
 }
 
-class Landing extends StatefulWidget {
-  Landing();
+class LockWrapper extends StatefulWidget {
 
   @override
-  _LandingState createState() => _LandingState();
+  _LockWrapperState createState() => _LockWrapperState();
 }
 
-class _LandingState extends State<Landing> with WidgetsBindingObserver {
+class _LockWrapperState extends State<LockWrapper> with WidgetsBindingObserver {
   StreamSubscription sub;
 
   GlobalKey<LockScreenState> _lockScreen = GlobalKey();
@@ -67,18 +68,19 @@ class _LandingState extends State<Landing> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: AnimatedSwitcher(
-          duration: Duration(milliseconds: 320), child: getWidget()),
+    return  LockScreen(
+      onPinEntryCallback: validate,
+      lockScreenMode: LockScreenMode.LOCK,
+      key: _lockScreen,
     );
   }
 
   validate(String code) async {
     try {
       await initDatabase(code);
-      this.setState(() {
-        sessionStates = SessionStates.ACTIVE;
-      });
+
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
     } catch (e) {
       _lockScreen.currentState.showError();
     }
@@ -90,20 +92,14 @@ class _LandingState extends State<Landing> with WidgetsBindingObserver {
     if (!enabled) {
       await initDatabase(null);
       Future.delayed(Duration.zero, () {
-        this.setState(() {
-          sessionStates = SessionStates.ACTIVE;
-        });
-      });
-    } else {
-      this.setState(() {
-        sessionStates = SessionStates.LOCK;
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
       });
     }
     if (sub != null)
       sub = SentinelState().eventsStream.stream.listen((val) {
-        this.setState(() {
-          sessionStates = val;
-        });
+        this.init();
+
       });
   }
 
@@ -151,11 +147,7 @@ class _LandingState extends State<Landing> with WidgetsBindingObserver {
         }
       case SessionStates.LOCK:
         {
-          return LockScreen(
-            onPinEntryCallback: validate,
-            lockScreenMode: LockScreenMode.LOCK,
-            key: _lockScreen,
-          );
+          return Container();
         }
       case SessionStates.ACTIVE:
         {
@@ -164,6 +156,15 @@ class _LandingState extends State<Landing> with WidgetsBindingObserver {
     }
   }
 }
+
+
+class Landing extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
 
 class SentinelX extends StatelessWidget {
   @override
