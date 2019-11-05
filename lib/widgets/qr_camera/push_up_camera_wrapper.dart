@@ -59,55 +59,45 @@ class PushUpCameraWrapperState extends State<PushUpCameraWrapper>
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        if (controller.isCompleted) {
-          controller.reverse();
-          return Future.value(false);
-        } else {
-          return Future.value(true);
-        }
-      },
-      child: Stack(
-        children: <Widget>[
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: QRCameraView(
-              cameraHeight: widget.cameraHeight,
-              controllerCallback: (CameraController co) {
-                _cameraController = co;
-                _cameraController.setDecodeListener((val) {
+    return Stack(
+      children: <Widget>[
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: QRCameraView(
+            cameraHeight: widget.cameraHeight,
+            controllerCallback: (CameraController co) {
+              _cameraController = co;
+              _cameraController.setDecodeListener((val) {
+                controller.reverse();
+                if (this._decodeComplete != null) this._decodeComplete(val);
+              });
+            },
+          ),
+        ),
+        Transform.translate(
+          offset: Offset(0, (animation.value * -1).toDouble()),
+          child: GestureDetector(
+              child: Container(
+                child: widget.child,
+                color: Colors.transparent,
+              ),
+              onHorizontalDragDown: (d) {
+                if (animation.isCompleted) {
                   controller.reverse();
-                  if (this._decodeComplete != null) this._decodeComplete(val);
-                });
+                }
               },
-            ),
-          ),
-          Transform.translate(
-            offset: Offset(0, (animation.value * -1).toDouble()),
-            child: GestureDetector(
-                child: Container(
-                  child: widget.child,
-                  color: Colors.transparent,
-                ),
-                onHorizontalDragDown: (d) {
-                  if (animation.isCompleted) {
-                    controller.reverse();
-                  }
-                },
-                onVerticalDragCancel: () {
-                  if (animation.isCompleted) {
-                    controller.reverse();
-                  }
-                },
-                onTap: () {
-                  if (animation.isCompleted) {
-                    controller.reverse();
-                  }
-                }),
-          ),
-        ],
-      ),
+              onVerticalDragCancel: () {
+                if (animation.isCompleted) {
+                  controller.reverse();
+                }
+              },
+              onTap: () {
+                if (animation.isCompleted) {
+                  controller.reverse();
+                }
+              }),
+        ),
+      ],
     );
   }
 }
