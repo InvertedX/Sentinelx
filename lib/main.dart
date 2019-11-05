@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/db/database.dart';
+import 'package:sentinelx/models/db/prefs_store.dart';
+import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/home.dart';
 import 'package:sentinelx/screens/settings.dart';
@@ -13,12 +15,11 @@ import 'package:sentinelx/shared_state/networkState.dart';
 import 'package:sentinelx/shared_state/sentinelState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
 
-import 'models/wallet.dart';
-
 Future main() async {
   Provider.debugCheckInvalidValueType = null;
   await initAppStateWithStub();
-  bool enabled = await SystemChannel().isLockEnabled();
+  await PrefsStore().init();
+  bool enabled = await PrefsStore().getBool(PrefsStore.LOCK_STATUS);
   if (!enabled) {
     await initDatabase(null);
   }
@@ -40,7 +41,6 @@ Future main() async {
           routes: <String, WidgetBuilder>{
             '/': (context) => Lock(),
             '/home': (context) => SentinelX(),
-//        '/': (context) => LockScreen(lockScreenMode: LockScreenMode.LOCK),
             '/settings': (context) => Settings(),
           },
         );
@@ -115,7 +115,6 @@ class _LockState extends State<Lock> with WidgetsBindingObserver {
     }, onError: (er) {
       print("State save error $er");
     });
-
     super.deactivate();
   }
 
@@ -179,7 +178,6 @@ class SplashScreen extends StatelessWidget {
     );
   }
 }
-
 
 class SentinelX extends StatelessWidget {
   @override

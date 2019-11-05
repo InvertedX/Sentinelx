@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:sentinelx/channels/SystemChannel.dart';
+import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/sentinelxDB.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
@@ -101,36 +101,6 @@ class _SettingsState extends State<Settings> {
               },
             ),
 
-//              Column(
-//                mainAxisAlignment: MainAxisAlignment.center,
-//                crossAxisAlignment: CrossAxisAlignment.start,
-//                children: <Widget>[
-//                  Text(
-//                    "Theme",
-//                    style: Theme.of(context).textTheme.subtitle,
-//                  ),
-//                  Padding(
-//                    padding: const EdgeInsets.symmetric(vertical: 12),
-//                    child: Row(
-//                      children: <Widget>[
-//                        Container(
-//                            width: 24,
-//                            height: 24,
-//                            margin: EdgeInsets.only(right: 12),
-//                            decoration: BoxDecoration(
-//                                shape: BoxShape.circle,
-//                                color: Colors.redAccent)),
-//                        Container(
-//                            width: 24,
-//                            height: 24,
-//                            decoration: BoxDecoration(
-//                                shape: BoxShape.circle,
-//                                color: Colors.redAccent))
-//                      ],
-//                    ),
-//                  )
-//                ],
-//              ),
             Divider(),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
@@ -205,7 +175,7 @@ class _SettingsState extends State<Settings> {
   }
 
   void init() async {
-    bool lockState = await SystemChannel().isLockEnabled();
+    bool lockState = await PrefsStore().getBool(PrefsStore.LOCK_STATUS);
     print("lockEnabled ${lockState}");
     this.setState(() {
       lockEnabled = lockState;
@@ -312,7 +282,7 @@ class _SettingsState extends State<Settings> {
                 height: MediaQuery
                     .of(context)
                     .size
-                    .height / 3,
+                    .height / 2.8,
                 child: SingleChildScrollView(
                   child: Card(
                     child: Padding(
@@ -440,8 +410,10 @@ class _SettingsState extends State<Settings> {
                           Text("Accent"),
                           Container(
                             height: 80,
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
+                            child: Row(
+//                              scrollDirection: Axis.horizontal,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children:
                               ThemeProvider.accentColors.keys.map((key) {
                                 Color accent = ThemeProvider.accentColors[key];
@@ -474,8 +446,8 @@ class _SettingsState extends State<Settings> {
                                           ),
                                         ),
                                         onTap: () {
-                                          Provider.of<ThemeProvider>(
-                                              context).changeAccent(accent);
+                                          Provider.of<ThemeProvider>(context)
+                                              .changeAccent(accent);
                                         },
                                       ),
                                       Padding(

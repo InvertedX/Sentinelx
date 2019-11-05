@@ -48,26 +48,6 @@ class SystemChannel {
     }
   }
 
-  Future<bool> isLockEnabled() async {
-    try {
-      bool run = await platform.invokeMethod<bool>("isLockEnabled");
-      return run;
-    } catch (exception) {
-      print(exception);
-      return false;
-    }
-  }
-
-  Future<bool> setLockEnabled(bool lock) async {
-    try {
-      bool run = await platform.invokeMethod<bool>("setLock", {"locked": lock});
-      return run;
-    } catch (exception) {
-      print(exception);
-      return false;
-    }
-  }
-
   Future<bool> openURL(String url) async {
     try {
       bool run = await platform.invokeMethod<bool>("openURL", url);

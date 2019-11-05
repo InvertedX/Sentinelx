@@ -47,7 +47,7 @@ class ThemeProvider extends ChangeNotifier {
   setLight() {
     theme = lightTheme;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: lightTheme.primaryColorDark,
+      statusBarColor: Color(0xff403F4D),
       systemNavigationBarColor: lightTheme.primaryColorDark,
     ));
     notifyListeners();

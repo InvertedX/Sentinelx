@@ -123,3 +123,6 @@ class AppState extends ChangeNotifier {
     return Address.fromJson(addressObjs);
   }
 }
+
+class FileStore {
+}

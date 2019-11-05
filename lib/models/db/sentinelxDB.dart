@@ -5,6 +5,7 @@ import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
+import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 
@@ -27,7 +28,7 @@ class SentinelxDB {
     final appDocumentDir = await SystemChannel().getDataDir();
     final dbPath = join(appDocumentDir.path, 'sentinalx.semdb');
     var database;
-    if (await SystemChannel().isLockEnabled()) {
+    if (await PrefsStore().getBool(PrefsStore.LOCK_STATUS)) {
       final codec = getEncryptSembastCodec(password: pass);
       database = await databaseFactoryIo.openDatabase(dbPath, codec: codec);
     } else {
@@ -77,7 +78,8 @@ class SentinelxDB {
     await SentinelxDB.instance.closeConnection();
 
     //save lock state to prefs
-    await SystemChannel().setLockEnabled(pass != null);
+    await PrefsStore().put(PrefsStore.LOCK_STATUS, pass != null);
+    await File(dbPath).delete();
   }
 
   closeConnection() async {

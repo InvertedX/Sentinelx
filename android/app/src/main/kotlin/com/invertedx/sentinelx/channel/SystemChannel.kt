@@ -60,20 +60,6 @@ class SystemChannel(private val applicationContext: Context, private val activit
                     result.success(true)
                 }
             }
-            "isLockEnabled" -> {
-                val pref = SentinalPrefs(applicationContext)
-                return if (pref.locked != null) {
-                    result.success(pref.locked!!)
-                } else {
-                    result.success(false)
-                }
-            }
-            "setLock" -> {
-                val pref = SentinalPrefs(applicationContext)
-                val isLocked = methodCall.argument<Boolean>("locked")
-                pref.locked = isLocked
-                result.success(true)
-            }
             "openURL" -> {
                 val url = methodCall.arguments as String;
                 val i = Intent(Intent.ACTION_VIEW)
