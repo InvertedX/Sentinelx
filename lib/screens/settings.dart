@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/db/sentinelxDB.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
+import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/sentinelState.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
@@ -39,16 +41,22 @@ class _SettingsState extends State<Settings> {
         centerTitle: true,
         primary: true,
       ),
-      backgroundColor: Theme.of(context).primaryColorDark,
+      backgroundColor: Theme
+          .of(context)
+          .backgroundColor,
       body: Container(
         margin: EdgeInsets.only(top: 12),
         child: ListView(
           physics: BouncingScrollPhysics(),
           children: <Widget>[
             Container(
-              color: Theme.of(context).secondaryHeaderColor,
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
-              child: Text("App"),
+              child: Text(
+                "App",
+                style: TextStyle(color: Theme
+                    .of(context)
+                    .accentColor),
+              ),
             ),
             Divider(),
             ListTile(
@@ -75,10 +83,63 @@ class _SettingsState extends State<Settings> {
               },
             ),
             Divider(),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.color_lens),
+              ),
+              title: Text(
+                "Theme",
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .subtitle,
+              ),
+              subtitle: Text("Customize theme"),
+              onTap: () {
+                showThemeChooser(context);
+              },
+            ),
+
+//              Column(
+//                mainAxisAlignment: MainAxisAlignment.center,
+//                crossAxisAlignment: CrossAxisAlignment.start,
+//                children: <Widget>[
+//                  Text(
+//                    "Theme",
+//                    style: Theme.of(context).textTheme.subtitle,
+//                  ),
+//                  Padding(
+//                    padding: const EdgeInsets.symmetric(vertical: 12),
+//                    child: Row(
+//                      children: <Widget>[
+//                        Container(
+//                            width: 24,
+//                            height: 24,
+//                            margin: EdgeInsets.only(right: 12),
+//                            decoration: BoxDecoration(
+//                                shape: BoxShape.circle,
+//                                color: Colors.redAccent)),
+//                        Container(
+//                            width: 24,
+//                            height: 24,
+//                            decoration: BoxDecoration(
+//                                shape: BoxShape.circle,
+//                                color: Colors.redAccent))
+//                      ],
+//                    ),
+//                  )
+//                ],
+//              ),
+            Divider(),
             Container(
-              color: Theme.of(context).secondaryHeaderColor,
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
-              child: Text("Security"),
+              child: Text(
+                "Security",
+                style: TextStyle(color: Theme
+                    .of(context)
+                    .accentColor),
+              ),
             ),
             Divider(),
             ListTile(
@@ -96,9 +157,13 @@ class _SettingsState extends State<Settings> {
             ),
             Divider(),
             Container(
-              color: Theme.of(context).secondaryHeaderColor,
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
-              child: Text("Network"),
+              child: Text(
+                "Network",
+                style: TextStyle(color: Theme
+                    .of(context)
+                    .accentColor),
+              ),
             ),
             Divider(),
             ListTile(
@@ -235,5 +300,48 @@ class _SettingsState extends State<Settings> {
         .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
     if (!SentinelState().eventsStream.isClosed)
       SentinelState().eventsStream.sink.add(SessionStates.LOCK);
+  }
+
+  void showThemeChooser(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            child: Card(
+              child: Column(
+                children: <Widget>[
+                  RaisedButton(
+                    onPressed: () {
+                      Provider.of<ThemeProvider>(context).toggleTheme();
+                    },
+                    child: Text("DARK"),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      Provider.of<ThemeProvider>(context).toggleTheme();
+                    },
+                    child: Text("LIGH"),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      Provider.of<ThemeProvider>(context)
+                          .changeAccent(Colors.greenAccent);
+                    },
+                    child: Text("GREEN"),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      Provider.of<ThemeProvider>(context)
+                          .changeAccent(Colors.redAccent);
+                    },
+                    child: Text("RED"),
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+//    Scaffold.of(context)
+//        .
   }
 }

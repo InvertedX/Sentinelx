@@ -131,13 +131,17 @@ class _HomeState extends State<Home> {
                           return Container(
                             color: Theme
                                 .of(context)
-                                .primaryColorDark,
+                                .primaryColorDark
+                                .withOpacity(Theme
+                                .of(context)
+                                .brightness == Brightness.light ? 0.1 : 0.8),
                             padding:
                             EdgeInsets.symmetric(vertical: 18, horizontal: 12),
                             child: Text(tx.section,
-                                style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontWeight: FontWeight.w500)),
+                                style: Theme
+                                    .of(context)
+                                    .textTheme
+                                    .subhead),
                           );
                         } else {
                           return Container(

@@ -27,7 +27,6 @@ class _WatchListState extends State<WatchList> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Consumer<Wallet>(builder: (context, model, child) {
-          print("model ${model.toJson()}");
           return ListView.builder(
             itemCount: model.xpubs.length,
             itemBuilder: (context, index) {
@@ -36,7 +35,6 @@ class _WatchListState extends State<WatchList> {
                 child: SlideUpWrapper(
                   Card(
                     elevation: 4,
-                    color: Theme.of(context).primaryColorDark,
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: Padding(
@@ -64,25 +62,31 @@ class _WatchListState extends State<WatchList> {
                                         context: context,
                                         builder: (con) {
                                           return Card(
+                                              color: Theme
+                                                  .of(context)
+                                                  .backgroundColor,
+                                              elevation: 12,
                                               child: Container(
-                                            margin: EdgeInsets.symmetric(
-                                                vertical: 22, horizontal: 12),
-                                            child: TextField(
-                                                controller:
+                                                margin: EdgeInsets.symmetric(
+                                                    vertical: 22,
+                                                    horizontal: 12),
+                                                child: TextField(
+                                                    controller:
                                                     TextEditingController()
                                                       ..text = model
                                                           .xpubs[index].label,
-                                                onSubmitted: (str) {
-                                                  _update(str, index, context);
-                                                  Navigator.pop(context);
-                                                },
-                                                autofocus: true,
-                                                keyboardType:
+                                                    onSubmitted: (str) {
+                                                      _update(
+                                                          str, index, context);
+                                                      Navigator.pop(context);
+                                                    },
+                                                    autofocus: true,
+                                                    keyboardType:
                                                     TextInputType.text,
-                                                decoration: InputDecoration(
-                                                  labelText: 'Label',
-                                                )),
-                                          ));
+                                                    decoration: InputDecoration(
+                                                      labelText: 'Label',
+                                                    )),
+                                              ));
                                         });
                                   },
                                 ),
@@ -116,9 +120,7 @@ class _WatchListState extends State<WatchList> {
     var snackBar = new SnackBar(
       content: new Text(
         "Label Updated",
-        style: TextStyle(color: Colors.white),
       ),
-      backgroundColor: Theme.of(context).accentColor,
       duration: Duration(milliseconds: 800),
       behavior: SnackBarBehavior.floating,
     );
@@ -188,7 +190,7 @@ class _SlideUpWrapperState extends State<SlideUpWrapper>
             height: 170,
             child: GestureDetector(
               child: Card(
-                  color: Theme.of(context).primaryColor, child: CardWidget()),
+                  child: CardWidget()),
               onTap: () {
                 if (controller.isCompleted) {
                   controller.reverse();

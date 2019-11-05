@@ -33,15 +33,19 @@ Future main() async {
           value: AppState().selectedWallet.txState),
       ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),
     ],
-    child: MaterialApp(
-      theme: ThemeProvider.darkTheme,
-      debugShowCheckedModeBanner: false,
-      routes: <String, WidgetBuilder>{
-        '/': (context) => LockWrapper(),
-        '/Landing': (context) => Landing(),
-        '/home': (context) => SentinelX(),
+    child: Consumer<ThemeProvider>(
+      builder: (context, model, child) {
+        return MaterialApp(
+          theme: model.theme,
+          debugShowCheckedModeBanner: false,
+          routes: <String, WidgetBuilder>{
+            '/': (context) => LockWrapper(),
+            '/Landing': (context) => Landing(),
+            '/home': (context) => SentinelX(),
 //        '/': (context) => LockScreen(lockScreenMode: LockScreenMode.LOCK),
-        '/settings': (context) => Settings(),
+            '/settings': (context) => Settings(),
+          },
+        );
       },
     ),
   ));

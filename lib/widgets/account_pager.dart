@@ -35,7 +35,9 @@ class _AccountsPagerState extends State<AccountsPager>
     return Container(
       padding: EdgeInsets.symmetric(vertical: 12),
       height: 230,
-      color: Theme.of(context).primaryColorDark,
+      color: Theme
+          .of(context)
+          .scaffoldBackgroundColor,
       child: Consumer<Wallet>(
         builder: (context, model, child) {
           wallet = model;
@@ -61,7 +63,9 @@ class _AccountsPagerState extends State<AccountsPager>
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: Card(
-            color: Theme.of(context).primaryColor,
+            color: Theme
+                .of(context)
+                .cardColor,
             child: InkWell(
               onTap: () => navigate(context),
               child: Center(
@@ -105,8 +109,8 @@ class _AccountsPagerState extends State<AccountsPager>
             child: ChangeNotifierProvider.value(
                 value: wallet.xpubs[index - 1],
                 child: Card(
+                  elevation: 5,
                   child: CardWidget(),
-                  color: Theme.of(context).backgroundColor,
                 )),
           ),
         ),

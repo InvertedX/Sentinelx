@@ -71,7 +71,10 @@ class LockScreenState extends State<LockScreen>
         }
       },
       child: Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme
+            .of(context)
+            .backgroundColor
+            .withOpacity(0.9),
         body: WillPopScope(
           onWillPop: onWillPop,
           child: Center(
@@ -151,7 +154,6 @@ class LockScreenState extends State<LockScreen>
                               ? Icons.lock_open
                               : Icons.check,
                           size: 34,
-                          color: Colors.greenAccent,
                         ),
                         onTap: onTap,
                       ),
@@ -264,9 +266,17 @@ class Circle extends StatelessWidget {
       width: 12,
       height: 12,
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme
+              .of(context)
+              .textTheme
+              .title
+              .color,
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 1)),
+          border: Border.all(color: Theme
+              .of(context)
+              .textTheme
+              .title
+              .color, width: 1)),
     );
   }
 }

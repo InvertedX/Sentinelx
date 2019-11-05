@@ -22,34 +22,34 @@ class Keyboard extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => _buildKeyboard();
+  Widget build(BuildContext context) => _buildKeyboard(context);
 
-  Widget _buildKeyboard() {
+  Widget _buildKeyboard(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            _buildKeyboardDigit('1'),
-            _buildKeyboardDigit('2'),
-            _buildKeyboardDigit('3'),
+            _buildKeyboardDigit('1', context),
+            _buildKeyboardDigit('2', context),
+            _buildKeyboardDigit('3', context),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            _buildKeyboardDigit('4'),
-            _buildKeyboardDigit('5'),
-            _buildKeyboardDigit('6'),
+            _buildKeyboardDigit('4', context),
+            _buildKeyboardDigit('5', context),
+            _buildKeyboardDigit('6', context),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            _buildKeyboardDigit('7'),
-            _buildKeyboardDigit('8'),
-            _buildKeyboardDigit('9'),
+            _buildKeyboardDigit('7', context),
+            _buildKeyboardDigit('8', context),
+            _buildKeyboardDigit('9', context),
           ],
         ),
         Row(
@@ -67,8 +67,13 @@ class Keyboard extends StatelessWidget {
                       color: Colors.transparent,
                       child: InkWell(
                         onLongPress: onDeleteLongPress,
-                        highlightColor: Colors.grey,
-                        splashColor: Colors.grey.withOpacity(0.4),
+                        highlightColor: Theme
+                            .of(context)
+                            .scaffoldBackgroundColor,
+                        splashColor: Theme
+                            .of(context)
+                            .scaffoldBackgroundColor
+                            .withOpacity(0.4),
                         onTap: onDeleteCancelTap,
                         child: Center(
                           child: Icon(Icons.backspace),
@@ -79,7 +84,7 @@ class Keyboard extends StatelessWidget {
                 ),
               ),
             ),
-            Center(child: _buildKeyboardDigit('0')),
+            Center(child: _buildKeyboardDigit('0', context)),
             Align(
               alignment: Alignment.topRight,
               child: AnimatedOpacity(
@@ -93,8 +98,13 @@ class Keyboard extends StatelessWidget {
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        highlightColor: Colors.greenAccent,
-                        splashColor: Colors.white.withOpacity(0.1),
+                        highlightColor: Theme
+                            .of(context)
+                            .accentColor
+                            .withOpacity(0.5),
+                        splashColor: Theme
+                            .of(context)
+                            .accentColor,
                         onTap: onDoneCallback,
                         child: Center(
                           child:  doneIcon
@@ -111,7 +121,7 @@ class Keyboard extends StatelessWidget {
     );
   }
 
-  Widget _buildKeyboardDigit(String text) {
+  Widget _buildKeyboardDigit(String text, BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 15),
       width: 80,
@@ -119,16 +129,26 @@ class Keyboard extends StatelessWidget {
       child: ClipOval(
         child: Material(
           child: InkWell(
-            radius: 300,
-            highlightColor: Colors.grey,
-            splashColor: Colors.grey,
+            highlightColor: Theme
+                .of(context)
+                .accentColor
+                .withOpacity(0.3),
+            splashColor: Theme
+                .of(context)
+                .accentColor,
             onTap: () {
               onTap(text);
             },
             child: Center(
               child: Text(
                 text,
-                style: TextStyle(fontSize: 32,fontWeight: FontWeight.w400,color: Colors.white),
+                style: TextStyle(fontSize: 32,
+                    fontWeight: FontWeight.w400,
+                    color: Theme
+                        .of(context)
+                        .textTheme
+                        .title
+                        .color),
               ),
             ),
           ),

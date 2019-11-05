@@ -56,7 +56,8 @@ class _TrackState extends State<Track> with SingleTickerProviderStateMixin {
         child: Scaffold(
           backgroundColor: Theme
               .of(context)
-              .primaryColor,
+              .backgroundColor,
+
           appBar: AppBar(
             title: Text("Track"),
             bottom: TabBar(

@@ -15,7 +15,6 @@ Future<bool> showConfirmModel({
       context: context,
       builder: (BuildContext bc) {
         return Card(
-          color: Theme.of(context).primaryColor,
           margin: EdgeInsets.symmetric(vertical: 16,horizontal: 12),
           child: Container(
             child: new Wrap(
