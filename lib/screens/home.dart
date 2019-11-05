@@ -48,7 +48,7 @@ class _HomeState extends State<Home> {
         automaticallyImplyLeading: false,
         title: Text(
           'Sentinel X',
-          style: TextStyle(fontWeight: FontWeight.w400,fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
         ),
         actions: <Widget>[
           Consumer<LoaderState>(builder: (context, model, child) {
@@ -74,7 +74,10 @@ class _HomeState extends State<Home> {
           Consumer<NetworkState>(
             builder: (context, model, child) {
               return IconButton(
-                icon: Icon(SentinelxIcons.onion_tor, color: getTorIconColor(model.torStatus),),
+                icon: Icon(
+                  SentinelxIcons.onion_tor,
+                  color: getTorIconColor(model.torStatus),
+                ),
                 onPressed: () {
                   showTorBottomSheet(context);
                 },
@@ -86,7 +89,10 @@ class _HomeState extends State<Home> {
             onPressed: () {
               Navigator.of(context).push(
                   new MaterialPageRoute<Null>(builder: (BuildContext context) {
-                    return Provider.value(child: Settings(),value: AppState(),);
+                    return Provider.value(
+                      child: Settings(),
+                      value: AppState(),
+                    );
                   }));
             },
           ),
@@ -98,70 +104,76 @@ class _HomeState extends State<Home> {
       backgroundColor: Theme
           .of(context)
           .backgroundColor,
-      body: RefreshIndicator(
-        child: CustomScrollView(
-          slivers: <Widget>[
-            SliverFixedExtentList(
-                itemExtent: 220.0,
-                delegate: SliverChildListDelegate(
-                  [
-                    AccountsPager(),
-                  ],
-                )),
-            SliverToBoxAdapter(
-              child: Container(
-                alignment: Alignment.centerLeft,
-                margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                child: Text(
-                  "Transactions",
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .subhead,
+      body: WillPopScope(
+        onWillPop: () => onPop(context),
+        child: RefreshIndicator(
+          child: CustomScrollView(
+            slivers: <Widget>[
+              SliverFixedExtentList(
+                  itemExtent: 220.0,
+                  delegate: SliverChildListDelegate(
+                    [
+                      AccountsPager(),
+                    ],
+                  )),
+              SliverToBoxAdapter(
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                  child: Text(
+                    "Transactions",
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .subhead,
+                  ),
                 ),
               ),
-            ),
-            Consumer<TxState>(
-              builder: (context, model, child) {
-                return SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                          (BuildContext context, int index) {
-                        Tx tx = model.txList[index];
-                        if (tx is ListSection) {
-                          return Container(
-                            color: Theme
-                                .of(context)
-                                .primaryColorDark
-                                .withOpacity(Theme
-                                .of(context)
-                                .brightness == Brightness.light ? 0.1 : 0.8),
-                            padding:
-                            EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-                            child: Text(tx.section,
-                                style: Theme
-                                    .of(context)
-                                    .textTheme
-                                    .subhead),
-                          );
-                        } else {
-                          return Container(
-                            child: TxWidget(
-                              tx: tx,
-                              callback: onTxClick,
-                            ),
-                          );
-                        }
-                      },
-                      childCount: model.txList.length,
-                    ));
-              },
-            ),
-          ],
+              Consumer<TxState>(
+                builder: (context, model, child) {
+                  return SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                            (BuildContext context, int index) {
+                          Tx tx = model.txList[index];
+                          if (tx is ListSection) {
+                            return Container(
+                              color: Theme
+                                  .of(context)
+                                  .primaryColorDark
+                                  .withOpacity(
+                                  Theme
+                                      .of(context)
+                                      .brightness == Brightness.light
+                                      ? 0.1
+                                      : 0.8),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 18, horizontal: 12),
+                              child: Text(tx.section,
+                                  style: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .subhead),
+                            );
+                          } else {
+                            return Container(
+                              child: TxWidget(
+                                tx: tx,
+                                callback: onTxClick,
+                              ),
+                            );
+                          }
+                        },
+                        childCount: model.txList.length,
+                      ));
+                },
+              ),
+            ],
+          ),
+          onRefresh: () async {
+            refreshTx();
+            return Future.value(true);
+          },
         ),
-        onRefresh: () async {
-          refreshTx();
-          return Future.value(true);
-        },
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: " ",
@@ -311,5 +323,35 @@ class _HomeState extends State<Home> {
       );
       _ScaffoldKey.currentState.showSnackBar(snackBar);
     }
+  }
+
+  Future<bool> onPop(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          elevation: 1,
+          title: new Text("Are you sure want to exit?                  "),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+                return Future.value(true);
+              },
+            ),
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+                return Future.value(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
