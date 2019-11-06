@@ -24,10 +24,11 @@ class NetworkChannel {
 
   NetworkChannel._internal() {
     _torStreamSubscription =
-        stream.receiveBroadcastStream().listen(this.onEvents);
+        stream.receiveBroadcastStream().listen(this._onEvents);
+    checkStatus();
   }
 
-  dynamic onEvents(dynamic event) {
+  dynamic _onEvents(dynamic event) {
     switch (event as String) {
       case "IDLE":
         {
@@ -83,5 +84,9 @@ class NetworkChannel {
   void stopListen() {
     logStreamController = new StreamController();
     _torLogSubscription.cancel();
+  }
+
+  void checkStatus() {
+    platform.invokeMethod("torStatus").then((va) => {_onEvents(va)});
   }
 }

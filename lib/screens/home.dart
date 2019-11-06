@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sentinelx/channels/NetworkChannel.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
@@ -13,6 +12,7 @@ import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/networkState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
+import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
@@ -196,26 +196,6 @@ class _HomeState extends State<Home> {
         },
       ),
     );
-  }
-
-  getTorIconColor(TorStatus torStatus) {
-    switch (torStatus) {
-      case TorStatus.CONNECTED:
-        {
-          return Colors.greenAccent;
-        }
-      case TorStatus.CONNECTING:
-        {
-          return Colors.orangeAccent;
-        }
-      case TorStatus.IDLE:
-        {
-          return Colors.white;
-        }
-      case TorStatus.DISCONNECTED:
-        return Colors.redAccent;
-        break;
-    }
   }
 
   Future onPress() async {

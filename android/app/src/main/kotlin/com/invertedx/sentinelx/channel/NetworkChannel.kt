@@ -75,6 +75,26 @@ class NetworkChannel(private val applicationContext: Context, private val activi
                 applicationContext.startService(startIntent)
             }
 
+            "torStatus" -> {
+                if (TorManager.getInstance(applicationContext).state == null) {
+                    return result.success("IDLE")
+                }
+                return when (TorManager.getInstance(applicationContext).state) {
+                    TorManager.CONNECTION_STATES.CONNECTED -> {
+                        result.success("CONNECTED")
+                    }
+                    TorManager.CONNECTION_STATES.IDLE -> {
+                        result.success("IDLE")
+                    }
+                    TorManager.CONNECTION_STATES.DISCONNECTED -> {
+                        result.success("DISCONNECTED")
+                    }
+                    TorManager.CONNECTION_STATES.CONNECTING -> {
+                        result.success("CONNECTING")
+                    }
+                }
+            }
+
         }
     }
 
