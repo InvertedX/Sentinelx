@@ -16,6 +16,7 @@ import 'package:sentinelx/shared_state/networkState.dart';
 import 'package:sentinelx/shared_state/sentinelState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
 import 'package:sentinelx/utils/utils.dart';
+import 'package:sentinelx/widgets/breath_widget.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 Future main() async {
