@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
+import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
 import 'package:sentinelx/screens/settings.dart';
@@ -175,8 +176,7 @@ class _HomeState extends State<Home> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: " ",
+      floatingActionButton: AppState().selectedWallet.xpubs.length != 0 ?  FloatingActionButton(
         child: Icon(
           SentinelxIcons.qrcode,
           color: Colors.white,
@@ -194,7 +194,7 @@ class _HomeState extends State<Home> {
                 return Receive();
               }));
         },
-      ),
+      ) : SizedBox.shrink(),
     );
   }
 
