@@ -8,11 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
- import android.util.Log;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.invertedx.sentinelx.R;
-
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +52,7 @@ public class TorService extends Service {
                 .setGroup("Tor")
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setGroupSummary(true)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.ic_tor_onion)
                 .build();
 
         startForeground(TOR_SERVICE_NOTIFICATION_ID, notification);
@@ -240,7 +239,7 @@ public class TorService extends Service {
                 .setGroup("Tor")
                 .setCategory(NotificationCompat.CATEGORY_PROGRESS)
                 .setGroupSummary(false)
-                .setSmallIcon(R.drawable.ic_launcher);
+                .setSmallIcon(R.drawable.ic_tor_onion);
 
         switch (TorManager.getInstance(getApplicationContext()).state) {
             case CONNECTED: {
