@@ -5,10 +5,12 @@ import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/NetworkChannel.dart';
 import 'package:sentinelx/models/db/database.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
+import 'package:sentinelx/models/db/sentinelxDB.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/home.dart';
 import 'package:sentinelx/screens/settings.dart';
+import 'package:sentinelx/screens/splashScreen.dart';
 import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
@@ -24,6 +26,7 @@ Future main() async {
   await initAppStateWithStub();
   await PrefsStore().init();
   bool enabled = await PrefsStore().getBool(PrefsStore.LOCK_STATUS);
+  await setUpTheme();
   if (!enabled) {
     await initDatabase(null);
   }
@@ -37,20 +40,72 @@ Future main() async {
           value: AppState().selectedWallet.txState),
       ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),
     ],
-    child: Consumer<ThemeProvider>(
+    child: AppWrapper(),
+  ));
+}
+
+class AppWrapper extends StatefulWidget {
+  @override
+  _AppWrapperState createState() => _AppWrapperState();
+}
+
+class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ThemeProvider>(
       builder: (context, model, child) {
         return MaterialApp(
           theme: model.theme,
           debugShowCheckedModeBanner: false,
           routes: <String, WidgetBuilder>{
             '/': (context) => Lock(),
-            '/home': (context) => SentinelX(),
+            '/home': (context) => Home(),
             '/settings': (context) => Settings(),
           },
         );
       },
-    ),
-  ));
+    );
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    PrefsStore().dispose();
+    SentinelxDB.instance.closeConnection();
+    AppState().dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+}
+
+setUpTheme() async {
+  String accentKey = await PrefsStore().getString(PrefsStore.THEME_ACCENT);
+  String theme = await PrefsStore().getString(PrefsStore.SELECTED_THEME);
+  if (accentKey
+      .trim()
+      .isNotEmpty) {
+    AppState().theme.changeAccent(ThemeProvider.accentColors[accentKey]);
+  }
+  if (theme
+      .trim()
+      .isNotEmpty) {
+    print("theme $theme");
+    if (theme == "light") {
+      AppState().theme.setLight();
+    } else {
+      AppState().theme.setDark();
+    }
+  }
 }
 
 class Lock extends StatefulWidget {
@@ -58,7 +113,7 @@ class Lock extends StatefulWidget {
   _LockState createState() => _LockState();
 }
 
-class _LockState extends State<Lock> with WidgetsBindingObserver {
+class _LockState extends State<Lock> {
   StreamSubscription sub;
 
   GlobalKey<LockScreenState> _lockScreen = GlobalKey();
@@ -150,17 +205,6 @@ class _LockState extends State<Lock> with WidgetsBindingObserver {
     SentinelState().dispose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.paused) {
-      print("LifeCycle : Paused");
-    }
-    if (state == AppLifecycleState.resumed) {
-      print("LifeCycle : resumed");
-    }
-  }
-
   getWidget() {
     switch (sessionStates) {
       case SessionStates.IDLE:
@@ -188,73 +232,6 @@ class _LockState extends State<Lock> with WidgetsBindingObserver {
   }
 }
 
-class SplashScreen extends StatelessWidget {
-  final bool torPref;
-
-  SplashScreen(this.torPref);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme
-          .of(context)
-          .backgroundColor,
-      appBar: AppBar(
-        elevation: 0,
-      ),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(12),
-          ),
-          Center(
-            child: Container(
-              child: Text("Sentinel x"),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(12),
-          ),
-          torPref
-              ? Consumer<NetworkState>(
-            builder: (con, model, c) {
-              return Container(
-                child: Column(
-                  children: <Widget>[
-                    BreathingAnimation(
-                      child: Icon(
-                        SentinelxIcons.onion_tor,
-                        size: 34,
-                        color: getTorIconColor(model.torStatus),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(6),
-                    ),
-                    Text(
-                      getTorStatusInText(
-                        model.torStatus,
-                      ),
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subhead
-                          .copyWith(fontSize: 12),
-                    )
-                  ],
-                ),
-              );
-            },
-          )
-              : SizedBox.shrink(),
-        ],
-      ),
-    );
-  }
-}
 
 class SentinelX extends StatelessWidget {
   @override
@@ -268,53 +245,5 @@ class SentinelX extends StatelessWidget {
           value: AppState().selectedWallet.txState),
       ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),
     ], child: Home());
-  }
-}
-
-class BreathingAnimation extends StatefulWidget {
-  final Widget child;
-
-  BreathingAnimation({@required this.child});
-
-  @override
-  _BreathingAnimationState createState() => _BreathingAnimationState();
-}
-
-class _BreathingAnimationState extends State<BreathingAnimation>
-    with SingleTickerProviderStateMixin {
-  static final _opacityTween = Tween<double>(begin: 1, end: 0.1);
-
-  Animation<double> animation;
-  AnimationController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller =
-        AnimationController(duration: const Duration(seconds: 1), vsync: this);
-    animation = CurvedAnimation(parent: controller, curve: Curves.easeOutSine)
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          controller.reverse();
-        } else if (status == AnimationStatus.dismissed) {
-          controller.forward();
-        }
-      });
-    controller.forward();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Opacity(
-        opacity: _opacityTween.evaluate(animation), child: widget.child);
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
   }
 }

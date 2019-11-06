@@ -9,6 +9,7 @@ class PrefsStore {
   static const LOCK_STATUS = "LOCK_STATUS";
   static const TOR_STATUS = "TOR_STATUS";
   static const SELECTED_THEME = "THEME";
+  static const THEME_ACCENT = "THEME_ACCENT";
 
   static PrefsStore get instance => _singleton;
 
@@ -29,7 +30,11 @@ class PrefsStore {
   }
 
   put(String key, dynamic val) async {
-    return store.record(key).put(database, val);
+    if (await store.record(key).exists(database)) {
+      return store.record(key).update(database, val);
+    } else {
+      return store.record(key).put(database, val);
+    }
   }
 
   Future<String> getString(String key) async {
@@ -38,7 +43,7 @@ class PrefsStore {
       if (_value == null) {
         return Future.value("");
       }
-      return Future.value("");
+      return Future.value(_value);
     } catch (e) {
       print(e);
       return Future.value("");
@@ -59,6 +64,7 @@ class PrefsStore {
   }
 
   dispose() {
+    print("DISPOSE");
     return database.close();
   }
 }
