@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
@@ -130,6 +131,13 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
       bip = "84";
     }
 
+    if (Provider
+        .of<AppState>(context)
+        .selectedWallet
+        .doesXPUBExist(xpub)) {
+      _showError("XPUB already exist");
+      return;
+    }
     try {
       setState(() {
         loading = true;
@@ -171,7 +179,7 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
 
   void _showSuccessSnackBar(String msg) {
     final snackBar = SnackBar(
-      content: Text(msg),
+      content: Text(msg, style: TextStyle(color: Colors.white),),
       backgroundColor: Color(0xff5BD38D),
     );
     Scaffold.of(context).showSnackBar(snackBar);
@@ -179,7 +187,7 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
 
   void _showError(String msg) {
     final snackBar = SnackBar(
-      content: Text(msg),
+      content: Text(msg, style: TextStyle(color: Colors.white),),
       backgroundColor: Color(0xffD55968),
     );
     Scaffold.of(context).showSnackBar(snackBar);
