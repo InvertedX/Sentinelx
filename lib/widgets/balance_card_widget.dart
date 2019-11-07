@@ -21,7 +21,7 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
     return Stack(
       children: <Widget>[
         Card(
-          elevation: 3,
+          elevation: 8,
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
@@ -34,11 +34,6 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-//                      Container(
-//                        child: Icon(SentinelxIcons.bitcoin),
-//                        padding: EdgeInsets.all(12),
-//                        decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).accentColor),
-//                      ),
                       Text(
                         "Total",
                         maxLines: 1,

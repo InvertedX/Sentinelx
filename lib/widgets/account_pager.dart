@@ -64,6 +64,7 @@ class _AccountsPagerState extends State<AccountsPager>
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: Card(
+            elevation: 8,
             color: Theme
                 .of(context)
                 .cardColor,
@@ -71,15 +72,15 @@ class _AccountsPagerState extends State<AccountsPager>
               onTap: () => navigate(context),
               child: Center(
                   child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(Icons.add),
-                  Text(
-                    "Track new",
-                    style: Theme.of(context).textTheme.caption,
-                  )
-                ],
-              )),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(Icons.add),
+                      Text(
+                        "Track new",
+                        style: Theme.of(context).textTheme.caption,
+                      )
+                    ],
+                  )),
             ),
           ),
         ),
@@ -110,7 +111,7 @@ class _AccountsPagerState extends State<AccountsPager>
             child: ChangeNotifierProvider.value(
                 value: wallet.xpubs[index - 1],
                 child: Card(
-                  elevation: 3,
+                  elevation: 8,
                   child: CardWidget(),
                 )),
           ),
