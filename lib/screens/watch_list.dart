@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:sentinelx/models/wallet.dart';
+import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/widgets/card_widget.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
@@ -48,7 +50,9 @@ class _WatchListState extends State<WatchList> {
                                 SentinelxIcons.qrcode,
                                 size: 16,
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                showQR(model.xpubs[index], context);
+                              },
                             ),
                             Wrap(
                               children: <Widget>[
@@ -147,6 +151,28 @@ class _WatchListState extends State<WatchList> {
       Provider.of<Wallet>(context).removeTracking(index);
       Navigator.pop(context);
     }
+  }
+
+  void showQR(XPUBModel xpub, BuildContext context) {
+    showModalBottomSheet(context: context, builder: (context) {
+      return Container(
+        height: MediaQuery
+            .of(context)
+            .size
+            .height,
+        child: Card(
+          margin: EdgeInsets.symmetric(vertical: 2),
+          child: Center(
+            child: QrImage(
+              data: xpub.xpub,
+              size: 240.0,
+              version: QrVersions.auto,
+              backgroundColor: Colors.white,
+            ),
+          ),
+        ),
+      );
+    });
   }
 }
 
