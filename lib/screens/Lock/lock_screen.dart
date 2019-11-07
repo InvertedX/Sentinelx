@@ -315,7 +315,6 @@ class _SlideState extends State<Slide> with SingleTickerProviderStateMixin {
             reversing = false;
           });
         }
-        print("status ${status.toString()}");
       })
       ..addListener(() {
         setState(() {});

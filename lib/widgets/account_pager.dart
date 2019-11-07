@@ -159,7 +159,6 @@ class _AccountsPagerState extends State<AccountsPager>
     }));
     if (result != null) {
       AppState().setPageIndex(result + 1);
-      print("setPageIndex");
       try {
         await AppState().refreshTx(result);
       } catch (ex) {

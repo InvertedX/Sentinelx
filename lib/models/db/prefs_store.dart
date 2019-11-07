@@ -64,7 +64,6 @@ class PrefsStore {
   }
 
   dispose() {
-    print("DISPOSE");
     return database.close();
   }
 }

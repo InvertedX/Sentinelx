@@ -18,7 +18,6 @@ class ApiChannel {
   Future<String> getXpubOrAddress(String xpubOrAddress) async {
     try {
       String response = await platform.invokeMethod("getTxData", {'xpubOrAddress': xpubOrAddress});
-      print("res : $response");
       return response;
     } catch (error) {
       throw error;

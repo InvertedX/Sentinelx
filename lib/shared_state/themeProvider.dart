@@ -37,7 +37,6 @@ class ThemeProvider extends ChangeNotifier {
 
   setDark() {
     theme = darkTheme;
-    print("SET DARTK");
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: darkTheme.primaryColorDark,
       systemNavigationBarColor: darkTheme.primaryColorDark,

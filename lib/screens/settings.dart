@@ -174,7 +174,6 @@ class _SettingsState extends State<Settings> {
 
   void init() async {
     bool lockState = await PrefsStore().getBool(PrefsStore.LOCK_STATUS);
-    print("lockEnabled ${lockState}");
     this.setState(() {
       lockEnabled = lockState;
     });
@@ -238,7 +237,6 @@ class _SettingsState extends State<Settings> {
       try {
         await SentinelxDB.instance.setEncryption(null);
       } catch (e) {
-        print("Error $e");
         debugPrint(e);
       }
       Navigator.of(context)
