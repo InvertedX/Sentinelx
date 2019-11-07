@@ -56,7 +56,7 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
           debugShowCheckedModeBanner: false,
           routes: <String, WidgetBuilder>{
             '/': (context) => Lock(),
-            '/home': (context) => Home(),
+            '/home': (context) => SentinelX(),
             '/settings': (context) => Settings(),
           },
         );
@@ -208,3 +208,20 @@ class _LockState extends State<Lock> {
     SentinelState().dispose();
   }
 }
+
+
+class SentinelX extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(providers: [
+      Provider<AppState>.value(value: AppState()),
+      ChangeNotifierProvider<NetworkState>.value(value: NetworkState()),
+      ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
+      ChangeNotifierProvider<Wallet>.value(value: AppState().selectedWallet),
+      ChangeNotifierProvider<TxState>.value(
+          value: AppState().selectedWallet.txState),
+      ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),
+    ], child: Home());
+  }
+}
+
