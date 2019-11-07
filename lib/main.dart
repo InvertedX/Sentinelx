@@ -17,9 +17,6 @@ import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/networkState.dart';
 import 'package:sentinelx/shared_state/sentinelState.dart';
 import 'package:sentinelx/shared_state/txState.dart';
-import 'package:sentinelx/utils/utils.dart';
-import 'package:sentinelx/widgets/breath_widget.dart';
-import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 Future main() async {
   Provider.debugCheckInvalidValueType = null;
@@ -99,7 +96,6 @@ setUpTheme() async {
   if (theme
       .trim()
       .isNotEmpty) {
-    print("theme $theme");
     if (theme == "light") {
       AppState().theme.setLight();
     } else {
@@ -127,7 +123,6 @@ class _LockState extends State<Lock> {
     super.initState();
     NetworkState().addListener(() {
       if (NetworkState().torStatus == TorStatus.CONNECTED) {
-//
         Future.delayed(Duration(milliseconds: 500), init);
       }
     });
@@ -139,6 +134,14 @@ class _LockState extends State<Lock> {
         NetworkChannel().startTor();
       } else {
         init();
+      }
+    });
+    Future.delayed(Duration.zero, () {
+      if (ModalRoute
+          .of(context)
+          .settings
+          .arguments == "LOCK") {
+        this.sessionStates = SessionStates.LOCK;
       }
     });
   }
@@ -203,47 +206,5 @@ class _LockState extends State<Lock> {
     super.dispose();
     if (sub != null) sub.cancel();
     SentinelState().dispose();
-  }
-
-  getWidget() {
-    switch (sessionStates) {
-      case SessionStates.IDLE:
-        {
-          return Scaffold(
-            backgroundColor: Theme
-                .of(context)
-                .backgroundColor,
-            body: Container(
-              child: Center(
-                child: Text("Sentinel x"),
-              ),
-            ),
-          );
-        }
-      case SessionStates.LOCK:
-        {
-          return Container();
-        }
-      case SessionStates.ACTIVE:
-        {
-          return SentinelX();
-        }
-    }
-  }
-}
-
-
-class SentinelX extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(providers: [
-      Provider<AppState>.value(value: AppState()),
-      ChangeNotifierProvider<NetworkState>.value(value: NetworkState()),
-      ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
-      ChangeNotifierProvider<Wallet>.value(value: AppState().selectedWallet),
-      ChangeNotifierProvider<TxState>.value(
-          value: AppState().selectedWallet.txState),
-      ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),
-    ], child: Home());
   }
 }

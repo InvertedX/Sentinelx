@@ -46,7 +46,6 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   setLight() {
-    print("SET LIG");
 
     theme = lightTheme;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(

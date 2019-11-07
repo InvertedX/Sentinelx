@@ -73,7 +73,7 @@ class _SettingsState extends State<Settings> {
                     )
                   : SizedBox.shrink(),
               title: Text(
-                "Erase All trackings",
+                "Clear all data",
                 style: Theme.of(context).textTheme.subtitle,
               ),
               subtitle: Text("Clear all data from the device"),
@@ -242,8 +242,9 @@ class _SettingsState extends State<Settings> {
         debugPrint(e);
       }
       Navigator.of(context)
-          .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-      SentinelState().eventsStream.sink.add(SessionStates.IDLE);
+          .pushNamedAndRemoveUntil(
+          '/', (Route<dynamic> route) => false, arguments: "LOCK");
+      SentinelState().eventsStream.sink.add(SessionStates.LOCK);
     }
   }
 
