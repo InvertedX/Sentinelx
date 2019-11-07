@@ -26,7 +26,6 @@ class Wallet extends ChangeNotifier {
   static final _walletStore = intMapStoreFactory.store(STORE_NAME);
 
   Future initTxDb(int id) async {
-    print("init txDB");
     if(this.getTxDb().contains("null")){
       return;
     }
@@ -84,7 +83,6 @@ class Wallet extends ChangeNotifier {
     if (this.legacyAddresses != null) {
       data['legacyAddresses'] = this.legacyAddresses.toList();
     }
-    print("data $data");
     return data;
   }
 
@@ -156,6 +154,15 @@ class Wallet extends ChangeNotifier {
     this.updateTotalBalance();
     this.saveState();
     this.notifyListeners();
+  }
+
+  bool doesXPUBExist(String xpub) {
+    for (var i = 0; i < xpubs.length; i++) {
+      if (xpubs[i].xpub == xpub) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }
