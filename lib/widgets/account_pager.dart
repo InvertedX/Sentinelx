@@ -102,7 +102,7 @@ class _AccountsPagerState extends State<AccountsPager>
                     child: WatchList(),
                     value: wallet,
                   ),
-              settings: RouteSettings(arguments: index - 1)));
+          ));
         },
         child: Container(
           height: 200,

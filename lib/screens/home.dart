@@ -4,11 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
-import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
 import 'package:sentinelx/screens/settings.dart';
 import 'package:sentinelx/screens/txDetails.dart';
+import 'package:sentinelx/screens/watch_list.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/networkState.dart';
@@ -83,6 +83,18 @@ class _HomeState extends State<Home> {
                   showTorBottomSheet(context);
                 },
               );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.remove_red_eye),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) =>
+                    ChangeNotifierProvider.value(
+                      child: WatchList(),
+                      value: AppState().selectedWallet,
+                    ),
+              ));
             },
           ),
           IconButton(
