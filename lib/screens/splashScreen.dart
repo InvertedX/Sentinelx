@@ -18,6 +18,9 @@ class SplashScreen extends StatelessWidget {
           .of(context)
           .backgroundColor,
       appBar: AppBar(
+        backgroundColor: Theme
+            .of(context)
+            .backgroundColor,
         elevation: 0,
       ),
       body: Column(
@@ -29,8 +32,25 @@ class SplashScreen extends StatelessWidget {
             padding: EdgeInsets.all(12),
           ),
           Center(
-            child: Container(
-              child: Text("Sentinel x"),
+            child: Column(
+              children: <Widget>[
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey[800]
+                  ),
+                  child: Icon(
+                    SentinelxIcons.sentinel, size: 68, color: Colors.white,),
+                ),
+                Padding(padding: EdgeInsets.all(12),),
+                Center(
+                  child: Container(
+                    child: Text("Sentinel x"),
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
