@@ -7,24 +7,24 @@ import 'package:sentinelx/shared_state/networkState.dart';
 import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
-showTorBottomSheet(BuildContext context) {
+showTorPanel(BuildContext context) {
   showModalBottomSheet(
       context: context,
       builder: (BuildContext bc) {
-        return TorBottomSheet(context);
+        return TorControlPanel(context);
       });
 }
 
-class TorBottomSheet extends StatefulWidget {
+class TorControlPanel extends StatefulWidget {
   final BuildContext _scaffoldContext;
 
-  TorBottomSheet(this._scaffoldContext);
+  TorControlPanel(this._scaffoldContext);
 
   @override
-  _TorBottomSheetState createState() => _TorBottomSheetState();
+  _TorControlPanelState createState() => _TorControlPanelState();
 }
 
-class _TorBottomSheetState extends State<TorBottomSheet> {
+class _TorControlPanelState extends State<TorControlPanel> {
   bool torOnStartup = false;
 
   @override
@@ -69,11 +69,7 @@ class _TorBottomSheetState extends State<TorBottomSheet> {
                                 model.torStatus == TorStatus.CONNECTED;
                             return FlatButton(
                               onPressed: () {
-                                if (isRunning) {
-                                  NetworkChannel().stopTor();
-                                } else {
-                                  NetworkChannel().startTor();
-                                }
+                                startOrStopTor(isRunning);
                               },
                               child: Text(isRunning ? "Stop" : "Start"),
                             );
@@ -128,19 +124,6 @@ class _TorBottomSheetState extends State<TorBottomSheet> {
                     ),
                     Divider(),
                     ListTile(
-                        title: Text("Start tor on startup"),
-                        trailing: Switch(
-                          onChanged: (v) {
-                            PrefsStore().put(PrefsStore.TOR_STATUS, v);
-                            this.setState(() {
-                              torOnStartup = v;
-                            });
-                          },
-                          value: torOnStartup,
-                        )
-                    ),
-                    Divider(),
-                    ListTile(
                       title: Text("View tor logs"),
                       onTap: showLogs,
                     ),
@@ -154,6 +137,16 @@ class _TorBottomSheetState extends State<TorBottomSheet> {
     );
   }
 
+  void startOrStopTor(bool isRunning) async {
+    if (isRunning) {
+      NetworkChannel().stopTor();
+      await PrefsStore().put(PrefsStore.TOR_STATUS, false);
+    } else {
+      NetworkChannel().startTor();
+      await PrefsStore().put(PrefsStore.TOR_STATUS, true);
+    }
+  }
+
   @override
   void initState() {
     init();
@@ -161,10 +154,7 @@ class _TorBottomSheetState extends State<TorBottomSheet> {
   }
 
   void init() async {
-    bool torPref = await PrefsStore().getBool(PrefsStore.TOR_STATUS);
-    setState(() {
-      torOnStartup = torPref;
-    });
+
   }
 
   void showLogs() {

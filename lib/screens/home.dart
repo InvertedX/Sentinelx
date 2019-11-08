@@ -17,7 +17,7 @@ import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
-import 'package:sentinelx/widgets/tor_bottomsheet.dart';
+import 'package:sentinelx/widgets/tor_control_panel.dart';
 import 'package:sentinelx/widgets/tx_widget.dart';
 
 import 'Track/track_screen.dart';
@@ -80,7 +80,7 @@ class _HomeState extends State<Home> {
                   color: getTorIconColor(model.torStatus),
                 ),
                 onPressed: () {
-                  showTorBottomSheet(context);
+                  showTorPanel(context);
                 },
               );
             },

@@ -9,7 +9,7 @@ import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/theme_chooser.dart';
-import 'package:sentinelx/widgets/tor_bottomsheet.dart';
+import 'package:sentinelx/widgets/tor_control_panel.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -145,7 +145,7 @@ class _SettingsState extends State<Settings> {
               ),
               subtitle: Text("Manage Tor service"),
               onTap: () {
-                showTorBottomSheet(context);
+                showTorPanel(context);
               },
             ),
             Opacity(
