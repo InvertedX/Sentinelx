@@ -121,7 +121,9 @@ class _TorBottomSheetState extends State<TorBottomSheet> {
                       title: Text("Renew Identity"),
                       trailing: FlatButton(
                         child: Text("renew"),
-                        onPressed: () {},
+                        onPressed: () {
+                          NetworkChannel().renewTor();
+                        },
                       ),
                     ),
                     Divider(),

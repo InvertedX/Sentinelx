@@ -89,4 +89,8 @@ class NetworkChannel {
   void checkStatus() {
     platform.invokeMethod("torStatus").then((va) => {_onEvents(va)});
   }
+
+  Future<dynamic> renewTor() {
+    return platform.invokeMethod("newNym");
+  }
 }
