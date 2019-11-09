@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:sentinelx/channels/NetworkChannel.dart';
+import 'package:sentinelx/models/db/prefs_store.dart';
 
 Future<Map<String, dynamic>> parseJsonResponse(String response) async {
   Map<String, dynamic> json = jsonDecode(response);
@@ -40,4 +41,40 @@ String getTorStatusInText(TorStatus torStatus) {
       return "Connecting...";
   }
   return "";
+}
+
+Future<bool> checkNetworkStatusBeforeApiCall(
+    Function(SnackBar) callback) async {
+  bool isConnected = await NetworkChannel().getConnectivityStatus() ==
+      ConnectivityStatus.CONNECTED;
+  bool torStatus = NetworkChannel().status == TorStatus.CONNECTED;
+  bool requireTor = await PrefsStore().getBool(PrefsStore.TOR_STATUS);
+
+  if (!isConnected) {
+    final snackBar = SnackBar(
+      content: Text(
+        "Network is not availble",
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: Color(0xffffc107),
+      duration: Duration(seconds: 2),
+    );
+    callback(snackBar);
+    return false;
+  }
+
+  // User is enabled tor but tor is either disconnected or connecting
+  if (requireTor && !torStatus) {
+    final snackBar = SnackBar(
+      content: Text(
+        "Tor service is not connected. please restart Tor or try again",
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: Color(0xffffc107),
+      duration: Duration(seconds: 2),
+    );
+    callback(snackBar);
+    return false;
+  }
+  return true;
 }

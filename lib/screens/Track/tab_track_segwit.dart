@@ -7,6 +7,7 @@ import 'package:sentinelx/channels/ApiChannel.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
@@ -138,43 +139,47 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
       _showError("XPUB already exist");
       return;
     }
-    try {
-      setState(() {
-        loading = true;
-      });
-      bool success = await ApiChannel().addHDAccount(xpub, "bip$bip");
-      if (success) {
-        XPUBModel xpubModel =
-        XPUBModel(xpub: xpub, bip: "BIP$bip", label: label);
-        Wallet wallet = AppState().selectedWallet;
-        wallet.xpubs.add(xpubModel);
-        await wallet.saveState();
+
+    bool networkOkay = await checkNetworkStatusBeforeApiCall(
+            (snackbar) => {Scaffold.of(context).showSnackBar(snackbar)});
+    if (networkOkay)
+      try {
+        setState(() {
+          loading = true;
+        });
+        bool success = await ApiChannel().addHDAccount(xpub, "bip$bip");
+        if (success) {
+          XPUBModel xpubModel =
+          XPUBModel(xpub: xpub, bip: "BIP$bip", label: label);
+          Wallet wallet = AppState().selectedWallet;
+          wallet.xpubs.add(xpubModel);
+          await wallet.saveState();
+          setState(() {
+            loading = false;
+          });
+          _showSuccessSnackBar("wallet added successfully");
+          Timer(Duration(milliseconds: 700), () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop<int>(context, wallet.xpubs.indexOf(xpubModel));
+            }
+          });
+        }
+      } catch (ex) {
         setState(() {
           loading = false;
         });
-        _showSuccessSnackBar("wallet added successfully");
-        Timer(Duration(milliseconds: 700), () {
-          if (Navigator.canPop(context)) {
-            Navigator.pop<int>(context, wallet.xpubs.indexOf(xpubModel));
-          }
-        });
+        if (ex is PlatformException) {
+          final snackBar = SnackBar(
+            content: Text("Error : ${ex.details as String}"),
+          );
+          Scaffold.of(context).showSnackBar(snackBar);
+        } else {
+          final snackBar = SnackBar(
+            content: Text("Error"),
+          );
+          Scaffold.of(context).showSnackBar(snackBar);
+        }
       }
-    } catch (ex) {
-      setState(() {
-        loading = false;
-      });
-      if (ex is PlatformException) {
-        final snackBar = SnackBar(
-          content: Text("Error : ${ex.details as String}"),
-        );
-        Scaffold.of(context).showSnackBar(snackBar);
-      } else {
-        final snackBar = SnackBar(
-          content: Text("Error"),
-        );
-        Scaffold.of(context).showSnackBar(snackBar);
-      }
-    }
   }
 
   void _showSuccessSnackBar(String msg) {

@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:sentinelx/channels/NetworkChannel.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
@@ -188,7 +190,8 @@ class _HomeState extends State<Home> {
           },
         ),
       ),
-      floatingActionButton: AppState().selectedWallet.xpubs.length != 0 ?  FloatingActionButton(
+      floatingActionButton: AppState().selectedWallet.xpubs.length != 0
+          ? FloatingActionButton(
         child: Icon(
           SentinelxIcons.qrcode,
           color: Colors.white,
@@ -201,12 +204,13 @@ class _HomeState extends State<Home> {
           if (AppState().selectedWallet.xpubs.length == 0) {
             return;
           }
-          Navigator.of(context).push(
-              new MaterialPageRoute<Null>(builder: (BuildContext context) {
+          Navigator.of(context).push(new MaterialPageRoute<Null>(
+              builder: (BuildContext context) {
                 return Receive();
               }));
         },
-      ) : SizedBox.shrink(),
+      )
+          : SizedBox.shrink(),
     );
   }
 
@@ -238,18 +242,26 @@ class _HomeState extends State<Home> {
     if (AppState().selectedWallet.xpubs.length == 0) {
       return;
     }
-    if (AppState().pageIndex == 0) {
-      for (int i = 0; i < AppState().selectedWallet.xpubs.length; i++) {
-        try {
-          await AppState().refreshTx(i);
-        } catch (e) {
-          print(e);
+
+    bool networkOkay = await checkNetworkStatusBeforeApiCall(
+            (snackBar) =>
+        {
+          _ScaffoldKey.currentState.showSnackBar(snackBar)
+        });
+    if (networkOkay) {
+      if (AppState().pageIndex == 0) {
+        for (int i = 0; i < AppState().selectedWallet.xpubs.length; i++) {
+          try {
+            await AppState().refreshTx(i);
+          } catch (e) {
+            print(e);
+          }
         }
-      }
 //      await refreshUnspent();
-      return;
+        return;
+      }
+      await AppState().refreshTx(AppState().pageIndex - 1);
     }
-    await AppState().refreshTx(AppState().pageIndex - 1);
   }
 
   Future<bool> refreshUnspent() async {
@@ -337,7 +349,10 @@ class _HomeState extends State<Home> {
             new FlatButton(
               child: new Text("Yes"),
               onPressed: () {
-                Navigator.of(context).pop(true);
+                if (NetworkState().torStatus == TorStatus.CONNECTED) {
+                  NetworkChannel().stopTor();
+                }
+                SystemNavigator.pop();
                 return Future.value(true);
               },
             ),

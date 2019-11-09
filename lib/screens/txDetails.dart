@@ -6,6 +6,7 @@ import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/txDetailsResponse.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/utils/format_util.dart';
+import 'package:sentinelx/utils/utils.dart';
 
 class TxDetails extends StatefulWidget {
   Tx tx;
@@ -20,6 +21,7 @@ class TxDetails extends StatefulWidget {
 class _TxDetailsState extends State<TxDetails> {
   String fees = "";
   String feeRate = "";
+  String blockHeight = "";
   bool isLoading = true;
 
   @override
@@ -53,6 +55,8 @@ class _TxDetailsState extends State<TxDetails> {
         _buildRow("Fees", fees),
         Divider(),
         _buildRow("Feerate", feeRate),
+        Divider(),
+        _buildRow("Block Height", blockHeight),
         Divider(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -128,22 +132,32 @@ class _TxDetailsState extends State<TxDetails> {
   }
 
   void loadTx() async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      TxDetailsResponse txDetailsResponse =
-      await ApiChannel().getTx(widget.tx.hash);
-      setState(() {
-        isLoading = false;
-        feeRate = "${txDetailsResponse.feerate} sats";
-        fees = "${txDetailsResponse.fees} sats";
-      });
-    } catch (exception) {
-      setState(() {
-        isLoading = false;
-      });
-    }
+    print("txDetailsResponse  ");
+
+    bool networkOkay = await checkNetworkStatusBeforeApiCall(
+            (snackbar) =>
+        {
+        });
+    if (networkOkay)
+      try {
+        setState(() {
+          isLoading = true;
+        });
+        TxDetailsResponse txDetailsResponse =
+        await ApiChannel().getTx(widget.tx.hash);
+        print("txDetailsResponse ${txDetailsResponse.toJson()}");
+
+        setState(() {
+          isLoading = false;
+//          feeRate = "${txDetailsResponse.feerate} sats";
+//          fees = "${txDetailsResponse.fees} sats";
+          blockHeight = "${txDetailsResponse.block.height}";
+        });
+      } catch (exception) {
+        setState(() {
+          isLoading = false;
+        });
+      }
   }
 
   _copy(String string) {

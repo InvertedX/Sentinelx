@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sentinelx/channels/NetworkChannel.dart';
 import 'package:sentinelx/shared_state/networkState.dart';
 import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/breath_widget.dart';
@@ -81,7 +82,16 @@ class SplashScreen extends StatelessWidget {
                           .textTheme
                           .subhead
                           .copyWith(fontSize: 12),
-                    )
+                    ),
+                    Padding(padding: EdgeInsets.all(12),),
+                    NetworkState().torStatus == TorStatus.IDLE ||
+                        NetworkState().torStatus == TorStatus.IDLE
+                        ? FlatButton(
+                      child: Text('restart tor'),
+                      onPressed: () {
+                        NetworkChannel().startTor();
+                      },
+                    ) : SizedBox.shrink()
                   ],
                 ),
               );
