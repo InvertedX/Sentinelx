@@ -29,6 +29,7 @@ class AppState extends ChangeNotifier {
   bool isTestnet = false;
   ThemeProvider theme = ThemeProvider();
   int pageIndex = 0;
+  bool offline = false;
   LoaderState loaderState = LoaderState();
 
   selectWallet(Wallet wallet) {
