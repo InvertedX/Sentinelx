@@ -2,7 +2,10 @@ package com.invertedx.sentinelx.channel
 
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.wifi.WifiManager
 import com.invertedx.sentinelx.MainActivity
+import com.invertedx.sentinelx.utils.Connectivity
 import com.invertedx.sentinelx.tor.TorManager
 import com.invertedx.sentinelx.tor.TorService
 import io.flutter.plugin.common.EventChannel
@@ -19,7 +22,10 @@ class NetworkChannel(private val applicationContext: Context, private val activi
 
     private val TOR_STREAM = "TOR_EVENT_STREAM"
     private val TOR_LOG_STREAM = "TOR_LOG_STREAM"
-    private val compositeDisposable: CompositeDisposable = CompositeDisposable();
+    private val CONNECTIVITY_CHANNEL = "CONNECTIVITY_CHANNEL"
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private val connectivity: Connectivity
+    private val eventChannel: EventChannel
 
     init {
         /**
@@ -48,6 +54,12 @@ class NetworkChannel(private val applicationContext: Context, private val activi
 
                 })
 
+        eventChannel = EventChannel(activity.flutterView, CONNECTIVITY_CHANNEL)
+
+        val connectivityManager = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val wifiManager = applicationContext.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        connectivity = Connectivity(connectivityManager, wifiManager)
+
     }
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
@@ -73,6 +85,10 @@ class NetworkChannel(private val applicationContext: Context, private val activi
                 val startIntent = Intent(applicationContext, TorService::class.java)
                 startIntent.action = TorService.RENEW_IDENTITY
                 applicationContext.startService(startIntent)
+            }
+
+            "connectivityStatus" -> {
+                result.success(connectivity.networkType)
             }
 
             "torStatus" -> {

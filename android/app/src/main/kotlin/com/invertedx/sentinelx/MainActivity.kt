@@ -37,7 +37,6 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterView, "network.channel").setMethodCallHandler(networkChannel)
         QRCameraPlugin.registerWith(this.registrarFor("plugins.sentinelx.qr_camera"), this)
 
-
     }
 
 

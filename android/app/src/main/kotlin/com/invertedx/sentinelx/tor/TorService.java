@@ -72,7 +72,7 @@ public class TorService extends Service {
     }
 
 
-    private NotificationCompat.Action getRestartAction() {
+    private NotificationCompat.Action getRenewAction() {
 
         Intent broadcastIntent = new Intent(this, TorBroadCastReceiver.class);
         broadcastIntent.setAction(RENEW_IDENTITY);
@@ -245,7 +245,7 @@ public class TorService extends Service {
             case CONNECTED: {
                 notification.setColorized(true);
                 notification.addAction(getStopAction("Stop"));
-                notification.addAction(getRestartAction());
+                notification.addAction(getRenewAction());
 //                notification.setColor(ContextCompat.getColor(this, R.color.green_ui_2));
                 break;
             }
