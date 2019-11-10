@@ -4,7 +4,7 @@
 </div>
 
 <h2 align="center">[BETA] Sentinel x</h2>
-<p align="center">bitcoin watch only wallet based [samourai sentinel](https://github.com/Samourai-Wallet/sentinel-android)
+<p align="center">bitcoin watch only wallet based <a href="https://github.com/Samourai-Wallet/sentinel-android"> samourai sentinel</a>
  </p>
 
 ## Sentinel x Features
