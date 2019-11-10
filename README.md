@@ -11,6 +11,7 @@ bitcoin watch only wallet based [samourai sentinel](https://github.com/Samourai-
 
 * Sleek and faster UI
 * Tor Support
+* Offline Mode
 * Theme support (light/dark and accent)
 * db level encryption
 * [WIP] Dojo node support
