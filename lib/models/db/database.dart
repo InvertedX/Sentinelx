@@ -2,6 +2,7 @@ import 'package:sentinelx/models/db/sentinelxDB.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 
+/// Database init function that creates necessary db files
 initDatabase(String pass) async {
   await SentinelxDB.instance.init(pass);
   final wallets = await Wallet.getAllWallets();
@@ -27,8 +28,8 @@ initDatabase(String pass) async {
 }
 
 initAppStateWithStub() async {
-//  await SentinelxDB.instance.init(pass);
-//  final wallets = await Wallet.getAllWallets();
+  ///  await SentinelxDB.instance.init(pass);
+  /// final wallets = await Wallet.getAllWallets();
   AppState appState = AppState();
 
   //Default account

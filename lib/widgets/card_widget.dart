@@ -4,7 +4,6 @@ import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/utils/format_util.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
-import 'package:sentinelx/widgets/wave_clipper.dart';
 
 class CardWidget extends StatefulWidget {
   @override
@@ -72,7 +71,8 @@ class _CardWidgetState extends State<CardWidget> {
                       maxLines: 1,
                       textAlign: TextAlign.start,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                      style:
+                      TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                     ),
                   )),
               Expanded(
@@ -84,7 +84,7 @@ class _CardWidgetState extends State<CardWidget> {
                         width: 190,
                         alignment: Alignment.bottomLeft,
                         child: Text(
-                          "$typeText: ${xpubModel.xpub.substring(0,9)}",
+                          "$typeText: ${xpubModel.xpub.substring(0, 9)}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.caption,

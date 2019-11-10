@@ -1,11 +1,11 @@
 
-
-# [BETA] Sentinel x
-bitcoin watch only wallet based [samourai sentinel](https://github.com/Samourai-Wallet/sentinel-android)
-
 <div align="center">
   <img src="./art/ic_launcher.png" width=200> 
 </div>
+
+<h2 align="center">[BETA] Sentinel x</h2>
+<p align="center">bitcoin watch only wallet based [samourai sentinel](https://github.com/Samourai-Wallet/sentinel-android)
+ </p>
 
 ## Sentinel x Features
 
@@ -50,8 +50,8 @@ bitcoin watch only wallet based [samourai sentinel](https://github.com/Samourai-
   </tr>
  </table>
  </div>
- 
- 
+
+
 ## Sentinel features
 
 ### BIP44:
@@ -69,10 +69,12 @@ Sentinel P2WPKH based on [original BIP](https://github.com/bitcoin/bips/blob/mas
 ### BIP173 (Segwit):
 Sentinel implementation based on [original BIP](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki) by Pieter Wuille and Greg Maxwell.
 
-### Build
+## Build
 
 - Install [Flutter](https://flutter.dev/)  and its dependencies.
 - Run the project by executing ``Flutter run``
 
-[Note]:  Sentinel x does not support ios for now (since this app is completely based on sentinel android core libs are based on java,if someone in the community can port those libs to ios it will be easy to integrate)
+------
+
+[Note]:  Sentinel x does not support ios (for now)(since this app is completely based on sentinel android core libs are based on java, in order to support IOS we need to port/implement native calls in ios )
 
