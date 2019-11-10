@@ -263,10 +263,10 @@ class _SettingsState extends State<Settings> {
     } catch (e) {
       print("Error $e");
     }
-    Navigator.of(context)
-        .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-    if (!SentinelState().eventsStream.isClosed)
-      SentinelState().eventsStream.sink.add(SessionStates.LOCK);
+//    Navigator.of(context)
+//        .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+//    if (!SentinelState().eventsStream.isClosed)
+//      SentinelState().eventsStream.sink.add(SessionStates.LOCK);
   }
 
   void showThemeChooser(BuildContext context) {

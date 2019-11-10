@@ -5,6 +5,7 @@ import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
+import 'package:sentinelx/models/db/database.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/shared_state/appState.dart';
@@ -51,7 +52,6 @@ class SentinelxDB {
       await file.delete();
     }
 
-    //using sembast encryption codec for creating
     var database;
 
     if (pass == null) {
@@ -79,7 +79,10 @@ class SentinelxDB {
 
     //save lock state to prefs
     await PrefsStore().put(PrefsStore.LOCK_STATUS, pass != null);
+    //Delete backup file
     await File(dbPath).delete();
+    //since the databased is now encrypted , db needs to reinitialized with provided password
+    await initDatabase(pass);
   }
 
   closeConnection() async {
