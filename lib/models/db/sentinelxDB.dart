@@ -88,4 +88,11 @@ class SentinelxDB {
   closeConnection() async {
     await this.database.close();
   }
+
+  clear() async {
+    final appDocumentDir = await SystemChannel().getDataDir();
+    final mainDb = join(appDocumentDir.path, 'sentinalx.semdb');
+    await File(mainDb).delete();
+    init(null);
+  }
 }

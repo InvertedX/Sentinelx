@@ -135,12 +135,13 @@ class Wallet extends ChangeNotifier {
     Wallet.update(this);
   }
 
-  Future clear() {
+  Future clear() async {
     this.xpubs = [];
     this.balanceModel = new BalanceModel();
     this.txDB.clear();
     this.txState.clear();
     notifyListeners();
+    await SentinelxDB.instance.clear();
     return this.saveState();
   }
 

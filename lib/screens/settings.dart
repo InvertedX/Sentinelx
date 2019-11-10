@@ -202,7 +202,6 @@ class _SettingsState extends State<Settings> {
       await AppState().clearWalletData();
       var snackbar = new SnackBar(
         content: new Text("Wallet erased successfully"),
-        backgroundColor: Theme.of(context).accentColor,
         duration: Duration(milliseconds: 800),
         behavior: SnackBarBehavior.fixed,
       );

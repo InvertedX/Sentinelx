@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
@@ -65,5 +67,13 @@ class PrefsStore {
 
   dispose() {
     return database.close();
+  }
+
+  clear() async {
+    database.close();
+    final appDocumentDir = await SystemChannel().getDataDir();
+    final dbPath = join(appDocumentDir.path, 'prefs.semdb');
+    await File(dbPath).delete();
+    init();
   }
 }

@@ -17,13 +17,17 @@ class TxDB {
   static const String STORE_NAME = 'txs';
   static const String UNSPENT_STORE = 'unspent';
 
-  static Future<Database> get _db async => await TxDB.instance(AppState().selectedWallet.getTxDb()).database;
+  static Future<Database> get _db async =>
+      await TxDB
+          .instance(AppState().selectedWallet.getTxDb())
+          .database;
   static final txStore = stringMapStoreFactory.store(STORE_NAME);
   static final unspentStore = stringMapStoreFactory.store(UNSPENT_STORE);
 
   TxDB._privateConstructor();
 
   String dbPath;
+
   static TxDB instance(param) {
     if (param != db) {
       db = param;
@@ -44,7 +48,8 @@ class TxDB {
     return _dbOpenCompleter.future;
   }
 
-  static Future insertOrUpdate(List<dynamic> items, Address addressObj, bool isXpub) async {
+  static Future insertOrUpdate(List<dynamic> items, Address addressObj,
+      bool isXpub) async {
     var db = await _db;
     StoreRef txStore = stringMapStoreFactory.store(addressObj.address);
     await txStore.delete(db);
@@ -84,7 +89,8 @@ class TxDB {
       recordSnapshots.forEach((record) {
         final tx = Tx.fromJson(record.value);
         tx.key = record.key;
-        var txExist = txes.firstWhere((item) => item.hash == tx.hash, orElse: () => null);
+        var txExist =
+        txes.firstWhere((item) => item.hash == tx.hash, orElse: () => null);
         if (txExist == null) {
           txes.add(tx);
         }
@@ -103,6 +109,6 @@ class TxDB {
   Future clear() async {
     final appDocumentDir = await SystemChannel().getDataDir();
     final dbPath = join(appDocumentDir.path, TxDB.db);
-    File(dbPath).writeAsStringSync("");
+    await File(dbPath).writeAsString("");
   }
 }

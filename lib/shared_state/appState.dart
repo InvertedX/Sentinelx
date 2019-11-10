@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
+import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/txDB.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/unspent.dart';
@@ -124,6 +125,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future clearWalletData() async {
+    await PrefsStore().clear();
     await selectedWallet.clear();
   }
 

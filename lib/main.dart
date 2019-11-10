@@ -187,6 +187,7 @@ class _LockState extends State<Lock> {
   }
 
   void init() async {
+
     NetworkState().addListener(() {
       if (NetworkState().torStatus == TorStatus.CONNECTED) {
         Future.delayed(Duration(milliseconds: 500), initDb);
@@ -217,6 +218,7 @@ class _LockState extends State<Lock> {
       await Future.delayed(Duration(seconds: 2));
       initDb();
     }
+
     Future.delayed(Duration.zero, () {
       if (ModalRoute
           .of(context)
