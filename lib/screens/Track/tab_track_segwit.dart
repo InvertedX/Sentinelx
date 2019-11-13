@@ -14,8 +14,7 @@ import 'package:sentinelx/widgets/sentinelx_icons.dart';
 class TabTrackSegwit extends StatefulWidget {
   final GlobalKey<PushUpCameraWrapperState> cameraKey;
 
-  TabTrackSegwit(Key key, this.cameraKey)
-      : super(key: key);
+  TabTrackSegwit(Key key, this.cameraKey) : super(key: key);
 
   @override
   TabTrackSegwitState createState() => TabTrackSegwitState();
@@ -46,20 +45,30 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
         child: Column(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-              child: Row(
+              margin: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+              child: Column(
                 children: <Widget>[
-                  Icon(
-                    SentinelxIcons.segwit,
-                    size: 24,
-                    color: Colors.grey[400],
+                  Align(
+                    child: Icon(
+                      SentinelxIcons.segwit,
+                      size: 24,
+                      color: Colors.grey[400],
+                    ),
+                    alignment: Alignment.topLeft,
                   ),
+                  Padding(padding: EdgeInsets.all(6),),
                   Container(
-                      margin: EdgeInsets.only(left: 16),
+                      margin: EdgeInsets.only(left: 4),
                       child: Text(
                         "bitcoin wallet via segwit YPUB/ZPUB (BIP49/84)",
-                        style: TextStyle(color: Colors.grey[400]),
-                      ))
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .subtitle
+                            .copyWith(color: Colors.grey[400]),
+                      )),
                 ],
               ),
             ),
@@ -83,15 +92,17 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
                     ),
                     maxLines: 3,
                   ),
-
                 ),
                 Align(
                   alignment: Alignment.topRight,
                   child: IconButton(
-                      icon: Icon(SentinelxIcons.qr_scan, size: 22,),
+                      icon: Icon(
+                        SentinelxIcons.qr_scan,
+                        size: 22,
+                      ),
                       onPressed: () async {
-                        await SystemChannels.textInput.invokeMethod(
-                            'TextInput.hide');
+                        await SystemChannels.textInput
+                            .invokeMethod('TextInput.hide');
                         widget.cameraKey.currentState.start();
                       }),
                 )
@@ -184,7 +195,10 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
 
   void _showSuccessSnackBar(String msg) {
     final snackBar = SnackBar(
-      content: Text(msg, style: TextStyle(color: Colors.white),),
+      content: Text(
+        msg,
+        style: TextStyle(color: Colors.white),
+      ),
       backgroundColor: Color(0xff5BD38D),
     );
     Scaffold.of(context).showSnackBar(snackBar);
@@ -192,7 +206,10 @@ class TabTrackSegwitState extends State<TabTrackSegwit> {
 
   void _showError(String msg) {
     final snackBar = SnackBar(
-      content: Text(msg, style: TextStyle(color: Colors.white),),
+      content: Text(
+        msg,
+        style: TextStyle(color: Colors.white),
+      ),
       backgroundColor: Color(0xffD55968),
     );
     Scaffold.of(context).showSnackBar(snackBar);

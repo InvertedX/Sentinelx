@@ -137,6 +137,13 @@ class _QRWidgetState extends State<QRWidget> {
 
   @override
   Widget build(BuildContext context) {
+    double qrSize = MediaQuery
+        .of(context)
+        .size
+        .height / 4.5 < 120 ? 120 : MediaQuery
+        .of(context)
+        .size
+        .height / 4.5;
     return Container(
       height: double.infinity,
       child: Column(
@@ -145,27 +152,24 @@ class _QRWidgetState extends State<QRWidget> {
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Container(
-              margin: EdgeInsets.only(top: 16),
-              height: 240,
-              width: 240,
-              child: RepaintBoundary(
-                key: repaintKey,
-                child: QrImage(
-                  data: _qrData,
-                  size: 240.0,
-                  version: QrVersions.auto,
-                  backgroundColor: Colors.white,
-                ),
+            margin: EdgeInsets.only(top: 16),
+            child: RepaintBoundary(
+              key: repaintKey,
+              child: QrImage(
+                data: _qrData,
+                size: qrSize,
+                version: QrVersions.auto,
+                backgroundColor: Colors.white,
               ),
             ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Column(
               children: <Widget>[
                 InkWell(
                   onTap: () {
-                    Clipboard.setData(
-                        ClipboardData(text: _address));
+                    Clipboard.setData(ClipboardData(text: _address));
                     Scaffold.of(context).showSnackBar(SnackBar(
                         content: Text(
                           "Address copied to clipboard",
@@ -230,8 +234,8 @@ class _QRWidgetState extends State<QRWidget> {
                                 child: Text("Request amount"),
                               ),
                               Padding(
-                                padding:
-                                const EdgeInsets.symmetric(horizontal: 22.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 22.0),
                                 child: AmountEntry(onAmountChange),
                               )
                             ],
