@@ -16,7 +16,7 @@ import java.nio.ByteBuffer
 class CryptoChannel(val applicationContext: Context) : MethodChannel.MethodCallHandler {
 
 
-    override fun onMethodCall(methodcall: MethodCall?, result: MethodChannel.Result?) {
+    override fun onMethodCall(methodcall: MethodCall, result: MethodChannel.Result) {
         if (methodcall == null || result == null) {
             return
         }

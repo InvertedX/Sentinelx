@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sentinelx/models/tx.dart';
-import 'package:sentinelx/screens/home.dart';
 import 'package:sentinelx/shared_state/txState.dart';
-import 'package:sentinelx/widgets/tx_widget.dart';
 
 class TxList extends StatelessWidget {
-  TxState model;
+  final TxState model;
+
   TxList(this.model);
 
   @override
@@ -20,8 +19,8 @@ class TxList extends StatelessWidget {
             );
           } else {
             return Container(
-              child: TxWidget(tx),
-            );
+//              child: TxWidget(tx),
+                );
           }
         },
         itemCount: model.txList.length);

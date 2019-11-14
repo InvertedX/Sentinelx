@@ -18,7 +18,6 @@ class SystemChannel {
     return Directory(path);
   }
 
-
   Future<bool> setNetwork(bool isTestNet) async {
     try {
       await platform.invokeMethod<String>("setNetwork", {'mode': isTestNet});
@@ -28,5 +27,56 @@ class SystemChannel {
       return false;
     }
   }
+
+  Future<bool> isTestNet() async {
+    try {
+      String network = await platform.invokeMethod<String>("getNetWork");
+      return (network == "TESTNET");
+    } catch (exception) {
+      print(exception);
+      return false;
+    }
+  }
+
+  Future<bool> isFirstRun() async {
+    try {
+      bool run = await platform.invokeMethod<bool>("isFirstRun");
+      return run;
+    } catch (exception) {
+      print(exception);
+      return false;
+    }
+  }
+
+  Future<bool> openURL(String url) async {
+    try {
+      bool run = await platform.invokeMethod<bool>("openURL", url);
+      return run;
+    } catch (exception) {
+      print(exception);
+      return false;
+    }
+  }
+
+  Future<bool> shareText(String share) async {
+    try {
+      bool run = await platform.invokeMethod<bool>("share", share);
+      return run;
+    } catch (exception) {
+      print(exception);
+      return false;
+    }
+  }
+
+  Future<bool> askCameraPermission() async {
+    try {
+      bool run = await platform.invokeMethod<bool>("cameraPermission");
+      return run;
+    } catch (exception) {
+      print(exception);
+      return false;
+    }
+  }
+
 
 }

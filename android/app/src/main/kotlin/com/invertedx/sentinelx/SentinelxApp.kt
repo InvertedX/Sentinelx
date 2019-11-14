@@ -25,11 +25,16 @@ fun Any.d(msg: Any? = "No Message provided") {
 object SentinelxApp {
 
 
-    public var networkParameters: NetworkParameters = if (BuildConfig.DEBUG) TestNet3Params.get() else TestNet3Params.get()
+    public var networkParameters: NetworkParameters = if (BuildConfig.DEBUG) TestNet3Params.get() else MainNetParams.get()
 
 
     fun isTestNet(): Boolean {
         return networkParameters !is MainNetParams
+    }
+
+
+    fun setNetWorkParam(param: NetworkParameters) {
+        networkParameters = param;
     }
 
 

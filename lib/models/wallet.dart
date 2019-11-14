@@ -1,10 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:sembast/sembast.dart';
+import 'package:sentinelx/models/db/sentinelxDB.dart';
 import 'package:sentinelx/models/db/txDB.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/xpub.dart';
-
-import 'package:sentinelx/models/db/sentinelxDB.dart';
 import 'package:sentinelx/shared_state/balance.dart';
 import 'package:sentinelx/shared_state/txState.dart';
 
@@ -22,13 +21,15 @@ class Wallet extends ChangeNotifier {
   Wallet({this.walletName, this.xpubs});
 
 
-  static Future<Database> get _db async => await SentinelxDB.instance.database;
+  static Future<Database> get _db async =>  SentinelxDB.instance.database;
 
   static final _walletStore = intMapStoreFactory.store(STORE_NAME);
 
-  Future initTxDb() async {
-    print("initTxDbinitTxDb");
-    txDB = TxDB.instance(this.getTxDb());
+  Future initTxDb(int id) async {
+    if(this.getTxDb().contains("null")){
+      return;
+    }
+    txDB = TxDB.instance("txstore-wallet-$id.semdb");
     await txDB.database;
     this.loadAllTxes();
   }
@@ -82,8 +83,16 @@ class Wallet extends ChangeNotifier {
     if (this.legacyAddresses != null) {
       data['legacyAddresses'] = this.legacyAddresses.toList();
     }
-    print("data $data");
     return data;
+  }
+
+
+  updateTrackingLabel(int index, String label) async {
+    XPUBModel xpubModel = this.xpubs[index];
+    xpubModel.label = label;
+    this.xpubs[index] = xpubModel;
+    xpubModel.notifyListeners();
+    await this.saveState();
   }
 
   Wallet.fromJson(Map<String, dynamic> json) {
@@ -126,13 +135,35 @@ class Wallet extends ChangeNotifier {
     Wallet.update(this);
   }
 
-  Future clear() {
+  Future clear() async {
     this.xpubs = [];
+    this.balanceModel = new BalanceModel();
+    this.txDB.clear();
+    this.txState.clear();
     notifyListeners();
+    await SentinelxDB.instance.clear();
     return this.saveState();
   }
 
   String getTxDb() {
-    return "txstore-wallet-${this.id}.db";
+    return "txstore-wallet-${this.id}.semdb";
   }
+
+  void removeTracking(int index) {
+    this.xpubs.removeAt(index);
+    this.txState.clear();
+    this.updateTotalBalance();
+    this.saveState();
+    this.notifyListeners();
+  }
+
+  bool doesXPUBExist(String xpub) {
+    for (var i = 0; i < xpubs.length; i++) {
+      if (xpubs[i].xpub == xpub) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 }

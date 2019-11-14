@@ -1,12 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
-import 'package:sembast/utils/value_utils.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/tx.dart';
-import 'package:sentinelx/models/wallet.dart';
+import 'package:sentinelx/models/unspent.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 
@@ -15,13 +15,19 @@ class TxDB {
   static TxDB _singleton = TxDB._privateConstructor();
 
   static const String STORE_NAME = 'txs';
+  static const String UNSPENT_STORE = 'unspent';
 
-  static Future<Database> get _db async => await TxDB.instance(AppState().selectedWallet.getTxDb()).database;
+  static Future<Database> get _db async =>
+      await TxDB
+          .instance(AppState().selectedWallet.getTxDb())
+          .database;
   static final txStore = stringMapStoreFactory.store(STORE_NAME);
+  static final unspentStore = stringMapStoreFactory.store(UNSPENT_STORE);
 
   TxDB._privateConstructor();
 
   String dbPath;
+
   static TxDB instance(param) {
     if (param != db) {
       db = param;
@@ -42,7 +48,8 @@ class TxDB {
     return _dbOpenCompleter.future;
   }
 
-  static Future insertOrUpdate(List<dynamic> items, Address addressObj, bool isXpub) async {
+  static Future insertOrUpdate(List<dynamic> items, Address addressObj,
+      bool isXpub) async {
     var db = await _db;
     StoreRef txStore = stringMapStoreFactory.store(addressObj.address);
     await txStore.delete(db);
@@ -50,6 +57,16 @@ class TxDB {
       for (var i = 0; i < items.length; i++) {
         var item = Tx.fromJson(items[i]);
         await txStore.add(txn, item.toJson());
+      }
+    });
+  }
+
+  static Future insertOrUpdateUnspent(List<Unspent> items) async {
+    var db = await _db;
+    await unspentStore.delete(db);
+    await db.transaction((txn) async {
+      for (var i = 0; i < items.length; i++) {
+        await unspentStore.add(txn, items[i].toJson());
       }
     });
   }
@@ -72,8 +89,9 @@ class TxDB {
       recordSnapshots.forEach((record) {
         final tx = Tx.fromJson(record.value);
         tx.key = record.key;
-        var txExist = txes.firstWhere((item) => item.hash == tx.hash,orElse:  () => null);
-        if(txExist == null){
+        var txExist =
+        txes.firstWhere((item) => item.hash == tx.hash, orElse: () => null);
+        if (txExist == null) {
           txes.add(tx);
         }
       });
@@ -86,5 +104,11 @@ class TxDB {
     final dbPath = join(appDocumentDir.path, TxDB.db);
     final database = await databaseFactoryIo.openDatabase(dbPath);
     _dbOpenCompleter.complete(database);
+  }
+
+  Future clear() async {
+    final appDocumentDir = await SystemChannel().getDataDir();
+    final dbPath = join(appDocumentDir.path, TxDB.db);
+    await File(dbPath).writeAsString("");
   }
 }

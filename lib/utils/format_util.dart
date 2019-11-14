@@ -15,3 +15,9 @@ String formatDate(num timestamp) {
   var time = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
   return formatter.format(time);
 }
+
+String formatDateAndTime(num timestamp) {
+  var formatter = new DateFormat("d MMM yyyy h:mm a");
+  var time = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+  return formatter.format(time);
+}

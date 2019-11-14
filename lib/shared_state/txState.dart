@@ -12,6 +12,10 @@ class TxState extends ChangeNotifier {
 
   makeSections(List<Tx> txes) {
     List<Tx> output = [];
+    txes.sort((m1, m2) {
+     return m2.time.compareTo(m1.time);
+    });
+
     List<DateTime> sections = createDateSet(txes);
     sections.forEach((section) {
       var formatter = new DateFormat("d MMM yyyy");
@@ -36,6 +40,11 @@ class TxState extends ChangeNotifier {
     return dateTime.year == d2.year && dateTime.month == d2.month && dateTime.day == d2.day;
   }
 
+  clear(){
+    this.txList.clear();
+    notifyListeners();
+  }
+
   List<DateTime> createDateSet(List<Tx> txes) {
     List<DateTime> timeStamps = txes.map((item) {
       return DateTime.fromMillisecondsSinceEpoch(item.time * 1000);
@@ -56,7 +65,6 @@ class TxState extends ChangeNotifier {
 
     filtered.forEach((item) {
       var formatter = new DateFormat("d MMM yyyy");
-      print("date ${formatter.format(item)}");
     });
     return filtered;
   }
