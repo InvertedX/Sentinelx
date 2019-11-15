@@ -79,5 +79,5 @@ Sentinel implementation based on [original BIP](https://github.com/bitcoin/bips/
 
 ------
 
-[Note]:  Sentinel x does not support ios (for now)(since this app is completely based on sentinel android core libs are based on java, in order to support IOS we need to port/implement native calls in ios )
+[Note]:  Sentinel x does not support ios (for now)(since this app is completely based on sentinel-android, in order to support IOS we need to port/implement native calls in ios )
 
