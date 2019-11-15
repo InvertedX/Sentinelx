@@ -7,6 +7,9 @@
 <p align="center">bitcoin watch only wallet based <a href="https://github.com/Samourai-Wallet/sentinel-android"> samourai sentinel</a>
  </p>
 
+<p align="center">  <a href="https://github.com/InvertedX/sentinelx/releases">Download</a>
+ </p>
+ 
 ## Sentinel x Features
 
 * Sleek and faster UI
