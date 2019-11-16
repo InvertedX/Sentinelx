@@ -11,11 +11,11 @@ import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/home.dart';
 import 'package:sentinelx/screens/settings.dart';
 import 'package:sentinelx/screens/splashScreen.dart';
-import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/networkState.dart';
 import 'package:sentinelx/shared_state/sentinelState.dart';
+import 'package:sentinelx/shared_state/themeProvider.dart';
 import 'package:sentinelx/shared_state/txState.dart';
 
 Future main() async {
