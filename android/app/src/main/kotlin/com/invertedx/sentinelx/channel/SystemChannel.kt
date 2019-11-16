@@ -14,6 +14,14 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.params.TestNet3Params
+import android.support.v4.content.ContextCompat.startActivity
+import android.support.v4.app.ActivityCompat.finishAffinity
+import android.support.v4.content.ContextCompat.startActivity
+import android.app.AlarmManager
+import android.support.v4.content.ContextCompat.getSystemService
+import android.app.PendingIntent
+import com.invertedx.sentinelx.i
+import io.flutter.embedding.android.SplashScreen
 
 
 class SystemChannel(private val applicationContext: Context, private val activity: MainActivity) : MethodChannel.MethodCallHandler {

@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 
 class TxDetailsResponse {
   String txid;
@@ -30,9 +30,10 @@ class TxDetailsResponse {
     vsize = json['vsize'];
     version = json['version'];
     locktime = json['locktime'];
-    fees = json['fees'];
-    feerate = json['feerate'];
-    vfeerate = json['vfeerate'];
+    block = Block.fromJson(json['block']);
+    fees = json.containsKey('fees') ? json['fees'] : null;
+    feerate = json.containsKey("feerate") ? json['feerate'] : null;
+    vfeerate = json.containsKey("vfeerate") ? json['vfeerate'] : null;
   }
 
   Map<String, dynamic> toJson() {

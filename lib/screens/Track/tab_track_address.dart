@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/CryptoChannel.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
@@ -102,6 +103,17 @@ class TabTrackAddressState extends State<TabTrackAddress> {
   validateAndSaveAddress() async {
     String label = _labelEditController.text;
     String xpubOrAddress = _xpubEditController.text;
+
+
+    if (Provider
+        .of<AppState>(context)
+        .selectedWallet
+        .doesXPUBExist(xpubOrAddress)) {
+      _showError("Address already exist");
+      return;
+    }
+
+
     try {
       bool valid = await CryptoChannel().validateAddress(xpubOrAddress);
       if (!valid) {

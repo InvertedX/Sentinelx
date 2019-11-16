@@ -58,7 +58,6 @@ class SystemChannel {
     }
   }
 
-
   Future<bool> shareText(String share) async {
     try {
       bool run = await platform.invokeMethod<bool>("share", share);
@@ -68,7 +67,6 @@ class SystemChannel {
       return false;
     }
   }
-
 
   Future<bool> askCameraPermission() async {
     try {

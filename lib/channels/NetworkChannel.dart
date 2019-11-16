@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:sentinelx/shared_state/networkState.dart';
 
 enum TorStatus { IDLE, CONNECTED, DISCONNECTED, CONNECTING }
+enum ConnectivityStatus { CONNECTED, DISCONNECTED }
 
 class NetworkChannel {
   static const TOR_STREAM = "TOR_EVENT_STREAM";
@@ -13,7 +14,9 @@ class NetworkChannel {
   static const logStream = const EventChannel(TOR_LOG_STREAM);
   StreamSubscription _torStreamSubscription;
   StreamSubscription _torLogSubscription;
+  StreamSubscription _connectivitySubscription;
   TorStatus status = TorStatus.IDLE;
+  ConnectivityStatus connectivityStatus = ConnectivityStatus.DISCONNECTED;
   static final NetworkChannel _singleton = new NetworkChannel._internal();
 
   StreamController<String> logStreamController = new StreamController();
@@ -24,16 +27,39 @@ class NetworkChannel {
 
   NetworkChannel._internal() {
     _torStreamSubscription =
-        stream.receiveBroadcastStream().listen(this.onEvents);
+        stream.receiveBroadcastStream().listen(this._onEvents);
+    checkStatus();
   }
 
-  dynamic onEvents(dynamic event) {
+  dynamic _onConnectivityEvent(dynamic event) {
+    switch (event as String) {
+      case "none":
+        {
+          connectivityStatus = ConnectivityStatus.DISCONNECTED;
+          break;
+        }
+
+      case "wifi":
+        {
+          connectivityStatus = ConnectivityStatus.CONNECTED;
+          break;
+        }
+      case "mobile":
+        {
+          connectivityStatus = ConnectivityStatus.CONNECTED;
+          break;
+        }
+    }
+  }
+
+  dynamic _onEvents(dynamic event) {
     switch (event as String) {
       case "IDLE":
         {
           status = TorStatus.IDLE;
           break;
         }
+
       case "CONNECTED":
         {
           status = TorStatus.CONNECTED;
@@ -60,14 +86,28 @@ class NetworkChannel {
   void dispose() {
     _torStreamSubscription.cancel();
     if (logStreamController != null) logStreamController.close();
+    if (_connectivitySubscription != null) _connectivitySubscription.cancel();
   }
 
   void startTor() async {
+    if (NetworkState().torStatus == TorStatus.CONNECTED) {
+      return;
+    }
     await platform.invokeMethod("startTor");
   }
 
   void stopTor() async {
     await platform.invokeMethod("stopTor");
+  }
+
+  Future<ConnectivityStatus> getConnectivityStatus() async {
+    String status = await platform.invokeMethod("connectivityStatus");
+
+    if (status == "wifi" || status == "mobile") {
+      return ConnectivityStatus.CONNECTED;
+    } else {
+      return ConnectivityStatus.DISCONNECTED;
+    }
   }
 
   StreamController<String> listenToTorLogs() {
@@ -83,5 +123,17 @@ class NetworkChannel {
   void stopListen() {
     logStreamController = new StreamController();
     _torLogSubscription.cancel();
+  }
+
+  void checkStatus() {
+    platform.invokeMethod("torStatus").then((va) => {_onEvents(va)});
+
+    platform
+        .invokeMethod("connectivityStatus")
+        .then((va) => {_onConnectivityEvent(va)});
+  }
+
+  Future<dynamic> renewTor() {
+    return platform.invokeMethod("newNym");
   }
 }

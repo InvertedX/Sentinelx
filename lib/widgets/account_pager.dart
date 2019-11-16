@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/screens/Track/track_screen.dart';
-import 'package:sentinelx/screens/xpub_details.dart';
+import 'package:sentinelx/screens/watch_list.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/widgets/balance_card_widget.dart';
 import 'package:sentinelx/widgets/card_widget.dart';
@@ -13,15 +14,20 @@ class AccountsPager extends StatefulWidget {
   _AccountsPagerState createState() => _AccountsPagerState();
 }
 
-class _AccountsPagerState extends State<AccountsPager> with SingleTickerProviderStateMixin {
+class _AccountsPagerState extends State<AccountsPager>
+    with SingleTickerProviderStateMixin {
   PageController _pageController;
   Wallet wallet;
+
   @override
   void initState() {
     super.initState();
-    _pageController = new PageController(initialPage: 0, keepPage: true, viewportFraction: 0.89);
+    _pageController = new PageController(
+        initialPage: 0, keepPage: true, viewportFraction: 0.89);
     Future.delayed(Duration(milliseconds: 50), () {
-      _pageController.jumpToPage(AppState().pageIndex);
+      if (_pageController.hasClients) {
+        _pageController.jumpToPage(AppState().pageIndex);
+      }
     });
   }
 
@@ -30,7 +36,9 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
     return Container(
       padding: EdgeInsets.symmetric(vertical: 12),
       height: 230,
-      color: Theme.of(context).primaryColorDark,
+      color: Theme
+          .of(context)
+          .scaffoldBackgroundColor,
       child: Consumer<Wallet>(
         builder: (context, model, child) {
           wallet = model;
@@ -56,20 +64,23 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: Card(
-            color: Theme.of(context).primaryColor,
+            elevation: 8,
+            color: Theme
+                .of(context)
+                .cardColor,
             child: InkWell(
-              onTap: navigate,
+              onTap: () => navigate(context),
               child: Center(
                   child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(Icons.add),
-                  Text(
-                    "Track new",
-                    style: Theme.of(context).textTheme.caption,
-                  )
-                ],
-              )),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(Icons.add),
+                      Text(
+                        "Track new",
+                        style: Theme.of(context).textTheme.caption,
+                      )
+                    ],
+                  )),
             ),
           ),
         ),
@@ -87,13 +98,22 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
       return GestureDetector(
         onTap: () async {
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => XpubDetailsScreen(), settings: RouteSettings(arguments: index - 1)));
+              builder: (context) => ChangeNotifierProvider.value(
+                    child: WatchList(),
+                    value: wallet,
+                  ),
+          ));
         },
         child: Container(
           height: 200,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ChangeNotifierProvider.value(value: wallet.xpubs[index - 1], child: CardWidget()),
+            child: ChangeNotifierProvider.value(
+                value: wallet.xpubs[index - 1],
+                child: Card(
+                  elevation: 8,
+                  child: CardWidget(),
+                )),
           ),
         ),
       );
@@ -128,15 +148,33 @@ class _AccountsPagerState extends State<AccountsPager> with SingleTickerProvider
         });
   }
 
-  void navigate() async {
+  void navigate(BuildContext context) async {
+//    Navigator.of(context)
+//        .push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
+//      return Track();
+//    }));
+
+
     int result = await Navigator.of(context).push(new MaterialPageRoute<int>(builder: (BuildContext context) {
       return Track();
     }));
     if (result != null) {
       AppState().setPageIndex(result + 1);
-      print("setPageIndex");
-      await AppState().refreshTx(result);
-      print("refresh");
+      try {
+        await AppState().refreshTx(result);
+      } catch (ex) {
+        if (ex is PlatformException) {
+          final snackBar = SnackBar(
+            content: Text("Error : ${ex.details as String}"),
+          );
+          Scaffold.of(context).showSnackBar(snackBar);
+        } else {
+          final snackBar = SnackBar(
+            content: Text("Error while refreshing..."),
+          );
+          Scaffold.of(context).showSnackBar(snackBar);
+        }
+      }
     }
   }
 }

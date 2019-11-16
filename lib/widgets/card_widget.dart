@@ -4,7 +4,6 @@ import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/utils/format_util.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
-import 'package:sentinelx/widgets/wave_clipper.dart';
 
 class CardWidget extends StatefulWidget {
   @override
@@ -20,28 +19,8 @@ class _CardWidgetState extends State<CardWidget> {
         : xpubModel.bip.contains("44") ? SentinelxIcons.xpub : SentinelxIcons.bitcoin;
 
     final typeText = xpubModel.bip.contains("ADDR") ? "Address" : xpubModel.bip;
-    return Stack(
+    return  Stack(
       children: <Widget>[
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
-            color: Theme.of(context).primaryColor,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ClipPath(
-                clipper: WaveClipper(reverse: true),
-                child: Container(
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(6), color: Theme.of(context).primaryColor),
-                  height: 120,
-                  width: double.infinity,
-                ),
-              )
-            ],
-          ),
-        ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -92,7 +71,8 @@ class _CardWidgetState extends State<CardWidget> {
                       maxLines: 1,
                       textAlign: TextAlign.start,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                      style:
+                      TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                     ),
                   )),
               Expanded(
@@ -101,11 +81,12 @@ class _CardWidgetState extends State<CardWidget> {
                   children: <Widget>[
                     Expanded(
                       child: Container(
-                        width: 80,
+                        width: 190,
                         alignment: Alignment.bottomLeft,
                         child: Text(
-                          "$typeText:${xpubModel.xpub}",
+                          "$typeText: ${xpubModel.xpub.substring(0, 9)}",
                           maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.caption,
                         ),
                       ),
@@ -124,11 +105,11 @@ class _CardWidgetState extends State<CardWidget> {
                               builder: (context, model, child) {
                                 return (model.state == States.LOADING && model.loadingXpub == xpubModel.xpub)
                                     ? Container(
-                                        alignment: Alignment.bottomLeft,
-                                        height: 12,
-                                        width: 12,
-                                        child: CircularProgressIndicator(strokeWidth: 1),
-                                      )
+                                  alignment: Alignment.bottomLeft,
+                                  height: 12,
+                                  width: 12,
+                                  child: CircularProgressIndicator(strokeWidth: 1),
+                                )
                                     : SizedBox.shrink();
                               },
                             )

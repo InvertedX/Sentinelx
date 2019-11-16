@@ -10,6 +10,9 @@ import io.reactivex.Observable
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.time.Duration
+import java.time.temporal.TemporalUnit
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
@@ -80,7 +83,7 @@ class ApiService(private val applicationContext: Context) {
                 Log.i("API", "response -> $content")
                 return@fromCallable content
             } catch (ex: Exception) {
-                return@fromCallable "{}"
+                throw  ex
             }
 
         }
@@ -103,7 +106,7 @@ class ApiService(private val applicationContext: Context) {
                 val content = response.body()!!.string()
                 return@fromCallable content
             } catch (ex: Exception) {
-                return@fromCallable "{}"
+                throw  ex;
             }
 
         }
@@ -128,15 +131,10 @@ class ApiService(private val applicationContext: Context) {
                     .url(baseUrl)
                     .method("POST", requestBody)
                     .build()
-
             val response = client.newCall(request).execute()
-            try {
-                val content = response.body()!!.string()
-                Log.i("API", "response -> $content")
-                return@fromCallable content
-            } catch (ex: Exception) {
-                return@fromCallable "{}"
-            }
+            val content = response.body()!!.string()
+            Log.i("API", "response -> $content")
+            return@fromCallable content
 
         }
     }
@@ -151,6 +149,8 @@ class ApiService(private val applicationContext: Context) {
             getHostNameVerifier(builder)
             builder.proxy(TorManager.getInstance(this.applicationContext).proxy)
         }
+        builder.connectTimeout(60, TimeUnit.SECONDS) // connect timeout
+        builder.readTimeout(60, TimeUnit.SECONDS)
         client = builder.build()
     }
 
