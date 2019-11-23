@@ -5,15 +5,16 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import com.invertedx.sentinelx.MainActivity
-import com.invertedx.sentinelx.utils.Connectivity
 import com.invertedx.sentinelx.tor.TorManager
 import com.invertedx.sentinelx.tor.TorService
+import com.invertedx.sentinelx.utils.Connectivity
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
