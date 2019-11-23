@@ -74,6 +74,40 @@ class NetworkChannel(private val applicationContext: Context, private val activi
                 } catch (ex: Exception) {
                 }
             }
+            "startAndWait" -> {
+                try {
+                    val startIntent = Intent(applicationContext, TorService::class.java)
+                    startIntent.action = TorService.START_SERVICE
+                    applicationContext.startService(startIntent)
+                    val disposable = TorManager.getInstance(applicationContext)
+                            .torStatus
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe ({
+                                if (it != null)
+                                    when (it) {
+                                        TorManager.CONNECTION_STATES.CONNECTED -> {
+
+                                            result.success(true)
+                                        }
+                                        TorManager.CONNECTION_STATES.IDLE -> {
+
+                                        }
+                                        TorManager.CONNECTION_STATES.DISCONNECTED -> {
+
+                                        }
+                                        TorManager.CONNECTION_STATES.CONNECTING -> {
+                                        }
+                                    }
+                            }, {
+                                print(it);
+                            })
+
+                    compositeDisposable.addAll(disposable)
+                } catch (ex: Exception) {
+                    result.error("Error", "TorError", ex.message)
+                }
+            }
 
             "stopTor" -> {
                 val startIntent = Intent(applicationContext, TorService::class.java)

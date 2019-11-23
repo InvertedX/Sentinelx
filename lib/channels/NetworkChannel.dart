@@ -96,6 +96,13 @@ class NetworkChannel {
     await platform.invokeMethod("startTor");
   }
 
+  Future<bool> startAndWaitForTor() async {
+    if (NetworkState().torStatus == TorStatus.CONNECTED) {
+      return Future.value(true);
+    }
+    return platform.invokeMethod<bool>("startAndWait");
+  }
+
   void stopTor() async {
     await platform.invokeMethod("stopTor");
   }
