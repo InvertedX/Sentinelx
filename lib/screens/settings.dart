@@ -3,8 +3,10 @@ import 'package:flutter/widgets.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/sentinelxDB.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
+import 'package:sentinelx/screens/dojo_configure.dart';
 import 'package:sentinelx/shared_state/appState.dart';
 import 'package:sentinelx/shared_state/sentinelState.dart';
+import 'package:sentinelx/widgets/breath_widget.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
@@ -40,9 +42,7 @@ class _SettingsState extends State<Settings> {
         centerTitle: true,
         primary: true,
       ),
-      backgroundColor: Theme
-          .of(context)
-          .backgroundColor,
+      backgroundColor: Theme.of(context).backgroundColor,
       body: Container(
         margin: EdgeInsets.only(top: 12),
         child: ListView(
@@ -52,16 +52,14 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
                 "App",
-                style: TextStyle(color: Theme
-                    .of(context)
-                    .accentColor),
+                style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ),
             Divider(),
             ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Icon(Icons.delete_outline),
+                child:  Icon(Icons.delete_outline),
               ),
               trailing: loadingErase
                   ? SizedBox(
@@ -89,10 +87,7 @@ class _SettingsState extends State<Settings> {
               ),
               title: Text(
                 "Theme",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .subtitle,
+                style: Theme.of(context).textTheme.subtitle,
               ),
               subtitle: Text("Customize theme"),
               onTap: () {
@@ -104,9 +99,7 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
                 "Security",
-                style: TextStyle(color: Theme
-                    .of(context)
-                    .accentColor),
+                style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ),
             Divider(),
@@ -128,9 +121,7 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
                 "Network",
-                style: TextStyle(color: Theme
-                    .of(context)
-                    .accentColor),
+                style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ),
             Divider(),
@@ -148,9 +139,8 @@ class _SettingsState extends State<Settings> {
                 showTorPanel(context);
               },
             ),
-            Opacity(
-              opacity: 0.3,
-              child: ListTile(
+
+            ListTile(
                 leading: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Icon(Icons.router),
@@ -160,10 +150,16 @@ class _SettingsState extends State<Settings> {
                   style: Theme.of(context).textTheme.subtitle,
                 ),
                 subtitle: Text("Power your sentinel with Dojo backend"),
-//                  onTap: () {
-//
-//                  },
-              ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (c) {
+                            return DojoConfigureScreen();
+                          },
+                          fullscreenDialog: true));
+//                  showDojoPanel(context);
+                },
             ),
             Divider(),
           ],
@@ -238,9 +234,9 @@ class _SettingsState extends State<Settings> {
       } catch (e) {
         debugPrint(e);
       }
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil(
-          '/', (Route<dynamic> route) => false, arguments: "LOCK");
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          '/', (Route<dynamic> route) => false,
+          arguments: "LOCK");
       SentinelState().eventsStream.sink.add(SessionStates.LOCK);
     }
   }
@@ -276,4 +272,3 @@ class _SettingsState extends State<Settings> {
         });
   }
 }
-
