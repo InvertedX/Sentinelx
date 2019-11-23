@@ -2,7 +2,10 @@ package com.invertedx.sentinelx.channel
 
 import android.content.Context
 import android.util.Log
+import com.invertedx.sentinelx.SentinelxApp
 import com.invertedx.sentinelx.api.ApiService
+import com.invertedx.sentinelx.e
+import com.invertedx.sentinelx.i
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -97,6 +100,50 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
                             if (it != null) {
                                 val obj: JSONObject = JSONObject(it)
                                 result.success(obj.toString());
+                            } else {
+                                result.success(false)
+                            }
+                        }, {
+                            it.printStackTrace()
+                            result.error("APIError", "Error", it.message)
+                        })
+            }
+            "setDojo" -> {
+                try {
+
+
+                    val accessToken = methodCall.argument<String>("accessToken")
+                    var url = methodCall.argument<String>("dojoUrl")
+                    val refreshToken = methodCall.argument<String>("refreshToken")
+                    if (refreshToken == null || accessToken == null) {
+                        result.notImplemented()
+                        return
+                    }
+                    if (!url!!.endsWith("/") && url.isNotEmpty()) {
+                        url = "${url}/"
+                    }
+                    SentinelxApp.setToken(accessToken, refreshToken)
+                    SentinelxApp.dojoUrl = url
+                    SentinelxApp.dojoEneabled = url.trim().isNotEmpty()
+                } catch (er: Exception) {
+                    e(er)
+                }
+                result.success(true);
+            }
+            "authenticateDojo" -> {
+                val url = methodCall.argument<String>("url")
+                val apiKey = methodCall.argument<String>("apiKey")
+                if (apiKey == null || url == null) {
+                    result.notImplemented()
+                    return
+                }
+                ApiService(applicationContext).authenticate(url, apiKey)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            if (it != null) {
+                                val obj = JSONObject(it)
+                                result.success(obj.toString())
                             } else {
                                 result.success(false)
                             }

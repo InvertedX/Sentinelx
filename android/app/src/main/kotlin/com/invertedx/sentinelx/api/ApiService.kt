@@ -113,7 +113,7 @@ class ApiService(private val applicationContext: Context) {
 
         }
     }
- 
+
 
     fun getUnspent(xpubOrAddress: String): Observable<String> {
         makeClient()
