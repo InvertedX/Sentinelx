@@ -8,6 +8,7 @@ import 'package:sentinelx/channels/NetworkChannel.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
+import 'package:sentinelx/screens/dojo_configure.dart';
 import 'package:sentinelx/screens/settings.dart';
 import 'package:sentinelx/screens/txDetails.dart';
 import 'package:sentinelx/screens/watch_list.dart';
@@ -77,13 +78,13 @@ class _HomeState extends State<Home> {
           Consumer<NetworkState>(
             builder: (context, model, child) {
               return IconButton(
-                icon: Icon(
-                  SentinelxIcons.onion_tor,
-                  color: getTorIconColor(model.torStatus),
-                ),
-                onPressed: () {
-                  showTorPanel(context);
-                },
+                  icon: Icon(
+                    SentinelxIcons.onion_tor,
+                    color: getTorIconColor(model.torStatus),
+                  ),
+                  onPressed: () {
+                    showTorPanel(context);
+                  }
               );
             },
           ),
