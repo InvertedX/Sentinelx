@@ -260,7 +260,12 @@ class _DojoCardState extends State<DojoCard> {
             Radius.circular(8.0),
           ),
           side: BorderSide(
-              color: Colors.white10, width: 1, style: BorderStyle.solid)),
+              color: Theme
+                  .of(context)
+                  .textTheme
+                  .title
+                  .color
+                  .withOpacity(0.3), width: 1, style: BorderStyle.solid)),
       elevation: 24,
       child: Container(
         child: Column(
