@@ -349,8 +349,6 @@ class _AmountEntryState extends State<AmountEntry> {
   void _onChangeSat(String value) {
     double amount = double.parse(value);
     num btcValue = amount / 1e8;
-    print(amount);
-    print(btcValue);
     btcController.text = "${btcValue.toStringAsFixed(8)}";
     satController.text = satFormatter.format(amount);
     satController.selection = new TextSelection(

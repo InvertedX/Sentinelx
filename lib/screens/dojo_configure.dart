@@ -203,8 +203,6 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
 
   void init() async {
     String data = await PrefsStore().getString(PrefsStore.DOJO);
-    print("data ${data == ""}");
-    print("data $data");
     if (data != null && data != "") {
       _pageController.jumpToPage(2);
       setState(() {
