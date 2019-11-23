@@ -12,6 +12,7 @@ class PrefsStore {
   static const TOR_STATUS = "TOR_STATUS";
   static const SELECTED_THEME = "THEME";
   static const THEME_ACCENT = "THEME_ACCENT";
+  static const DOJO = "DOJO";
 
   static PrefsStore get instance => _singleton;
 
