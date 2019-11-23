@@ -120,8 +120,8 @@ class NetworkChannel {
   StreamController<String> listenToTorLogs() {
     _torLogSubscription =
         logStream.receiveBroadcastStream().listen((dynamic log) {
-          logStreamController.sink.add(log as String);
-        });
+      logStreamController.sink.add(log as String);
+    });
 
     platform.invokeMethod("listen").then((va) => {});
     return logStreamController;

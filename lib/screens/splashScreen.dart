@@ -5,12 +5,17 @@ import 'package:sentinelx/channels/NetworkChannel.dart';
 import 'package:sentinelx/shared_state/networkState.dart';
 import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/breath_widget.dart';
+import 'package:sentinelx/widgets/dojo_progress.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
-class SplashScreen extends StatelessWidget {
-  final bool torPref;
 
-  SplashScreen(this.torPref);
+
+class SplashScreen extends StatelessWidget {
+
+  final Widget progressStateWidget;
+
+
+  SplashScreen(this.progressStateWidget);
 
   @override
   Widget build(BuildContext context) {
@@ -57,47 +62,7 @@ class SplashScreen extends StatelessWidget {
           Padding(
             padding: EdgeInsets.all(12),
           ),
-          torPref
-              ? Consumer<NetworkState>(
-            builder: (con, model, c) {
-              return Container(
-                child: Column(
-                  children: <Widget>[
-                    BreathingAnimation(
-                      child: Icon(
-                        SentinelxIcons.onion_tor,
-                        size: 34,
-                        color: getTorIconColor(model.torStatus),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(6),
-                    ),
-                    Text(
-                      getTorStatusInText(
-                        model.torStatus,
-                      ),
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subhead
-                          .copyWith(fontSize: 12),
-                    ),
-                    Padding(padding: EdgeInsets.all(12),),
-                    NetworkState().torStatus == TorStatus.IDLE ||
-                        NetworkState().torStatus == TorStatus.IDLE
-                        ? FlatButton(
-                      child: Text('restart tor'),
-                      onPressed: () {
-                        NetworkChannel().startTor();
-                      },
-                    ) : SizedBox.shrink()
-                  ],
-                ),
-              );
-            },
-          )
-              : SizedBox.shrink(),
+          progressStateWidget
         ],
       ),
     );
