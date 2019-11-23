@@ -4,14 +4,14 @@ import android.content.Context
 import android.util.Log
 import com.invertedx.sentinelx.BuildConfig
 import com.invertedx.sentinelx.SentinelxApp
+import com.invertedx.sentinelx.i
 import com.invertedx.sentinelx.tor.TorManager
 import com.invertedx.sentinelx.utils.LoggingInterceptor
 import io.reactivex.Observable
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.time.Duration
-import java.time.temporal.TemporalUnit
+import okhttp3.RequestBody
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
@@ -35,7 +35,7 @@ class ApiService(private val applicationContext: Context) {
 
     fun getTxAndXPUBData(XpubOrAddress: String): Observable<String> {
         val baseAddress = getBaseUrl()
-        val url = "${baseAddress}multiaddr?active=$XpubOrAddress"
+        val url = "${baseAddress}multiaddr?active=$XpubOrAddress&at=${SentinelxApp.accessToken}"
         Log.i("API", "CALL url -> $url")
         return Observable.fromCallable {
             val request = Request.Builder()
@@ -60,6 +60,11 @@ class ApiService(private val applicationContext: Context) {
          */
         makeClient()
 
+        i("DOJO URL  SentinelxApp.dojoUrl")
+        if (SentinelxApp.dojoUrl.isNotBlank()) {
+            return SentinelxApp.dojoUrl
+        }
+
         return if (TorManager.getInstance(this.applicationContext).isConnected) {
             if (SentinelxApp.isTestNet()) SAMOURAI_API2_TESTNET_TOR_DIST else SAMOURAI_API2_TOR_DIST
         } else {
@@ -69,7 +74,7 @@ class ApiService(private val applicationContext: Context) {
 
     fun getTx(txid: String): Observable<String> {
         val baseAddress = getBaseUrl()
-        val baseUrl = "${baseAddress}tx/$txid/?fees=true&at="
+        val baseUrl = "${baseAddress}tx/$txid/?fees=trues&at=${SentinelxApp.accessToken}"
 
         return Observable.fromCallable {
 
@@ -89,11 +94,32 @@ class ApiService(private val applicationContext: Context) {
         }
     }
 
+
+    fun authenticate(url: String, key: String): Observable<String> {
+        val targetUrl = "$url/auth/login?apikey=$key"
+        return Observable.fromCallable {
+
+            val request = Request.Builder()
+                    .url(targetUrl)
+                    .post(RequestBody.create(null, ByteArray(0)))
+                    .build()
+
+            val response = client.newCall(request).execute()
+            try {
+                return@fromCallable response.body()!!.string()
+            } catch (ex: Exception) {
+                throw  ex
+            }
+
+        }
+    }
+ 
+
     fun getUnspent(xpubOrAddress: String): Observable<String> {
         makeClient()
 
         val baseAddress = getBaseUrl()
-        val baseUrl = "${baseAddress}unspent?active=$xpubOrAddress"
+        val baseUrl = "${baseAddress}unspent?active=$xpubOrAddress&at=${SentinelxApp.accessToken}"
 
         return Observable.fromCallable {
 
@@ -114,7 +140,7 @@ class ApiService(private val applicationContext: Context) {
 
     fun addHDAccount(xpub: String, bip: String): Observable<String> {
         val baseAddress = getBaseUrl()
-        val baseUrl = "${baseAddress}xpub"
+        val baseUrl = "${baseAddress}xpub&at=${SentinelxApp.accessToken}"
 
 
         val requestBody = FormBody.Builder()
@@ -138,7 +164,6 @@ class ApiService(private val applicationContext: Context) {
 
         }
     }
-
 
     private fun makeClient() {
         val builder = OkHttpClient.Builder()
