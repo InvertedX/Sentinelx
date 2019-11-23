@@ -21,24 +21,20 @@ class _BreathingAnimationState extends State<BreathingAnimation>
     super.initState();
     controller =
         AnimationController(duration: const Duration(seconds: 1), vsync: this);
-    animation = CurvedAnimation(parent: controller, curve: Curves.easeOutSine)
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          controller.reverse();
-        } else if (status == AnimationStatus.dismissed) {
-          controller.forward();
-        }
-      });
-    controller.forward();
+    animation = CurvedAnimation(parent: controller, curve: Curves.easeOutSine);
+    controller.repeat(reverse: true);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Opacity(
-        opacity: _opacityTween.evaluate(animation), child: widget.child);
+    return AnimatedBuilder(
+        animation: animation,
+        builder: (BuildContext context, Widget child) {
+          return Opacity(
+            child: widget.child,
+            opacity: _opacityTween.evaluate(animation),
+          );
+        });
   }
 
   @override
