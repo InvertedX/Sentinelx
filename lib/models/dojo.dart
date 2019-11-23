@@ -5,7 +5,7 @@ class Dojo {
 
   Dojo.fromJson(Map<String, dynamic> json) {
     pairing =
-        json['pairing'] != null ? new Pairing.fromJson(json['pairing']) : null;
+    json['pairing'] != null ? new Pairing.fromJson(json['pairing']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -26,6 +26,7 @@ class Pairing {
   String version = "";
   String apikey = "";
   String url = "";
+  Uri uri;
 
   Pairing({this.type, this.version, this.apikey, this.url});
 
@@ -34,6 +35,9 @@ class Pairing {
     version = json['version'];
     apikey = json['apikey'];
     url = json['url'];
+    if (url != null) {
+      uri = Uri.parse(url);
+    }
   }
 
   Map<String, dynamic> toJson() {

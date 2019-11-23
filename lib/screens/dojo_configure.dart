@@ -1,14 +1,20 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:sentinelx/channels/ApiChannel.dart';
 import 'package:sentinelx/channels/NetworkChannel.dart';
 import 'package:sentinelx/channels/SystemChannel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/dojo.dart';
+import 'package:sentinelx/shared_state/networkState.dart';
+import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/dojo_progress.dart';
 import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
+import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 class DojoConfigureScreen extends StatefulWidget {
   @override
@@ -32,203 +38,88 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
       _cameraKey.currentState.setDecodeListener((val) {
         _validate(val);
       });
+      init();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return PushUpCameraWrapper(
-      cameraHeight: MediaQuery.of(context).size.height / 2,
-      key: _cameraKey,
-      child: Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: Theme.of(context).backgroundColor,
-        appBar: AppBar(
-          title: Text("Dojo node"),
-          elevation: 0,
-        ),
-        body: PageView(
-          controller: _pageController,
-          pageSnapping: false,
-          scrollDirection: Axis.vertical,
-          physics: NeverScrollableScrollPhysics(),
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 80),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  OutlineButton.icon(
-                      onPressed: () {
-                        _cameraKey.currentState.start();
-                      },
-                      icon: Icon(Icons.camera),
-                      label: Text("Scan DOJO QR")),
-                  OutlineButton.icon(
-                      onPressed: () {},
-                      icon: Icon(Icons.content_paste),
-                      label: Text("Paste payload"))
-                ],
+    return WillPopScope(
+      onWillPop: () {
+        if (_cameraKey.currentState.controller.isCompleted) {
+          _cameraKey.currentState.controller.reverse();
+          return Future.value(false);
+        }
+        return Future.value(true);
+      },
+      child: PushUpCameraWrapper(
+        cameraHeight: MediaQuery
+            .of(context)
+            .size
+            .height / 2,
+        key: _cameraKey,
+        child: Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: Theme
+              .of(context)
+              .backgroundColor,
+          appBar: AppBar(
+            title: Text("Dojo node"),
+            elevation: 0,
+          ),
+          body: PageView(
+            controller: _pageController,
+            pageSnapping: false,
+            scrollDirection: Axis.vertical,
+            physics: NeverScrollableScrollPhysics(),
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 80),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    OutlineButton.icon(
+                        onPressed: () {
+                          _cameraKey.currentState.start();
+                        },
+                        icon: Icon(Icons.camera),
+                        label: Text("Scan DOJO QR")),
+                    OutlineButton.icon(
+                        onPressed: () {},
+                        icon: Icon(Icons.content_paste),
+                        label: Text("Paste payload"))
+                  ],
+                ),
               ),
-            ),
-            Center(
-              child: Container(
-                  margin: EdgeInsets.all(64),
-                  child: DojoProgress(
-                    key: _progressKey,
-                  )),
-            ),
-            Container(
-              color: Colors.grey,
-              child: Card(
+              Center(
+                child: Container(
+                    margin: EdgeInsets.all(64),
+                    child: DojoProgress(
+                      key: _progressKey,
+                    )),
               ),
-            )
-          ],
+              SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 120),
+                  child: _dojo != null
+                      ? DojoCard(_dojo, this.clear)
+                      : SizedBox.shrink(),
+                  margin: EdgeInsets.symmetric(horizontal: 12),
+                ),
+              ),
+            ],
+          ),
         ),
-//        body: Column(
-//          children: <Widget>[
-//            Center(
-//              child: Container(height: 400, child: DojoProgress()),
-//            )
-////            Container(
-////              width: double.infinity,
-////              color: Theme.of(context).backgroundColor.withAlpha(0),
-//////              height: MediaQuery.of(context).size.height / 2.5,
-////              padding: EdgeInsets.all(12),
-////              child: Center(
-////                child: Column(
-////                  mainAxisAlignment: MainAxisAlignment.center,
-////                  children: <Widget>[
-////                    Image.asset(
-////                      "assets/dojo.png",
-////                      height: 140,
-////                      width: 140,
-////                      fit: BoxFit.scaleDown,
-////                    ),
-////                    Text("Not connected")
-////                  ],
-////                ),
-////              ),
-////            ),
-////            Container(
-////              margin: EdgeInsets.symmetric(horizontal: 12),
-////              child: Column(
-////                children: <Widget>[
-////                  Card(
-////                    elevation: 12,
-////                    child: Container(
-////                      height: 120,
-////                      child: Row(
-////                        children: <Widget>[
-////                          Expanded(
-////                            child: Container(
-////                              width: 12,
-////                              decoration: BoxDecoration(
-////                                shape: BoxShape.circle,
-////                                color: Colors.greenAccent,
-////                              ),
-////                              height: 12,
-////                            ),
-////                          ),
-////                          Flexible(
-////                            flex: 1,
-////                            child: Column(
-////                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-////                              children: <Widget>[
-////                                Container(
-////                                  alignment: Alignment.bottomCenter,
-////                                  height: 40,
-////                                  child: Row(
-////                                    mainAxisAlignment:
-////                                    MainAxisAlignment.start,
-////                                    children: <Widget>[
-////                                      Container(
-////                                        color: Colors.white,
-////                                        height: double.infinity,
-////                                        width: 3,
-////                                      ),
-////                                      Container(
-////                                        color: Colors.grey[700],
-////                                        height: double.infinity,
-////                                        width: 3,
-////                                      ),
-////                                    ],
-////                                  ),
-////                                ) ,
-////                                Container(
-////                                  alignment: Alignment.bottomCenter,
-////                                  height: 40,
-////                                  child: Row(
-////                                    mainAxisAlignment:
-////                                    MainAxisAlignment.start,
-////                                    children: <Widget>[
-////                                      Container(
-////                                        color: Colors.white,
-////                                        height: double.infinity,
-////                                        width: 3,
-////                                      ),
-////                                      Container(
-////                                        color: Colors.grey[700],
-////                                        height: double.infinity,
-////                                        width: 3,
-////                                      )
-////                                    ],
-////                                  ),
-////                                )
-////                              ],
-////                            ),
-////                          )
-////                        ],
-////                      ),
-////                    ),
-////                  ),
-////                ],
-////              ),
-////            )
-//
-////            Expanded(
-////              child: AnimatedSwitcher(
-////                switchInCurve: Curves.easeInExpo,
-////                duration: Duration(milliseconds: 400),
-////                child: this._dojo == null
-////                    ? Center(
-////                        child: Container(
-////                          height: 120,
-////                          child:  DojoProgress()
-////                        ),
-////                      )
-////                    : Container(
-////                        padding: EdgeInsets.symmetric(vertical: 80),
-////                        child: Column(
-////                          mainAxisAlignment: MainAxisAlignment.end,
-////                          children: <Widget>[
-////                            OutlineButton.icon(
-////                                onPressed: () {
-////                                  _cameraKey.currentState.start();
-////                                },
-////                                icon: Icon(Icons.camera),
-////                                label: Text("Scan DOJO QR")),
-////                            OutlineButton.icon(
-////                                onPressed: () {},
-////                                icon: Icon(Icons.content_paste),
-////                                label: Text("Paste payload"))
-////                          ],
-////                        ),
-////                      ),
-////              ),
-////            )
-//          ],
-//        ),
       ),
     );
   }
 
   _validate(String val) async {
     try {
+      await Future.delayed(Duration(milliseconds: 500));
       Dojo dojo = Dojo.fromJson(json.decode(val));
       bool isTestnet = await SystemChannel().isTestNet();
       if (dojo.validate()) {
-        PrefsStore().put(PrefsStore.DOJO, jsonEncode(dojo.toJson()));
         if (dojo.pairing.url.contains("test") && !isTestnet) {
           bool confirm = await showConfirmModel(
             context: context,
@@ -258,27 +149,32 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
   }
 
   void _connectToDojo(Dojo dojo) async {
-    _pageController.animateToPage(1,
-        duration: Duration(milliseconds: 600), curve: Curves.easeIn);
-    bool isTorRunning = NetworkChannel().status == TorStatus.CONNECTED;
-    await Future.delayed(Duration(milliseconds: 600));
-    if (isTorRunning) {
-      _progressKey.currentState.updateProgress(60);
-    } else {
-      _progressKey.currentState.updateProgress(30);
-      _progressKey.currentState.updateText("Intilaizing Tor");
-      await NetworkChannel().startAndWaitForTor();
-      _progressKey.currentState.updateText("Tor Connected");
+    try {
+      _pageController.animateToPage(1,
+          duration: Duration(milliseconds: 600), curve: Curves.easeIn);
+      bool isTorRunning = NetworkChannel().status == TorStatus.CONNECTED;
+      await Future.delayed(Duration(milliseconds: 600));
+      if (isTorRunning) {
+        _progressKey.currentState.updateProgress(50);
+        _progressKey.currentState.updateText("Tor Connected");
+      } else {
+        _progressKey.currentState.updateProgress(30);
+        _progressKey.currentState.updateText("Intilaizing Tor");
+        await NetworkChannel().startAndWaitForTor();
+        _progressKey.currentState.updateText("Tor Connected");
+      }
       _progressKey.currentState.updateIcon(Icon(
         Icons.router,
         size: 48,
       ));
-      _progressKey.currentState.updateProgress(60);
-      await Future.delayed(Duration(milliseconds: 500));
+      _progressKey.currentState.updateProgress(70);
       _progressKey.currentState.updateText("Authenticating...");
+      await Future.delayed(Duration(milliseconds: 500));
       await ApiChannel()
           .authenticateDojo(dojo.pairing.url, dojo.pairing.apikey);
+
       _progressKey.currentState.updateText("Autheniticated");
+
       DojoAuth dojoAuth = await ApiChannel()
           .authenticateDojo(dojo.pairing.url, dojo.pairing.apikey);
 
@@ -291,9 +187,273 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
 
       await Future.delayed(Duration(milliseconds: 500));
 
+      await PrefsStore().put(PrefsStore.DOJO, jsonEncode(dojo.toJson()));
+
+      setState(() {
+        _dojo = dojo;
+      });
+
+      await Future.delayed(Duration(milliseconds: 500));
       _pageController.animateToPage(2,
           duration: Duration(milliseconds: 600), curve: Curves.easeIn);
+    } catch (e) {
+      print("e $e");
+    }
+  }
 
+  void init() async {
+    String data = await PrefsStore().getString(PrefsStore.DOJO);
+    print("data ${data == ""}");
+    print("data $data");
+    if (data != null && data != "") {
+      _pageController.jumpToPage(2);
+      setState(() {
+        _dojo = Dojo.fromJson(jsonDecode(data));
+      });
+    }
+  }
+
+  clear() async {
+    bool confirm = await showConfirmModel(
+      context: context,
+      title: Text("Are you sure want to disconnect from dojo ?",
+          style: Theme
+              .of(context)
+              .textTheme
+              .subhead),
+      iconPositive: new Icon(
+        Icons.check,
+      ),
+      textPositive: new Text(
+        'Continue ',
+      ),
+      textNegative: new Text('Cancel'),
+      iconNegative: new Icon(Icons.close),
+    );
+    if (confirm) {
+      await PrefsStore().put(PrefsStore.DOJO, "");
+      await ApiChannel().setDojo("", "", "");
+      setState(() {
+        _dojo = null;
+      });
+      _pageController.jumpToPage(0);
+    }
+  }
+}
+
+class DojoCard extends StatefulWidget {
+  final Dojo _dojo;
+  final Function clearCallback;
+
+  DojoCard(this._dojo, this.clearCallback);
+
+  @override
+  _DojoCardState createState() => _DojoCardState();
+}
+
+class _DojoCardState extends State<DojoCard> {
+  bool _loadingDojo = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: const BorderRadius.all(
+            Radius.circular(8.0),
+          ),
+          side: BorderSide(
+              color: Colors.white10, width: 1, style: BorderStyle.solid)),
+      elevation: 24,
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        "DOJO Node",
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .subtitle,
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Consumer<NetworkState>(
+                            builder: (context, model, child) {
+                              return IconButton(
+                                icon: Icon(
+                                  SentinelxIcons.onion_tor,
+                                  color: getTorIconColor(model.torStatus),
+                                ),
+                                onPressed: () {
+//                  showTorPanel(context);
+
+                                  Navigator.push(
+                                      context,
+                                      new MaterialPageRoute(
+                                          builder: (c) {
+                                            return DojoConfigureScreen();
+                                          },
+                                          fullscreenDialog: true));
+//                  showDojoPanel(context);
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(4),
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Text(
+                      "${widget._dojo.pairing.uri.host}...",
+                      maxLines: 1,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .subhead,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    leading: Icon(Icons.router),
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Text(
+                      "Ver: ${widget._dojo.pairing.version}",
+                      maxLines: 1,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .subhead,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    leading: Icon(Icons.info_outline),
+                  ),
+                  Divider(),
+                ],
+              ),
+            ),
+            Container(
+              color: Theme
+                  .of(context)
+                  .backgroundColor,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Tooltip(
+                    message: "Disconnect dojo",
+                    child: FlatButton(
+                      onPressed: this.widget.clearCallback,
+                      child: Icon(Icons.power_settings_new,
+                          color: Colors.redAccent),
+                    ),
+                  ),
+                  Tooltip(
+                    message: "Show dojo pairing code",
+                    child: FlatButton(
+                      onPressed: () =>
+                      {_showQR(jsonEncode(widget._dojo.toJson()), context)},
+                      child: Icon(
+                        SentinelxIcons.qrcode,
+                        size: 16,
+                      ),
+                    ),
+                  ),
+                  Tooltip(
+                    message: "Reauthenticate",
+                    child: FlatButton(
+                        onPressed: this.reAuthenticate,
+                        child: _loadingDojo
+                            ? SizedBox(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                          width: 14,
+                          height: 14,
+                        )
+                            : Icon(
+                          Icons.vpn_key,
+                          size: 16,
+                        )),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showQR(String dojo, BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: MediaQuery
+                .of(context)
+                .size
+                .height,
+            child: Card(
+              margin: EdgeInsets.symmetric(vertical: 2),
+              child: Center(
+                child: QrImage(
+                  data: dojo,
+                  size: 240.0,
+                  version: QrVersions.auto,
+                  backgroundColor: Colors.white,
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  void reAuthenticate() async {
+    bool confirm = await showConfirmModel(
+      context: context,
+      title: Text(
+          "Sentinel x will reauthenticate dojo. do you want to continue?",
+          style: Theme
+              .of(context)
+              .textTheme
+              .subhead),
+      iconPositive: new Icon(
+        Icons.check,
+      ),
+      textPositive: new Text(
+        'Continue ',
+      ),
+      textNegative: new Text('Cancel'),
+      iconNegative: new Icon(Icons.close),
+    );
+    if (confirm) {
+      try {
+        this.setState(() {
+          _loadingDojo = true;
+        });
+        DojoAuth dojoAuth = await ApiChannel().authenticateDojo(
+            widget._dojo.pairing.url, widget._dojo.pairing.apikey);
+        await ApiChannel().setDojo(dojoAuth.authorizations.accessToken,
+            dojoAuth.authorizations.accessToken, widget._dojo.pairing.url);
+        this.setState(() {
+          _loadingDojo = false;
+        });
+      } catch (e) {
+        this.setState(() {
+          _loadingDojo = false;
+        });
+      }
     }
   }
 }
