@@ -132,7 +132,6 @@ class _TxDetailsState extends State<TxDetails> {
   }
 
   void loadTx() async {
-    print("txDetailsResponse  ");
 
     bool networkOkay = await checkNetworkStatusBeforeApiCall(
             (snackbar) =>
@@ -145,7 +144,6 @@ class _TxDetailsState extends State<TxDetails> {
         });
         TxDetailsResponse txDetailsResponse =
         await ApiChannel().getTx(widget.tx.hash);
-        print("txDetailsResponse ${txDetailsResponse.toJson()}");
 
         setState(() {
           isLoading = false;
