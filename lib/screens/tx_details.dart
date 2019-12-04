@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sentinelx/channels/ApiChannel.dart';
-import 'package:sentinelx/channels/SystemChannel.dart';
+import 'package:sentinelx/channels/api_channel.dart';
+import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/tx.dart';
-import 'package:sentinelx/models/txDetailsResponse.dart';
-import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/models/tx_details_response.dart';
+import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/utils/format_util.dart';
 import 'package:sentinelx/utils/utils.dart';
 
 class TxDetails extends StatefulWidget {
-  Tx tx;
-  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final Tx tx;
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
   TxDetails(this.tx, this.scaffoldKey);
 
@@ -132,18 +132,14 @@ class _TxDetailsState extends State<TxDetails> {
   }
 
   void loadTx() async {
-
-    bool networkOkay = await checkNetworkStatusBeforeApiCall(
-            (snackbar) =>
-        {
-        });
+    bool networkOkay = await checkNetworkStatusBeforeApiCall((snackbar) => {});
     if (networkOkay)
       try {
         setState(() {
           isLoading = true;
         });
         TxDetailsResponse txDetailsResponse =
-        await ApiChannel().getTx(widget.tx.hash);
+            await ApiChannel().getTx(widget.tx.hash);
 
         setState(() {
           isLoading = false;

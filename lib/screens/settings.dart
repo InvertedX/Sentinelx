@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
-import 'package:sentinelx/models/db/sentinelxDB.dart';
+import 'package:sentinelx/models/db/sentinelx_db.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/dojo_configure.dart';
-import 'package:sentinelx/shared_state/appState.dart';
-import 'package:sentinelx/shared_state/sentinelState.dart';
-import 'package:sentinelx/widgets/breath_widget.dart';
+import 'package:sentinelx/shared_state/app_state.dart';
+import 'package:sentinelx/shared_state/sentinel_state.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';

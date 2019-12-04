@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sentinelx/channels/NetworkChannel.dart';
+import 'package:sentinelx/channels/network_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
-import 'package:sentinelx/shared_state/networkState.dart';
+import 'package:sentinelx/shared_state/network_state.dart';
 import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 

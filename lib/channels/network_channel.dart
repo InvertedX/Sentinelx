@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:sentinelx/shared_state/networkState.dart';
+import 'package:sentinelx/shared_state/network_state.dart';
 
 enum TorStatus { IDLE, CONNECTED, DISCONNECTED, CONNECTING }
 enum ConnectivityStatus { CONNECTED, DISCONNECTED }
