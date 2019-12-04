@@ -130,7 +130,7 @@ class _TorControlPanelState extends State<TorControlPanel> {
                       ),
                       selected: true,
                       onTap: showLogs,
-                    ),
+                    ) : SizedBox.shrink(),
                   ],
                 ),
               )
