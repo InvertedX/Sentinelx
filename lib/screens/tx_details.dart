@@ -32,69 +32,76 @@ class _TxDetailsState extends State<TxDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
+    return Column(
       children: <Widget>[
         Container(
-          color: Theme
-              .of(context)
-              .primaryColorDark,
+          color: Theme.of(context).primaryColorDark,
           child: Center(
               child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 32),
             child: Text("${satToBtc(widget.tx.result)} BTC",
-                style: Theme
-                    .of(context)
+                style: Theme.of(context)
                     .textTheme
                     .headline
                     .copyWith(color: Colors.white),
                 textAlign: TextAlign.center),
           )),
         ),
-        _buildRow("Date", "${formatDateAndTime(widget.tx.time)}"),
-        Divider(),
-        _buildRow("Fees", fees),
-        Divider(),
-        _buildRow("Feerate", feeRate),
-        Divider(),
-        _buildRow("Block Height", blockHeight),
-        Divider(),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                child: Text(
-                  "Tx hash",
-                  style: Theme.of(context).textTheme.subtitle,
+        Expanded(
+          flex: 2,
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                _buildRow("Date", "${formatDateAndTime(widget.tx.time)}"),
+                Divider(),
+                _buildRow("Fees", fees),
+                Divider(),
+                _buildRow("Feerate", feeRate),
+                Divider(),
+                _buildRow("Block Height", blockHeight),
+                Divider(),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 12),
+                        child: Text(
+                          "Tx hash",
+                          style: Theme.of(context).textTheme.subtitle,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4, horizontal: 12),
+                        child: InkWell(
+                            onTap: () => _copy(widget.tx.hash),
+                            child: Text(
+                              "${widget.tx.hash}",
+                              maxLines: 2,
+                              style: TextStyle(fontSize: 12),
+                            )),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                child: InkWell(
-                    onTap: () => _copy(widget.tx.hash),
-                    child: Text(
-                      "${widget.tx.hash}",
-                      maxLines: 2,
-                      style: TextStyle(fontSize: 12),
-                    )),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 22),
+                  child: Center(
+                      child: FlatButton.icon(
+                          onPressed: () => openInExplorer(context),
+                          icon: Icon(Icons.open_in_browser),
+                          label: Text("Open in explorer"))),
+                )
+              ],
+            ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 22),
-          child: Center(
-              child: FlatButton.icon(
-                  onPressed: () => openInExplorer(context),
-                  icon: Icon(Icons.open_in_browser),
-                  label: Text("Open in explorer"))),
-        )
       ],
     );
   }
