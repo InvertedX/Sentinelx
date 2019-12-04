@@ -26,6 +26,7 @@ class TorControlPanel extends StatefulWidget {
 
 class _TorControlPanelState extends State<TorControlPanel> {
   bool torOnStartup = false;
+  bool isDojoEnabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +34,9 @@ class _TorControlPanelState extends State<TorControlPanel> {
       value: NetworkState(),
       child: Card(
         margin: EdgeInsets.all(1),
-        color: Theme
-            .of(context)
-            .backgroundColor,
+        color: Theme.of(context).backgroundColor,
         child: Container(
-          height: MediaQuery
-              .of(context)
-              .size
-              .height / 1.8,
+          height: MediaQuery.of(context).size.height / 1.8,
           child: Column(
             children: <Widget>[
               Center(
@@ -57,8 +53,7 @@ class _TorControlPanelState extends State<TorControlPanel> {
                       children: <Widget>[
                         Text(
                           "Tor Routing",
-                          style: Theme
-                              .of(context)
+                          style: Theme.of(context)
                               .textTheme
                               .title
                               .copyWith(fontSize: 16),
@@ -127,6 +122,15 @@ class _TorControlPanelState extends State<TorControlPanel> {
                       title: Text("View tor logs"),
                       onTap: showLogs,
                     ),
+                    isDojoEnabled ? ListTile(
+                      subtitle: Text(
+                        "Note: Tor cannot be disabled if dojo is active",
+                        style: Theme.of(context).textTheme.subtitle.copyWith(fontSize: 12),
+                        textAlign: TextAlign.center,
+                      ),
+                      selected: true,
+                      onTap: showLogs,
+                    ),
                   ],
                 ),
               )
@@ -138,7 +142,7 @@ class _TorControlPanelState extends State<TorControlPanel> {
   }
 
   void startOrStopTor(bool isRunning) async {
-    if (isRunning) {
+    if (isRunning && !isDojoEnabled) {
       NetworkChannel().stopTor();
       await PrefsStore().put(PrefsStore.TOR_STATUS, false);
     } else {
@@ -154,7 +158,12 @@ class _TorControlPanelState extends State<TorControlPanel> {
   }
 
   void init() async {
-
+    String data = await PrefsStore().getString(PrefsStore.DOJO);
+    if (data != null && data != "") {
+      setState(() {
+        isDojoEnabled = true;
+      });
+    }
   }
 
   void showLogs() {
@@ -165,10 +174,7 @@ class _TorControlPanelState extends State<TorControlPanel> {
             margin: EdgeInsets.all(12),
             color: Colors.black,
             child: Container(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height / 4,
+              height: MediaQuery.of(context).size.height / 4,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -177,10 +183,7 @@ class _TorControlPanelState extends State<TorControlPanel> {
                         vertical: 16, horizontal: 14),
                     child: Text(
                       "Tor Logs",
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .caption,
+                      style: Theme.of(context).textTheme.caption,
                       textAlign: TextAlign.center,
                     ),
                   ),
