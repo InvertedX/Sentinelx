@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:sentinelx/channels/api_channel.dart';
@@ -10,6 +11,7 @@ import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/dojo.dart';
 import 'package:sentinelx/shared_state/network_state.dart';
+import 'package:sentinelx/shared_state/theme_provider.dart';
 import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/dojo_progress.dart';
@@ -53,16 +55,11 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
         return Future.value(true);
       },
       child: PushUpCameraWrapper(
-        cameraHeight: MediaQuery
-            .of(context)
-            .size
-            .height / 2,
+        cameraHeight: MediaQuery.of(context).size.height / 2,
         key: _cameraKey,
         child: Scaffold(
           key: _scaffoldKey,
-          backgroundColor: Theme
-              .of(context)
-              .backgroundColor,
+          backgroundColor: Theme.of(context).backgroundColor,
           appBar: AppBar(
             title: Text("Dojo node"),
             elevation: 0,
@@ -85,7 +82,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
                         icon: Icon(Icons.camera),
                         label: Text("Scan DOJO QR")),
                     OutlineButton.icon(
-                        onPressed: () {},
+                        onPressed: readClipboard,
                         icon: Icon(Icons.content_paste),
                         label: Text("Paste payload"))
                   ],
@@ -115,6 +112,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
   }
 
   _validate(String val) async {
+
     try {
       await Future.delayed(Duration(milliseconds: 500));
       Dojo dojo = Dojo.fromJson(json.decode(val));
@@ -144,6 +142,16 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
       } else {}
     } catch (er) {
       print(er);
+      final snackBar = SnackBar(
+        content: Text(
+            "Error : $er",
+            style: Theme.of(context).textTheme.subtitle.copyWith(color: Colors.white)),
+        backgroundColor: ThemeProvider.accentColors["Red"] ,
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      );
+
+      _scaffoldKey.currentState.showSnackBar(snackBar);
       return false;
     }
   }
@@ -215,10 +223,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
     bool confirm = await showConfirmModel(
       context: context,
       title: Text("Are you sure want to disconnect from dojo ?",
-          style: Theme
-              .of(context)
-              .textTheme
-              .subhead),
+          style: Theme.of(context).textTheme.subhead),
       iconPositive: new Icon(
         Icons.check,
       ),
@@ -235,6 +240,13 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
         _dojo = null;
       });
       _pageController.jumpToPage(0);
+    }
+  }
+
+  void readClipboard() async {
+    ClipboardData data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (data.text.isNotEmpty) {
+      _validate(data.text);
     }
   }
 }
@@ -260,12 +272,9 @@ class _DojoCardState extends State<DojoCard> {
             Radius.circular(8.0),
           ),
           side: BorderSide(
-              color: Theme
-                  .of(context)
-                  .textTheme
-                  .title
-                  .color
-                  .withOpacity(0.3), width: 1, style: BorderStyle.solid)),
+              color: Theme.of(context).textTheme.title.color.withOpacity(0.3),
+              width: 1,
+              style: BorderStyle.solid)),
       elevation: 24,
       child: Container(
         child: Column(
@@ -280,10 +289,7 @@ class _DojoCardState extends State<DojoCard> {
                     children: <Widget>[
                       Text(
                         "DOJO Node",
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .subtitle,
+                        style: Theme.of(context).textTheme.subtitle,
                       ),
                       Row(
                         children: <Widget>[
@@ -321,10 +327,7 @@ class _DojoCardState extends State<DojoCard> {
                     title: Text(
                       "${widget._dojo.pairing.uri.host}...",
                       maxLines: 1,
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subhead,
+                      style: Theme.of(context).textTheme.subhead,
                       overflow: TextOverflow.ellipsis,
                     ),
                     leading: Icon(Icons.router),
@@ -334,10 +337,7 @@ class _DojoCardState extends State<DojoCard> {
                     title: Text(
                       "Ver: ${widget._dojo.pairing.version}",
                       maxLines: 1,
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subhead,
+                      style: Theme.of(context).textTheme.subhead,
                       overflow: TextOverflow.ellipsis,
                     ),
                     leading: Icon(Icons.info_outline),
@@ -347,9 +347,7 @@ class _DojoCardState extends State<DojoCard> {
               ),
             ),
             Container(
-              color: Theme
-                  .of(context)
-                  .backgroundColor,
+              color: Theme.of(context).backgroundColor,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -365,7 +363,7 @@ class _DojoCardState extends State<DojoCard> {
                     message: "Show dojo pairing code",
                     child: FlatButton(
                       onPressed: () =>
-                      {_showQR(jsonEncode(widget._dojo.toJson()), context)},
+                          {_showQR(jsonEncode(widget._dojo.toJson()), context)},
                       child: Icon(
                         SentinelxIcons.qrcode,
                         size: 16,
@@ -378,16 +376,16 @@ class _DojoCardState extends State<DojoCard> {
                         onPressed: this.reAuthenticate,
                         child: _loadingDojo
                             ? SizedBox(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                          width: 14,
-                          height: 14,
-                        )
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                                width: 14,
+                                height: 14,
+                              )
                             : Icon(
-                          Icons.vpn_key,
-                          size: 16,
-                        )),
+                                Icons.vpn_key,
+                                size: 16,
+                              )),
                   ),
                 ],
               ),
@@ -403,10 +401,7 @@ class _DojoCardState extends State<DojoCard> {
         context: context,
         builder: (context) {
           return Container(
-            height: MediaQuery
-                .of(context)
-                .size
-                .height,
+            height: MediaQuery.of(context).size.height,
             child: Card(
               margin: EdgeInsets.symmetric(vertical: 2),
               child: Center(
@@ -427,10 +422,7 @@ class _DojoCardState extends State<DojoCard> {
       context: context,
       title: Text(
           "Sentinel x will reauthenticate dojo. do you want to continue?",
-          style: Theme
-              .of(context)
-              .textTheme
-              .subhead),
+          style: Theme.of(context).textTheme.subhead),
       iconPositive: new Icon(
         Icons.check,
       ),
