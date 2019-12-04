@@ -1,8 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/utils/value_utils.dart';
-import 'package:sentinelx/models/db/txDB.dart';
-import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/shared_state/app_state.dart';
+
+import 'db/tx_db.dart';
 
 class Xpub extends ChangeNotifier {
   String m;

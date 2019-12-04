@@ -8,10 +8,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:sentinelx/channels/CryptoChannel.dart';
-import 'package:sentinelx/channels/SystemChannel.dart';
+import 'package:sentinelx/channels/crypto_channel.dart';
+import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/xpub.dart';
-import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/shared_state/app_state.dart';
 
 class Receive extends StatefulWidget {
   @override

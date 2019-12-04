@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
-import 'package:sentinelx/shared_state/themeProvider.dart';
+import 'package:sentinelx/shared_state/theme_provider.dart';
 
 class ThemeChooser extends StatelessWidget {
   @override

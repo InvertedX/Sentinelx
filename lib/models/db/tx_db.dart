@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
-import 'package:sentinelx/channels/SystemChannel.dart';
+import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/unspent.dart';
 import 'package:sentinelx/models/xpub.dart';
-import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/shared_state/app_state.dart';
 
 class TxDB {
   static String db = 'txes.db';

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:sentinelx/models/dojo.dart';
-import 'package:sentinelx/models/txDetailsResponse.dart';
+import 'package:sentinelx/models/tx_details_response.dart';
 
 class ApiChannel {
   static const platform = const MethodChannel('api.channel');

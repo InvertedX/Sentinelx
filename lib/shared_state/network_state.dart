@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:sentinelx/channels/NetworkChannel.dart';
+import 'package:sentinelx/channels/network_channel.dart';
 
 class NetworkState extends ChangeNotifier {
   NetworkState._privateConstructor();

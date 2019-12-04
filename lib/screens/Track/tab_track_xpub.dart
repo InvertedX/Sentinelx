@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sentinelx/channels/CryptoChannel.dart';
+import 'package:sentinelx/channels/crypto_channel.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
-import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 

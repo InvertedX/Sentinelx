@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sentinelx/channels/SystemChannel.dart';
+import 'package:sentinelx/channels/system_channel.dart';
 
 typedef void ControllerCallback(CameraController controller);
 typedef void OnDecodeComplete(String code);

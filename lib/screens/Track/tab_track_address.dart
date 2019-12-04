@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:sentinelx/channels/CryptoChannel.dart';
+import 'package:sentinelx/channels/crypto_channel.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
-import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
@@ -104,15 +104,12 @@ class TabTrackAddressState extends State<TabTrackAddress> {
     String label = _labelEditController.text;
     String xpubOrAddress = _xpubEditController.text;
 
-
-    if (Provider
-        .of<AppState>(context)
+    if (Provider.of<AppState>(context)
         .selectedWallet
         .doesXPUBExist(xpubOrAddress)) {
       _showError("Address already exist");
       return;
     }
-
 
     try {
       bool valid = await CryptoChannel().validateAddress(xpubOrAddress);
@@ -120,7 +117,7 @@ class TabTrackAddressState extends State<TabTrackAddress> {
         _showError('Invalid Bitcoin address');
       } else {
         XPUBModel xpubModel =
-        XPUBModel(xpub: xpubOrAddress, bip: "ADDR", label: label);
+            XPUBModel(xpub: xpubOrAddress, bip: "ADDR", label: label);
         Wallet wallet = AppState().selectedWallet;
         wallet.xpubs.add(xpubModel);
         await wallet.saveState();
