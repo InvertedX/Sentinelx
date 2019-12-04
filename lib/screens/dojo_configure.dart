@@ -166,7 +166,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
         _progressKey.currentState.updateText("Tor Connected");
       } else {
         _progressKey.currentState.updateProgress(30);
-        _progressKey.currentState.updateText("Intilaizing Tor");
+        _progressKey.currentState.updateText("Initializing Tor");
         await NetworkChannel().startAndWaitForTor();
         _progressKey.currentState.updateText("Tor Connected");
       }
