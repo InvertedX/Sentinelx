@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:package_info/package_info.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/sentinelx_db.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
@@ -22,6 +23,8 @@ class _SettingsState extends State<Settings> {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<PushUpCameraWrapperState> bottomUpCamera = GlobalKey();
   bool lockEnabled = false;
+  String version = "";
+  String buildNumber = "";
 
   @override
   void initState() {
@@ -58,7 +61,7 @@ class _SettingsState extends State<Settings> {
             ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                child:  Icon(Icons.delete_outline),
+                child: Icon(Icons.delete_outline),
               ),
               trailing: loadingErase
                   ? SizedBox(
@@ -138,29 +141,37 @@ class _SettingsState extends State<Settings> {
                 showTorPanel(context);
               },
             ),
-
             ListTile(
-                leading: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Icon(Icons.router),
-                ),
-                title: Text(
-                  "Samourai DOJO",
-                  style: Theme.of(context).textTheme.subtitle,
-                ),
-                subtitle: Text("Power your sentinel with Dojo backend"),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (c) {
-                            return DojoConfigureScreen();
-                          },
-                          fullscreenDialog: true));
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.router),
+              ),
+              title: Text(
+                "Samourai DOJO",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Power your sentinel with Dojo backend"),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (c) {
+                          return DojoConfigureScreen();
+                        },
+                        fullscreenDialog: true));
 //                  showDojoPanel(context);
-                },
+              },
             ),
             Divider(),
+            Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(24),
+                ),
+                Text("Version : $version",style: Theme.of(context).textTheme.caption,),
+                Text("build : $buildNumber",style: Theme.of(context).textTheme.caption,)
+              ],
+            )
           ],
         ),
       ),
@@ -171,6 +182,11 @@ class _SettingsState extends State<Settings> {
     bool lockState = await PrefsStore().getBool(PrefsStore.LOCK_STATUS);
     this.setState(() {
       lockEnabled = lockState;
+    });
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      version = packageInfo.version;
+      buildNumber = packageInfo.buildNumber;
     });
   }
 
