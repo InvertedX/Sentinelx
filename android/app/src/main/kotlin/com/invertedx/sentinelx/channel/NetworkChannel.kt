@@ -5,15 +5,16 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import com.invertedx.sentinelx.MainActivity
-import com.invertedx.sentinelx.utils.Connectivity
 import com.invertedx.sentinelx.tor.TorManager
 import com.invertedx.sentinelx.tor.TorService
+import com.invertedx.sentinelx.utils.Connectivity
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
@@ -72,6 +73,40 @@ class NetworkChannel(private val applicationContext: Context, private val activi
                     applicationContext.startService(startIntent)
                     result.success(true);
                 } catch (ex: Exception) {
+                }
+            }
+            "startAndWait" -> {
+                try {
+                    val startIntent = Intent(applicationContext, TorService::class.java)
+                    startIntent.action = TorService.START_SERVICE
+                    applicationContext.startService(startIntent)
+                    val disposable = TorManager.getInstance(applicationContext)
+                            .torStatus
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe ({
+                                if (it != null)
+                                    when (it) {
+                                        TorManager.CONNECTION_STATES.CONNECTED -> {
+
+                                            result.success(true)
+                                        }
+                                        TorManager.CONNECTION_STATES.IDLE -> {
+
+                                        }
+                                        TorManager.CONNECTION_STATES.DISCONNECTED -> {
+
+                                        }
+                                        TorManager.CONNECTION_STATES.CONNECTING -> {
+                                        }
+                                    }
+                            }, {
+                                print(it);
+                            })
+
+                    compositeDisposable.addAll(disposable)
+                } catch (ex: Exception) {
+                    result.error("Error", "TorError", ex.message)
                 }
             }
 

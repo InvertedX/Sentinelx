@@ -1,11 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:sembast/sembast.dart';
-import 'package:sentinelx/models/db/sentinelxDB.dart';
-import 'package:sentinelx/models/db/txDB.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/balance.dart';
-import 'package:sentinelx/shared_state/txState.dart';
+import 'package:sentinelx/shared_state/tx_state.dart';
+
+import 'db/sentinelx_db.dart';
+import 'db/tx_db.dart';
 
 class Wallet extends ChangeNotifier {
   static const String STORE_NAME = 'wallet';

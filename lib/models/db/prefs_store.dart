@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
-import 'package:sentinelx/channels/SystemChannel.dart';
+import 'package:sentinelx/channels/system_channel.dart';
 
 class PrefsStore {
   static final PrefsStore _singleton = PrefsStore._();
@@ -12,6 +12,7 @@ class PrefsStore {
   static const TOR_STATUS = "TOR_STATUS";
   static const SELECTED_THEME = "THEME";
   static const THEME_ACCENT = "THEME_ACCENT";
+  static const DOJO = "DOJO";
 
   static PrefsStore get instance => _singleton;
 

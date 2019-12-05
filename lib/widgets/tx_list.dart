@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sentinelx/models/tx.dart';
-import 'package:sentinelx/shared_state/txState.dart';
+import 'package:sentinelx/shared_state/tx_state.dart';
 
 class TxList extends StatelessWidget {
   final TxState model;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:sentinelx/widgets/qr_camera/QRCameraView.dart';
+import 'package:sentinelx/widgets/qr_camera/qr_camera_view.dart';
 
 typedef void OnQrDetect(String code);
 

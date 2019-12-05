@@ -26,6 +26,10 @@ object SentinelxApp {
 
 
     public var networkParameters: NetworkParameters = if (BuildConfig.DEBUG) TestNet3Params.get() else MainNetParams.get()
+    public var accessToken = "";
+    public var refreshToken = "";
+    public var dojoEneabled = false
+    public var dojoUrl = ""
 
 
     fun isTestNet(): Boolean {
@@ -35,6 +39,11 @@ object SentinelxApp {
 
     fun setNetWorkParam(param: NetworkParameters) {
         networkParameters = param;
+    }
+
+    fun setToken(accessToken: String, refreshToken: String) {
+        this.accessToken = accessToken
+        this.refreshToken = refreshToken
     }
 
 

@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:sentinelx/channels/CryptoChannel.dart';
+import 'package:sentinelx/channels/crypto_channel.dart';
 
 class XPUBModel extends ChangeNotifier {
   String xpub;

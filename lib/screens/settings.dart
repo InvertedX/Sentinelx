@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:package_info/package_info.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
-import 'package:sentinelx/models/db/sentinelxDB.dart';
+import 'package:sentinelx/models/db/sentinelx_db.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
-import 'package:sentinelx/shared_state/appState.dart';
-import 'package:sentinelx/shared_state/sentinelState.dart';
+import 'package:sentinelx/screens/dojo_configure.dart';
+import 'package:sentinelx/shared_state/app_state.dart';
+import 'package:sentinelx/shared_state/sentinel_state.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
@@ -21,6 +23,8 @@ class _SettingsState extends State<Settings> {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<PushUpCameraWrapperState> bottomUpCamera = GlobalKey();
   bool lockEnabled = false;
+  String version = "";
+  String buildNumber = "";
 
   @override
   void initState() {
@@ -40,9 +44,7 @@ class _SettingsState extends State<Settings> {
         centerTitle: true,
         primary: true,
       ),
-      backgroundColor: Theme
-          .of(context)
-          .backgroundColor,
+      backgroundColor: Theme.of(context).backgroundColor,
       body: Container(
         margin: EdgeInsets.only(top: 12),
         child: ListView(
@@ -52,9 +54,7 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
                 "App",
-                style: TextStyle(color: Theme
-                    .of(context)
-                    .accentColor),
+                style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ),
             Divider(),
@@ -89,10 +89,7 @@ class _SettingsState extends State<Settings> {
               ),
               title: Text(
                 "Theme",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .subtitle,
+                style: Theme.of(context).textTheme.subtitle,
               ),
               subtitle: Text("Customize theme"),
               onTap: () {
@@ -104,9 +101,7 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
                 "Security",
-                style: TextStyle(color: Theme
-                    .of(context)
-                    .accentColor),
+                style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ),
             Divider(),
@@ -128,9 +123,7 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
                 "Network",
-                style: TextStyle(color: Theme
-                    .of(context)
-                    .accentColor),
+                style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ),
             Divider(),
@@ -148,24 +141,37 @@ class _SettingsState extends State<Settings> {
                 showTorPanel(context);
               },
             ),
-            Opacity(
-              opacity: 0.3,
-              child: ListTile(
-                leading: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Icon(Icons.router),
-                ),
-                title: Text(
-                  "Samourai DOJO",
-                  style: Theme.of(context).textTheme.subtitle,
-                ),
-                subtitle: Text("Power your sentinel with Dojo backend"),
-//                  onTap: () {
-//
-//                  },
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.router),
               ),
+              title: Text(
+                "Samourai DOJO",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Power your sentinel with Dojo backend"),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (c) {
+                          return DojoConfigureScreen();
+                        },
+                        fullscreenDialog: true));
+//                  showDojoPanel(context);
+              },
             ),
             Divider(),
+            Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(24),
+                ),
+                Text("Version : $version",style: Theme.of(context).textTheme.caption,),
+                Text("build : $buildNumber",style: Theme.of(context).textTheme.caption,)
+              ],
+            )
           ],
         ),
       ),
@@ -176,6 +182,11 @@ class _SettingsState extends State<Settings> {
     bool lockState = await PrefsStore().getBool(PrefsStore.LOCK_STATUS);
     this.setState(() {
       lockEnabled = lockState;
+    });
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      version = packageInfo.version;
+      buildNumber = packageInfo.buildNumber;
     });
   }
 
@@ -238,9 +249,9 @@ class _SettingsState extends State<Settings> {
       } catch (e) {
         debugPrint(e);
       }
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil(
-          '/', (Route<dynamic> route) => false, arguments: "LOCK");
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          '/', (Route<dynamic> route) => false,
+          arguments: "LOCK");
       SentinelState().eventsStream.sink.add(SessionStates.LOCK);
     }
   }
@@ -276,4 +287,3 @@ class _SettingsState extends State<Settings> {
         });
   }
 }
-

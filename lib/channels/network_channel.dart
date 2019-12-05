@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:sentinelx/shared_state/networkState.dart';
+import 'package:sentinelx/shared_state/network_state.dart';
 
 enum TorStatus { IDLE, CONNECTED, DISCONNECTED, CONNECTING }
 enum ConnectivityStatus { CONNECTED, DISCONNECTED }
@@ -96,6 +96,13 @@ class NetworkChannel {
     await platform.invokeMethod("startTor");
   }
 
+  Future<bool> startAndWaitForTor() async {
+    if (NetworkState().torStatus == TorStatus.CONNECTED) {
+      return Future.value(true);
+    }
+    return platform.invokeMethod<bool>("startAndWait");
+  }
+
   void stopTor() async {
     await platform.invokeMethod("stopTor");
   }
@@ -113,8 +120,8 @@ class NetworkChannel {
   StreamController<String> listenToTorLogs() {
     _torLogSubscription =
         logStream.receiveBroadcastStream().listen((dynamic log) {
-          logStreamController.sink.add(log as String);
-        });
+      logStreamController.sink.add(log as String);
+    });
 
     platform.invokeMethod("listen").then((va) => {});
     return logStreamController;

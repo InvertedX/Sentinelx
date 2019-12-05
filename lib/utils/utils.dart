@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:sentinelx/channels/NetworkChannel.dart';
+import 'package:sentinelx/channels/network_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 
 Future<Map<String, dynamic>> parseJsonResponse(String response) async {

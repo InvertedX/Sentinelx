@@ -1,6 +1,6 @@
-import 'package:sentinelx/models/db/sentinelxDB.dart';
+import 'package:sentinelx/models/db/sentinelx_db.dart';
 import 'package:sentinelx/models/wallet.dart';
-import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/shared_state/app_state.dart';
 
 /// Database init function that creates necessary db files
 initDatabase(String pass) async {

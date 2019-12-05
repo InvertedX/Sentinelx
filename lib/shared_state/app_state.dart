@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:sentinelx/channels/ApiChannel.dart';
+import 'package:sentinelx/channels/api_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
-import 'package:sentinelx/models/db/txDB.dart';
+import 'package:sentinelx/models/db/tx_db.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/unspent.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
-import 'package:sentinelx/shared_state/ThemeProvider.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
+import 'package:sentinelx/shared_state/theme_provider.dart';
 import 'package:sentinelx/utils/utils.dart';
 
 class AppState extends ChangeNotifier {

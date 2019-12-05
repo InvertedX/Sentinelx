@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:sentinelx/models/txDetailsResponse.dart';
+import 'package:sentinelx/models/dojo.dart';
+import 'package:sentinelx/models/tx_details_response.dart';
 
 class ApiChannel {
   static const platform = const MethodChannel('api.channel');
@@ -49,8 +50,23 @@ class ApiChannel {
   Future<String> getUnspent(List<String> xpubsAndAddresses) async {
     String joined = xpubsAndAddresses.join("|");
     String response =
-    await platform.invokeMethod("unspent", {'params': joined});
+        await platform.invokeMethod("unspent", {'params': joined});
     return response;
   }
-}
 
+  Future<DojoAuth> authenticateDojo(String url, String apiKey) async {
+    String status = await platform
+        .invokeMethod("authenticateDojo", {"url": url, "apiKey": apiKey});
+    DojoAuth auth = DojoAuth.fromJson(jsonDecode(status));
+    return Future.value(auth);
+  }
+
+  Future<bool> setDojo(String accessToken, String refreshToken, String url) async {
+    await platform.invokeMethod("setDojo", {
+      'accessToken': accessToken,
+      "refreshToken": refreshToken,
+      "dojoUrl": url
+    });
+    return Future.value(true);
+  }
+}

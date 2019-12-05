@@ -1,22 +1,28 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sentinelx/channels/NetworkChannel.dart';
+import 'package:sentinelx/channels/api_channel.dart';
+import 'package:sentinelx/channels/network_channel.dart';
 import 'package:sentinelx/models/db/database.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
-import 'package:sentinelx/models/db/sentinelxDB.dart';
+import 'package:sentinelx/models/db/sentinelx_db.dart';
+import 'package:sentinelx/models/dojo.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/home.dart';
 import 'package:sentinelx/screens/settings.dart';
-import 'package:sentinelx/screens/splashScreen.dart';
-import 'package:sentinelx/shared_state/ThemeProvider.dart';
-import 'package:sentinelx/shared_state/appState.dart';
+import 'package:sentinelx/screens/splash_screen.dart';
+import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
-import 'package:sentinelx/shared_state/networkState.dart';
-import 'package:sentinelx/shared_state/sentinelState.dart';
-import 'package:sentinelx/shared_state/txState.dart';
+import 'package:sentinelx/shared_state/network_state.dart';
+import 'package:sentinelx/shared_state/sentinel_state.dart';
+import 'package:sentinelx/shared_state/theme_provider.dart';
+import 'package:sentinelx/shared_state/tx_state.dart';
+import 'package:sentinelx/utils/utils.dart';
+import 'package:sentinelx/widgets/breath_widget.dart';
+import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 Future main() async {
   Provider.debugCheckInvalidValueType = null;
@@ -88,14 +94,10 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
 setUpTheme() async {
   String accentKey = await PrefsStore().getString(PrefsStore.THEME_ACCENT);
   String theme = await PrefsStore().getString(PrefsStore.SELECTED_THEME);
-  if (accentKey
-      .trim()
-      .isNotEmpty) {
+  if (accentKey.trim().isNotEmpty) {
     AppState().theme.changeAccent(ThemeProvider.accentColors[accentKey]);
   }
-  if (theme
-      .trim()
-      .isNotEmpty) {
+  if (theme.trim().isNotEmpty) {
     if (theme == "light") {
       AppState().theme.setLight();
     } else {
@@ -109,6 +111,8 @@ class Lock extends StatefulWidget {
   _LockState createState() => _LockState();
 }
 
+enum LockProgressState { IDLE, TOR, DOJO }
+
 class _LockState extends State<Lock> {
   StreamSubscription sub;
 
@@ -116,8 +120,8 @@ class _LockState extends State<Lock> {
   GlobalKey<ScaffoldState> _ScaffoldState = GlobalKey();
 
   SessionStates sessionStates = SessionStates.IDLE;
-
-  bool torPref = false;
+  LockProgressState lockProgressState = LockProgressState.IDLE;
+  int progressState = 0;
 
   @override
   void initState() {
@@ -133,7 +137,7 @@ class _LockState extends State<Lock> {
           switchInCurve: Curves.easeInExpo,
           duration: Duration(milliseconds: 400),
           child: sessionStates == SessionStates.IDLE
-              ? SplashScreen(torPref)
+              ? SplashScreen(buildStatusWidget())
               : LockScreen(
             onPinEntryCallback: validate,
             lockScreenMode: LockScreenMode.LOCK,
@@ -154,18 +158,21 @@ class _LockState extends State<Lock> {
 
   void initDb() async {
     bool enabled = await PrefsStore().getBool(PrefsStore.LOCK_STATUS);
-
-    if (!enabled) {
-      await initDatabase(null);
-      Future.delayed(Duration.zero, () {
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
-      });
-    } else {
-      if (this.mounted)
-        setState(() {
-          sessionStates = SessionStates.LOCK;
+    try {
+      if (!enabled && context != null) {
+        await initDatabase(null);
+        Future.delayed(Duration.zero, () {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/home', (Route<dynamic> route) => false);
         });
+      } else {
+        if (this.mounted)
+          setState(() {
+            sessionStates = SessionStates.LOCK;
+          });
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -188,28 +195,40 @@ class _LockState extends State<Lock> {
 
   void init() async {
 
-    NetworkState().addListener(() {
-      if (NetworkState().torStatus == TorStatus.CONNECTED) {
-        Future.delayed(Duration(milliseconds: 500), initDb);
-      }
-    });
 
     ConnectivityStatus status = await NetworkChannel().getConnectivityStatus();
 
     if (status == ConnectivityStatus.CONNECTED) {
       bool torVal = await PrefsStore().getBool(PrefsStore.TOR_STATUS);
-      this.setState(() {
-        torPref = torVal;
+      String dojoString = await PrefsStore().getString(PrefsStore.DOJO);
+      setState(() {
+        lockProgressState = LockProgressState.TOR;
       });
       if (torVal) {
-        NetworkChannel().startTor();
+        await NetworkChannel().startAndWaitForTor();
+        if (dojoString.length != 0) {
+          setState(() {
+            lockProgressState = LockProgressState.DOJO;
+          });
+          Dojo dojo = Dojo.fromJson(jsonDecode(dojoString));
+          DojoAuth dojoAuth = await ApiChannel()
+              .authenticateDojo(dojo.pairing.url, dojo.pairing.apikey);
+          await ApiChannel().setDojo(dojoAuth.authorizations.accessToken,
+              dojoAuth.authorizations.accessToken, dojo.pairing.url);
+          setState(() {
+            lockProgressState = LockProgressState.IDLE;
+          });
+        }
+        initDb();
       } else {
         initDb();
       }
     } else {
       final snackBar = SnackBar(
-        content: Text("No Internet... going offline mode",
-          style: TextStyle(color: Colors.white),),
+        content: Text(
+          "No Internet... going offline mode",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Color(0xff5BD38D),
         duration: Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
@@ -220,13 +239,89 @@ class _LockState extends State<Lock> {
     }
 
     Future.delayed(Duration.zero, () {
-      if (ModalRoute
-          .of(context)
-          .settings
-          .arguments == "LOCK") {
+      if (ModalRoute.of(context).settings.arguments == "LOCK") {
         this.sessionStates = SessionStates.LOCK;
       }
     });
+  }
+
+  Widget buildStatusWidget() {
+    if (lockProgressState == LockProgressState.IDLE) {
+      return SizedBox.shrink();
+    } else if (lockProgressState == LockProgressState.TOR) {
+      return Consumer<NetworkState>(
+        builder: (con, model, c) {
+          return Container(
+            child: Column(
+              children: <Widget>[
+                BreathingAnimation(
+                  child: Icon(
+                    SentinelxIcons.onion_tor,
+                    size: 34,
+                    color: getTorIconColor(model.torStatus),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(6),
+                ),
+                Text(
+                  getTorStatusInText(
+                    model.torStatus,
+                  ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .subhead
+                      .copyWith(fontSize: 12),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(12),
+                ),
+                NetworkState().torStatus == TorStatus.IDLE ||
+                    NetworkState().torStatus == TorStatus.IDLE
+                    ? FlatButton(
+                  child: Text('restart tor'),
+                  onPressed: () {
+                    init();
+                  },
+                )
+                    : SizedBox.shrink()
+              ],
+            ),
+          );
+        },
+      );
+    } else if (lockProgressState == LockProgressState.DOJO) {
+      return Consumer<NetworkState>(
+        builder: (con, model, c) {
+          return Container(
+            child: Column(
+              children: <Widget>[
+                BreathingAnimation(
+                  child: Icon(
+                    Icons.router,
+                    size: 34,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(6),
+                ),
+                Text(
+                  "Connecting to dojo...",
+                  style: Theme.of(context)
+                      .textTheme
+                      .subhead
+                      .copyWith(fontSize: 12),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(12),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+    return SizedBox.shrink();
   }
 }
 
