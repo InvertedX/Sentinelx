@@ -17,7 +17,7 @@
 * Offline Mode
 * Theme support (light/dark and accent)
 * db level encryption
-* [WIP] Dojo node support
+* Dojo node support
 
 
 ## Screenshots
