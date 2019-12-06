@@ -35,7 +35,8 @@ class ApiService(private val applicationContext: Context) {
 
     fun getTxAndXPUBData(XpubOrAddress: String): Observable<String> {
         val baseAddress = getBaseUrl()
-        val url = "${baseAddress}multiaddr?active=$XpubOrAddress&at=${SentinelxApp.accessToken}"
+        val url = if (SentinelxApp.accessToken.isNotEmpty())   "${baseAddress}multiaddr?active=$XpubOrAddress&at=${SentinelxApp.accessToken}"  else    "${baseAddress}multiaddr?active=$XpubOrAddress"
+
         Log.i("API", "CALL url -> $url")
         return Observable.fromCallable {
             val request = Request.Builder()
@@ -74,7 +75,7 @@ class ApiService(private val applicationContext: Context) {
 
     fun getTx(txid: String): Observable<String> {
         val baseAddress = getBaseUrl()
-        val baseUrl = "${baseAddress}tx/$txid/?fees=trues&at=${SentinelxApp.accessToken}"
+        val baseUrl = if (SentinelxApp.accessToken.isNotEmpty())  "${baseAddress}tx/$txid/?fees=trues&at=${SentinelxApp.accessToken}"  else   "${baseAddress}tx/$txid/?fees=trues"
 
         return Observable.fromCallable {
 
@@ -119,7 +120,7 @@ class ApiService(private val applicationContext: Context) {
         makeClient()
 
         val baseAddress = getBaseUrl()
-        val baseUrl = "${baseAddress}unspent?active=$xpubOrAddress&at=${SentinelxApp.accessToken}"
+        val baseUrl = if (SentinelxApp.accessToken.isNotEmpty())  "${baseAddress}unspent?active=$xpubOrAddress&at=${SentinelxApp.accessToken}"  else  "${baseAddress}unspent?active=$xpubOrAddress";
 
         return Observable.fromCallable {
 
@@ -140,8 +141,7 @@ class ApiService(private val applicationContext: Context) {
 
     fun addHDAccount(xpub: String, bip: String): Observable<String> {
         val baseAddress = getBaseUrl()
-        val baseUrl = "${baseAddress}xpub&at=${SentinelxApp.accessToken}"
-
+        val baseUrl = if (SentinelxApp.accessToken.isNotEmpty()) "${baseAddress}xpub?at=${SentinelxApp.accessToken.trim()}" else "${baseAddress}xpub";
 
         val requestBody = FormBody.Builder()
                 .add("xpub", xpub)
