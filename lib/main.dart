@@ -25,6 +25,7 @@ import 'package:sentinelx/widgets/breath_widget.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   Provider.debugCheckInvalidValueType = null;
   await initAppStateWithStub();
   await PrefsStore().init();

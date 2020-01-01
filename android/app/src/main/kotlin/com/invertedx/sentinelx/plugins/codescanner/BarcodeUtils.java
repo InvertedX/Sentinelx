@@ -30,9 +30,9 @@ import java.util.Objects;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
@@ -45,7 +45,6 @@ import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.invertedx.sentinelx.plugins.codescanner.CodeScanner;
 
 /**
  * Utils for decoding and encoding bar codes

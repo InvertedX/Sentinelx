@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.invertedx.sentinelx.MainActivity
 import com.invertedx.sentinelx.SentinelxApp
 import com.invertedx.sentinelx.utils.SentinalPrefs
@@ -14,11 +14,11 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.params.TestNet3Params
-import android.support.v4.content.ContextCompat.startActivity
-import android.support.v4.app.ActivityCompat.finishAffinity
-import android.support.v4.content.ContextCompat.startActivity
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.app.ActivityCompat.finishAffinity
+import androidx.core.content.ContextCompat.startActivity
 import android.app.AlarmManager
-import android.support.v4.content.ContextCompat.getSystemService
+import androidx.core.content.ContextCompat.getSystemService
 import android.app.PendingIntent
 import com.invertedx.sentinelx.i
 import io.flutter.embedding.android.SplashScreen
