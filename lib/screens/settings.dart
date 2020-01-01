@@ -44,7 +44,9 @@ class _SettingsState extends State<Settings> {
         centerTitle: true,
         primary: true,
       ),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme
+          .of(context)
+          .backgroundColor,
       body: Container(
         margin: EdgeInsets.only(top: 12),
         child: ListView(
@@ -54,7 +56,9 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
                 "App",
-                style: TextStyle(color: Theme.of(context).accentColor),
+                style: TextStyle(color: Theme
+                    .of(context)
+                    .accentColor),
               ),
             ),
             Divider(),
@@ -65,16 +69,19 @@ class _SettingsState extends State<Settings> {
               ),
               trailing: loadingErase
                   ? SizedBox(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1,
-                      ),
-                      width: 12,
-                      height: 12,
-                    )
+                child: CircularProgressIndicator(
+                  strokeWidth: 1,
+                ),
+                width: 12,
+                height: 12,
+              )
                   : SizedBox.shrink(),
               title: Text(
                 "Clear all data",
-                style: Theme.of(context).textTheme.subtitle,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .subtitle,
               ),
               subtitle: Text("Clear all data from the device"),
               onTap: () {
@@ -89,7 +96,10 @@ class _SettingsState extends State<Settings> {
               ),
               title: Text(
                 "Theme",
-                style: Theme.of(context).textTheme.subtitle,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .subtitle,
               ),
               subtitle: Text("Customize theme"),
               onTap: () {
@@ -101,7 +111,9 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
                 "Security",
-                style: TextStyle(color: Theme.of(context).accentColor),
+                style: TextStyle(color: Theme
+                    .of(context)
+                    .accentColor),
               ),
             ),
             Divider(),
@@ -112,10 +124,13 @@ class _SettingsState extends State<Settings> {
               ),
               title: Text(
                 lockEnabled ? "Change Lock PIN" : "Enable Lock Screen",
-                style: Theme.of(context).textTheme.subtitle,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .subtitle,
               ),
               subtitle:
-                  Text("Database will be encrypted using the provided PIN"),
+              Text("Database will be encrypted using the provided PIN"),
               onTap: enableOrChangeLock,
             ),
             Divider(),
@@ -123,7 +138,9 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
                 "Network",
-                style: TextStyle(color: Theme.of(context).accentColor),
+                style: TextStyle(color: Theme
+                    .of(context)
+                    .accentColor),
               ),
             ),
             Divider(),
@@ -134,7 +151,10 @@ class _SettingsState extends State<Settings> {
               ),
               title: Text(
                 "Tor",
-                style: Theme.of(context).textTheme.subtitle,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .subtitle,
               ),
               subtitle: Text("Manage Tor service"),
               onTap: () {
@@ -148,7 +168,10 @@ class _SettingsState extends State<Settings> {
               ),
               title: Text(
                 "Samourai DOJO",
-                style: Theme.of(context).textTheme.subtitle,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .subtitle,
               ),
               subtitle: Text("Power your sentinel with Dojo backend"),
               onTap: () {
@@ -168,8 +191,14 @@ class _SettingsState extends State<Settings> {
                 Padding(
                   padding: EdgeInsets.all(24),
                 ),
-                Text("Version : $version",style: Theme.of(context).textTheme.caption,),
-                Text("build : $buildNumber",style: Theme.of(context).textTheme.caption,)
+                Text("Version : $version", style: Theme
+                    .of(context)
+                    .textTheme
+                    .caption,),
+                Text("build : $buildNumber", style: Theme
+                    .of(context)
+                    .textTheme
+                    .caption,)
               ],
             )
           ],
@@ -194,7 +223,10 @@ class _SettingsState extends State<Settings> {
     bool confirm = await showConfirmModel(
       context: context,
       title: Text("Are you sure want to  continue?",
-          style: Theme.of(context).textTheme.subhead),
+          style: Theme
+              .of(context)
+              .textTheme
+              .subhead),
       iconPositive: new Icon(
         Icons.check_circle,
         color: Colors.greenAccent[200],
@@ -230,7 +262,10 @@ class _SettingsState extends State<Settings> {
     }
     bool confirm = await showConfirmModel(
       context: context,
-      title: Text("Choose option", style: Theme.of(context).textTheme.subhead),
+      title: Text("Choose option", style: Theme
+          .of(context)
+          .textTheme
+          .subhead),
       iconPositive: new Icon(
         Icons.dialpad,
       ),
@@ -252,15 +287,15 @@ class _SettingsState extends State<Settings> {
       Navigator.of(context).pushNamedAndRemoveUntil(
           '/', (Route<dynamic> route) => false,
           arguments: "LOCK");
-      SentinelState().eventsStream.sink.add(SessionStates.LOCK);
-    }
+  }
   }
 
   void setPassword() async {
     final text = await Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => LockScreen(
+          builder: (context) =>
+              LockScreen(
                 lockScreenMode: LockScreenMode.CONFIRM,
               ),
           fullscreenDialog: true),
