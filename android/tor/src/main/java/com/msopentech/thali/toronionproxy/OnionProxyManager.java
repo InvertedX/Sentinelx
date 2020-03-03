@@ -515,5 +515,17 @@ public abstract class OnionProxyManager {
      * @param f File to make executable
      * @return True if it worked, otherwise false.
      */
-    protected abstract boolean setExecutable(File f);
+    protected boolean setExecutable(File f){
+        try {
+            f.setReadable(true);
+            f.setExecutable(true);
+            f.setWritable(false);
+            f.setWritable(true, true);
+        }catch (Exception ex){
+            Log.i("OnionProxyManager",ex.getMessage() != null ? ex.getMessage() : "");
+            ex.printStackTrace();
+        }
+
+        return   f.setExecutable(true);
+    }
 }
