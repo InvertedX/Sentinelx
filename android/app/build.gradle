@@ -122,12 +122,12 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.4'
     implementation 'com.lambdaworks:scrypt:1.4.0'
     implementation 'commons-codec:commons-codec:1.10'
-    implementation 'com.google.guava:guava:24.1-jre'
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.guava:guava:28.2-jre'
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.protobuf:protobuf-java:3.8.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.13.1'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation('com.google.zxing:core:3.3.0') {
+    implementation 'com.squareup.okhttp3:okhttp:4.4.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation('com.google.zxing:core:3.4.0') {
         transitive = true
     }
     implementation 'org.torproject:tor-android-binary:0.4.2.5'
