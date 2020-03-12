@@ -10,6 +10,7 @@ class PrefsStore {
 
   static const LOCK_STATUS = "LOCK_STATUS";
   static const TOR_STATUS = "TOR_STATUS";
+  static const TOR_PORT = "TOR_PORT";
   static const SELECTED_THEME = "THEME";
   static const THEME_ACCENT = "THEME_ACCENT";
   static const DOJO = "DOJO";
@@ -50,6 +51,19 @@ class PrefsStore {
     } catch (e) {
       print(e);
       return Future.value("");
+    }
+  }
+
+  Future<int> getInt(String key) async {
+    try {
+      var _value = await store.record(key).get(database) as int;
+      if (_value == null) {
+        return Future.value();
+      }
+      return Future.value(_value);
+    } catch (e) {
+      print(e);
+      return Future.value();
     }
   }
 

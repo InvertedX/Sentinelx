@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
@@ -35,7 +36,7 @@ class ApiService(private val applicationContext: Context) {
 
     fun getTxAndXPUBData(XpubOrAddress: String): Observable<String> {
         val baseAddress = getBaseUrl()
-        val url = if (SentinelxApp.accessToken.isNotEmpty())   "${baseAddress}multiaddr?active=$XpubOrAddress&at=${SentinelxApp.accessToken}"  else    "${baseAddress}multiaddr?active=$XpubOrAddress"
+        val url = if (SentinelxApp.accessToken.isNotEmpty()) "${baseAddress}multiaddr?active=$XpubOrAddress&at=${SentinelxApp.accessToken}" else "${baseAddress}multiaddr?active=$XpubOrAddress"
 
         Log.i("API", "CALL url -> $url")
         return Observable.fromCallable {
@@ -44,7 +45,7 @@ class ApiService(private val applicationContext: Context) {
                     .build()
             val response = client.newCall(request).execute()
             try {
-                val content = response.body()!!.string()
+                val content = response.body!!.string()
                 Log.i("API", "response -> $content")
                 return@fromCallable content
             } catch (ex: Exception) {
@@ -61,12 +62,11 @@ class ApiService(private val applicationContext: Context) {
          */
         makeClient()
 
-        i("DOJO URL  SentinelxApp.dojoUrl")
         if (SentinelxApp.dojoUrl.isNotBlank()) {
             return SentinelxApp.dojoUrl
         }
 
-        return if (TorManager.getInstance(this.applicationContext).isConnected) {
+        return if (TorManager.getInstance(this.applicationContext)?.isConnected!!) {
             if (SentinelxApp.isTestNet()) SAMOURAI_API2_TESTNET_TOR_DIST else SAMOURAI_API2_TOR_DIST
         } else {
             if (SentinelxApp.isTestNet()) SAMOURAI_API_TESTNET else SAMOURAI_API
@@ -75,7 +75,7 @@ class ApiService(private val applicationContext: Context) {
 
     fun getTx(txid: String): Observable<String> {
         val baseAddress = getBaseUrl()
-        val baseUrl = if (SentinelxApp.accessToken.isNotEmpty())  "${baseAddress}tx/$txid/?fees=trues&at=${SentinelxApp.accessToken}"  else   "${baseAddress}tx/$txid/?fees=trues"
+        val baseUrl = if (SentinelxApp.accessToken.isNotEmpty()) "${baseAddress}tx/$txid/?fees=trues&at=${SentinelxApp.accessToken}" else "${baseAddress}tx/$txid/?fees=trues"
 
         return Observable.fromCallable {
 
@@ -85,7 +85,7 @@ class ApiService(private val applicationContext: Context) {
 
             val response = client.newCall(request).execute()
             try {
-                val content = response.body()!!.string()
+                val content = response.body!!.string()
                 Log.i("API", "response -> $content")
                 return@fromCallable content
             } catch (ex: Exception) {
@@ -107,7 +107,7 @@ class ApiService(private val applicationContext: Context) {
 
             val response = client.newCall(request).execute()
             try {
-                return@fromCallable response.body()!!.string()
+                return@fromCallable response.body!!.string()
             } catch (ex: Exception) {
                 throw  ex
             }
@@ -120,7 +120,7 @@ class ApiService(private val applicationContext: Context) {
         makeClient()
 
         val baseAddress = getBaseUrl()
-        val baseUrl = if (SentinelxApp.accessToken.isNotEmpty())  "${baseAddress}unspent?active=$xpubOrAddress&at=${SentinelxApp.accessToken}"  else  "${baseAddress}unspent?active=$xpubOrAddress";
+        val baseUrl = if (SentinelxApp.accessToken.isNotEmpty()) "${baseAddress}unspent?active=$xpubOrAddress&at=${SentinelxApp.accessToken}" else "${baseAddress}unspent?active=$xpubOrAddress";
 
         return Observable.fromCallable {
 
@@ -130,7 +130,7 @@ class ApiService(private val applicationContext: Context) {
 
             val response = client.newCall(request).execute()
             try {
-                val content = response.body()!!.string()
+                val content = response.body!!.string()
                 return@fromCallable content
             } catch (ex: Exception) {
                 throw  ex;
@@ -158,7 +158,7 @@ class ApiService(private val applicationContext: Context) {
                     .method("POST", requestBody)
                     .build()
             val response = client.newCall(request).execute()
-            val content = response.body()!!.string()
+            val content = response.body!!.string()
             Log.i("API", "response -> $content")
             return@fromCallable content
 
@@ -170,9 +170,9 @@ class ApiService(private val applicationContext: Context) {
         if (BuildConfig.DEBUG) {
             builder.addInterceptor(LoggingInterceptor())
         }
-        if ((TorManager.getInstance(this.applicationContext).isConnected)) {
+        if ((TorManager.getInstance(this.applicationContext)?.isConnected!!)) {
             getHostNameVerifier(builder)
-            builder.proxy(TorManager.getInstance(this.applicationContext).proxy)
+            builder.proxy(TorManager.getInstance(this.applicationContext)?.getProxy())
         }
         builder.connectTimeout(60, TimeUnit.SECONDS) // connect timeout
         builder.readTimeout(60, TimeUnit.SECONDS)
@@ -202,7 +202,7 @@ class ApiService(private val applicationContext: Context) {
 
 
         clientBuilder.sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
-        clientBuilder.hostnameVerifier { hostname, session -> true }
+        clientBuilder.hostnameVerifier(HostnameVerifier { _, _ -> true })
 
     }
 

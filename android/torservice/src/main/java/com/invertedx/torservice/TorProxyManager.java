@@ -1047,7 +1047,6 @@ public class TorProxyManager implements TorServiceConstants, TorPrefernceConstan
 
                     }
                 } catch (Exception ioe) {
-                    Log.i("CALL NEW ID", ioe.getMessage());
 
                     debug("error requesting newnym: " + ioe.getLocalizedMessage());
                     throw new Exception("error requesting newnym: " + ioe.getLocalizedMessage());
