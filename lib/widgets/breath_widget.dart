@@ -9,8 +9,7 @@ class BreathingAnimation extends StatefulWidget {
   _BreathingAnimationState createState() => _BreathingAnimationState();
 }
 
-class _BreathingAnimationState extends State<BreathingAnimation>
-    with SingleTickerProviderStateMixin {
+class _BreathingAnimationState extends State<BreathingAnimation> with SingleTickerProviderStateMixin {
   static final _opacityTween = Tween<double>(begin: 1, end: 0.1);
 
   Animation<double> animation;
@@ -19,8 +18,7 @@ class _BreathingAnimationState extends State<BreathingAnimation>
   @override
   void initState() {
     super.initState();
-    controller =
-        AnimationController(duration: const Duration(seconds: 1), vsync: this);
+    controller = AnimationController(duration: const Duration(seconds: 1), vsync: this);
     animation = CurvedAnimation(parent: controller, curve: Curves.easeOutSine);
     controller.repeat(reverse: true);
   }

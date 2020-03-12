@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:package_info/package_info.dart';
+import 'package:sentinelx/channels/network_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/sentinelx_db.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
@@ -8,6 +10,7 @@ import 'package:sentinelx/screens/dojo_configure.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/shared_state/sentinel_state.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
+import 'package:sentinelx/widgets/port_selector.dart';
 import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/theme_chooser.dart';
@@ -44,9 +47,7 @@ class _SettingsState extends State<Settings> {
         centerTitle: true,
         primary: true,
       ),
-      backgroundColor: Theme
-          .of(context)
-          .backgroundColor,
+      backgroundColor: Theme.of(context).backgroundColor,
       body: Container(
         margin: EdgeInsets.only(top: 12),
         child: ListView(
@@ -56,9 +57,7 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
                 "App",
-                style: TextStyle(color: Theme
-                    .of(context)
-                    .accentColor),
+                style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ),
             Divider(),
@@ -69,19 +68,16 @@ class _SettingsState extends State<Settings> {
               ),
               trailing: loadingErase
                   ? SizedBox(
-                child: CircularProgressIndicator(
-                  strokeWidth: 1,
-                ),
-                width: 12,
-                height: 12,
-              )
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1,
+                      ),
+                      width: 12,
+                      height: 12,
+                    )
                   : SizedBox.shrink(),
               title: Text(
                 "Clear all data",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .subtitle,
+                style: Theme.of(context).textTheme.subtitle,
               ),
               subtitle: Text("Clear all data from the device"),
               onTap: () {
@@ -96,10 +92,7 @@ class _SettingsState extends State<Settings> {
               ),
               title: Text(
                 "Theme",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .subtitle,
+                style: Theme.of(context).textTheme.subtitle,
               ),
               subtitle: Text("Customize theme"),
               onTap: () {
@@ -111,9 +104,7 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
                 "Security",
-                style: TextStyle(color: Theme
-                    .of(context)
-                    .accentColor),
+                style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ),
             Divider(),
@@ -124,13 +115,9 @@ class _SettingsState extends State<Settings> {
               ),
               title: Text(
                 lockEnabled ? "Change Lock PIN" : "Enable Lock Screen",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .subtitle,
+                style: Theme.of(context).textTheme.subtitle,
               ),
-              subtitle:
-              Text("Database will be encrypted using the provided PIN"),
+              subtitle: Text("Database will be encrypted using the provided PIN"),
               onTap: enableOrChangeLock,
             ),
             Divider(),
@@ -138,9 +125,7 @@ class _SettingsState extends State<Settings> {
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
                 "Network",
-                style: TextStyle(color: Theme
-                    .of(context)
-                    .accentColor),
+                style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ),
             Divider(),
@@ -151,10 +136,7 @@ class _SettingsState extends State<Settings> {
               ),
               title: Text(
                 "Tor",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .subtitle,
+                style: Theme.of(context).textTheme.subtitle,
               ),
               subtitle: Text("Manage Tor service"),
               onTap: () {
@@ -164,14 +146,25 @@ class _SettingsState extends State<Settings> {
             ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.import_export),
+              ),
+              title: Text(
+                "Socks Port",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Set Tor service socks port"),
+              onTap: () {
+                showPortChooser();
+              },
+            ),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Icon(Icons.router),
               ),
               title: Text(
                 "Samourai DOJO",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .subtitle,
+                style: Theme.of(context).textTheme.subtitle,
               ),
               subtitle: Text("Power your sentinel with Dojo backend"),
               onTap: () {
@@ -191,14 +184,14 @@ class _SettingsState extends State<Settings> {
                 Padding(
                   padding: EdgeInsets.all(24),
                 ),
-                Text("Version : $version", style: Theme
-                    .of(context)
-                    .textTheme
-                    .caption,),
-                Text("build : $buildNumber", style: Theme
-                    .of(context)
-                    .textTheme
-                    .caption,)
+                Text(
+                  "Version : $version",
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                Text(
+                  "build : $buildNumber",
+                  style: Theme.of(context).textTheme.caption,
+                )
               ],
             )
           ],
@@ -222,11 +215,7 @@ class _SettingsState extends State<Settings> {
   void deleteConfirmModal() async {
     bool confirm = await showConfirmModel(
       context: context,
-      title: Text("Are you sure want to  continue?",
-          style: Theme
-              .of(context)
-              .textTheme
-              .subhead),
+      title: Text("Are you sure want to  continue?", style: Theme.of(context).textTheme.subhead),
       iconPositive: new Icon(
         Icons.check_circle,
         color: Colors.greenAccent[200],
@@ -262,10 +251,7 @@ class _SettingsState extends State<Settings> {
     }
     bool confirm = await showConfirmModel(
       context: context,
-      title: Text("Choose option", style: Theme
-          .of(context)
-          .textTheme
-          .subhead),
+      title: Text("Choose option", style: Theme.of(context).textTheme.subhead),
       iconPositive: new Icon(
         Icons.dialpad,
       ),
@@ -284,18 +270,15 @@ class _SettingsState extends State<Settings> {
       } catch (e) {
         debugPrint(e);
       }
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          '/', (Route<dynamic> route) => false,
-          arguments: "LOCK");
-  }
+      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false, arguments: "LOCK");
+    }
   }
 
   void setPassword() async {
     final text = await Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              LockScreen(
+          builder: (context) => LockScreen(
                 lockScreenMode: LockScreenMode.CONFIRM,
               ),
           fullscreenDialog: true),
@@ -320,5 +303,9 @@ class _SettingsState extends State<Settings> {
         builder: (context) {
           return ThemeChooser();
         });
+  }
+
+  void showPortChooser() {
+    showModalBottomSheet(context: context, isScrollControlled: true, builder: (context) => PortSelector());
   }
 }
