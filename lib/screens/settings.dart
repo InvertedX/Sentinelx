@@ -197,14 +197,16 @@ class _SettingsState extends State<Settings> {
                 ),
                 Text(
                   "Version : $version",
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.subtitle,
                 ),
+                SizedBox(height: 12),
                 Text(
                   "build : $buildNumber",
                   style: Theme.of(context).textTheme.caption,
                 )
               ],
-            )
+            ),
+            SizedBox(height: 120)
           ],
         ),
       ),
