@@ -130,6 +130,7 @@ class SentinalPrefs(context: Context) : Preferences(context) {
     var isTestNet by booleanPref()
     var firstRunComplete by booleanPref()
     var locked by booleanPref()
+    var timeout by intPref()
 }
 
 

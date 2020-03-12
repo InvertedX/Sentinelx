@@ -78,9 +78,29 @@ class SystemChannel {
     }
   }
 
-  Future<Map<String,dynamic>> getPackageInfo() async {
+  Future<Map<String, dynamic>> getPackageInfo() async {
     try {
       var run = await platform.invokeMapMethod<String, dynamic>("getPackageInfo");
+      return run;
+    } catch (exception) {
+      print(exception);
+      return null;
+    }
+  }
+
+  Future<bool> setCustomHttpTimeouts(num time) async {
+    try {
+      var run = await platform.invokeMethod<bool>("setHttpTimeout", time);
+      return run;
+    } catch (exception) {
+      print(exception);
+      return null;
+    }
+  }
+
+  Future<num> getHttpTimeouts() async {
+    try {
+      var run = await platform.invokeMethod<num>("getHttpTimeout");
       return run;
     } catch (exception) {
       print(exception);

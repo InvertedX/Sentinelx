@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.invertedx.sentinelx.MainActivity
 import com.invertedx.sentinelx.SentinelxApp
+import com.invertedx.sentinelx.api.ApiService
 import com.invertedx.sentinelx.utils.SentinalPrefs
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -101,6 +102,22 @@ class SystemChannel(private val applicationContext: Context, private val activit
                 }
             }
 
+            "setHttpTimeout" -> {
+                val timeout = methodCall.arguments as Int
+                SentinalPrefs(applicationContext).timeout = timeout;
+                ApiService(applicationContext).makeClient()
+                result.success(true);
+            }
+            "getHttpTimeout" -> {
+                val timeout = SentinalPrefs(applicationContext).timeout
+                if (timeout != null) {
+                    result.success(timeout)
+                } else {
+                    result.success(90)
+                }
+            }
+
+
             "getPackageInfo" -> {
                 val pm = applicationContext.packageManager
                 val info = pm.getPackageInfo(applicationContext.packageName, 0)
@@ -111,7 +128,7 @@ class SystemChannel(private val applicationContext: Context, private val activit
                 map["buildNumber"] = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     info.longVersionCode.toString()
                 } else info.versionCode.toString()
-                
+
                 result.success(map)
             }
 

@@ -157,6 +157,20 @@ class _SettingsState extends State<Settings> {
             ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.http),
+              ),
+              title: Text(
+                "HTTP Timeout ",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Set custom http timeout"),
+              onTap: () {
+                showTimeoutChooser();
+              },
+            ),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Icon(Icons.router),
               ),
               title: Text(
@@ -288,10 +302,6 @@ class _SettingsState extends State<Settings> {
     } catch (e) {
       print("Error $e");
     }
-//    Navigator.of(context)
-//        .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-//    if (!SentinelState().eventsStream.isClosed)
-//      SentinelState().eventsStream.sink.add(SessionStates.LOCK);
   }
 
   void showThemeChooser(BuildContext context) {
@@ -304,5 +314,76 @@ class _SettingsState extends State<Settings> {
 
   void showPortChooser() {
     showModalBottomSheet(context: context, isScrollControlled: true, builder: (context) => PortSelector());
+  }
+
+  void showTimeoutChooser() {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return TimeoutChooser();
+        });
+  }
+}
+
+class TimeoutChooser extends StatefulWidget {
+  @override
+  _TimeoutChooserState createState() => _TimeoutChooserState();
+}
+
+class _TimeoutChooserState extends State<TimeoutChooser> {
+  List<num> timeouts = [60, 0, 90, 0, 120, 0, 150];
+
+  num selectedVal = 90;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        child: Wrap(
+          direction: Axis.horizontal,
+          children: timeouts.map((timeout) {
+            if (timeout == 0) {
+              return Divider();
+            }
+            return ListTile(
+              dense: true,
+              onTap: () {
+                onSelect(timeout);
+              },
+              title: Text('$timeout seconds'),
+              trailing: Radio(
+                value: timeout,
+                groupValue: selectedVal,
+                onChanged: onSelect,
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChannel().getHttpTimeouts().then((onValue) {
+      if (onValue == 0) {
+        return;
+      }
+      setState(() {
+        selectedVal = onValue;
+      });
+    });
+  }
+
+  void onSelect(num timeout) {
+    SystemChannel().setCustomHttpTimeouts(timeout);
+    setState(() {
+      selectedVal = timeout;
+    });
+    Future.delayed(Duration(milliseconds: 400)).then((v) {
+      Navigator.pop(context);
+    });
   }
 }

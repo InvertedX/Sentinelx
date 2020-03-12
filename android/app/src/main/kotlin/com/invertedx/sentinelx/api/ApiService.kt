@@ -1,12 +1,14 @@
 package com.invertedx.sentinelx.api
 
 import android.content.Context
+import android.preference.PreferenceManager
 import android.util.Log
 import com.invertedx.sentinelx.BuildConfig
 import com.invertedx.sentinelx.SentinelxApp
 import com.invertedx.sentinelx.i
 import com.invertedx.sentinelx.tor.TorManager
 import com.invertedx.sentinelx.utils.LoggingInterceptor
+import com.invertedx.sentinelx.utils.SentinalPrefs
 import io.reactivex.Observable
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -140,6 +142,9 @@ class ApiService(private val applicationContext: Context) {
     }
 
     fun addHDAccount(xpub: String, bip: String): Observable<String> {
+
+        makeClient()
+
         val baseAddress = getBaseUrl()
         val baseUrl = if (SentinelxApp.accessToken.isNotEmpty()) "${baseAddress}xpub?at=${SentinelxApp.accessToken.trim()}" else "${baseAddress}xpub";
 
@@ -157,6 +162,8 @@ class ApiService(private val applicationContext: Context) {
                     .url(baseUrl)
                     .method("POST", requestBody)
                     .build()
+
+            client.connectTimeoutMillis
             val response = client.newCall(request).execute()
             val content = response.body!!.string()
             Log.i("API", "response -> $content")
@@ -165,7 +172,8 @@ class ApiService(private val applicationContext: Context) {
         }
     }
 
-    private fun makeClient() {
+  
+    fun makeClient() {
         val builder = OkHttpClient.Builder()
         if (BuildConfig.DEBUG) {
             builder.addInterceptor(LoggingInterceptor())
@@ -174,8 +182,14 @@ class ApiService(private val applicationContext: Context) {
             getHostNameVerifier(builder)
             builder.proxy(TorManager.getInstance(this.applicationContext)?.getProxy())
         }
-        builder.connectTimeout(60, TimeUnit.SECONDS) // connect timeout
-        builder.readTimeout(60, TimeUnit.SECONDS)
+        val prefs = SentinalPrefs(applicationContext)
+
+        var timeout = 90L;
+        if (prefs.timeout != null) {
+            timeout = prefs.timeout!!.toLong();
+        }
+        builder.connectTimeout(timeout, TimeUnit.SECONDS) // connect timeout
+        builder.readTimeout(timeout, TimeUnit.SECONDS)
         client = builder.build()
     }
 
