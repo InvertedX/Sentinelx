@@ -300,16 +300,6 @@ class _DojoCardState extends State<DojoCard> {
                                   color: getTorIconColor(model.torStatus),
                                 ),
                                 onPressed: () {
-//                  showTorPanel(context);
-
-                                  Navigator.push(
-                                      context,
-                                      new MaterialPageRoute(
-                                          builder: (c) {
-                                            return DojoConfigureScreen();
-                                          },
-                                          fullscreenDialog: true));
-//                  showDojoPanel(context);
                                 },
                               );
                             },

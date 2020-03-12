@@ -5,6 +5,7 @@ import 'package:sentinelx/channels/network_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/shared_state/network_state.dart';
 import 'package:sentinelx/utils/utils.dart';
+import 'package:sentinelx/widgets/port_selector.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 showTorPanel(BuildContext context) {
@@ -27,6 +28,7 @@ class TorControlPanel extends StatefulWidget {
 class _TorControlPanelState extends State<TorControlPanel> {
   bool torOnStartup = false;
   bool isDojoEnabled = false;
+  int port = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -53,15 +55,11 @@ class _TorControlPanelState extends State<TorControlPanel> {
                       children: <Widget>[
                         Text(
                           "Tor Routing",
-                          style: Theme.of(context)
-                              .textTheme
-                              .title
-                              .copyWith(fontSize: 16),
+                          style: Theme.of(context).textTheme.title.copyWith(fontSize: 16),
                         ),
                         Consumer<NetworkState>(
                           builder: (context, model, c) {
-                            bool isRunning =
-                                model.torStatus == TorStatus.CONNECTED;
+                            bool isRunning = model.torStatus == TorStatus.CONNECTED;
                             return FlatButton(
                               onPressed: () {
                                 startOrStopTor(isRunning);
@@ -119,18 +117,31 @@ class _TorControlPanelState extends State<TorControlPanel> {
                     ),
                     Divider(),
                     ListTile(
+                      onTap: () {
+                        showModalBottomSheet(context: context, isScrollControlled: true, builder: (context) => PortSelector());
+                      },
+                      title: Text("SOCKS Port"),
+                      trailing: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24),
+                        child: Text(port==-1 ? "auto": "$port" ),
+                      ),
+                    ),
+                    Divider(),
+                    ListTile(
                       title: Text("View tor logs"),
                       onTap: showLogs,
                     ),
-                    isDojoEnabled ? ListTile(
-                      subtitle: Text(
-                        "Note: Tor cannot be disabled if dojo is active",
-                        style: Theme.of(context).textTheme.subtitle.copyWith(fontSize: 12),
-                        textAlign: TextAlign.center,
-                      ),
-                      selected: true,
-                      onTap: showLogs,
-                    ) : SizedBox.shrink(),
+                    isDojoEnabled
+                        ? ListTile(
+                            subtitle: Text(
+                              "Note: Tor cannot be disabled if dojo is active",
+                              style: Theme.of(context).textTheme.subtitle.copyWith(fontSize: 12),
+                              textAlign: TextAlign.center,
+                            ),
+                            selected: true,
+                            onTap: showLogs,
+                          )
+                        : SizedBox.shrink(),
                   ],
                 ),
               )
@@ -159,9 +170,11 @@ class _TorControlPanelState extends State<TorControlPanel> {
 
   void init() async {
     String data = await PrefsStore().getString(PrefsStore.DOJO);
+    int portPref = await PrefsStore().getInt(PrefsStore.TOR_PORT);
     if (data != null && data != "") {
       setState(() {
         isDojoEnabled = true;
+        port = portPref;
       });
     }
   }
@@ -179,8 +192,7 @@ class _TorControlPanelState extends State<TorControlPanel> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16, horizontal: 14),
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
                     child: Text(
                       "Tor Logs",
                       style: Theme.of(context).textTheme.caption,
@@ -213,8 +225,7 @@ class _TorLogViewerState extends State<TorLogViewer> {
     super.initState();
 
     NetworkChannel().listenToTorLogs().stream.listen((event) {
-      if (log.split("\n").last == event ||
-          NetworkChannel().status == TorStatus.DISCONNECTED) {
+      if (log.split("\n").last == event || NetworkChannel().status == TorStatus.DISCONNECTED) {
         return;
       }
       setState(() {
@@ -234,10 +245,7 @@ class _TorLogViewerState extends State<TorLogViewer> {
             child: Text(
               "$log",
               textAlign: TextAlign.left,
-              style: TextStyle(
-                  fontSize: 12,
-                  color: Theme.of(context).textTheme.subtitle.color,
-                  fontWeight: FontWeight.w300),
+              style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.subtitle.color, fontWeight: FontWeight.w300),
             ),
           )),
     );
