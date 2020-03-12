@@ -78,5 +78,13 @@ class SystemChannel {
     }
   }
 
-
+  Future<Map<String,dynamic>> getPackageInfo() async {
+    try {
+      var run = await platform.invokeMapMethod<String, dynamic>("getPackageInfo");
+      return run;
+    } catch (exception) {
+      print(exception);
+      return null;
+    }
+  }
 }

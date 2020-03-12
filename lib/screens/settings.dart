@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:package_info/package_info.dart';
-import 'package:sentinelx/channels/network_channel.dart';
+import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/sentinelx_db.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/dojo_configure.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
-import 'package:sentinelx/shared_state/sentinel_state.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/port_selector.dart';
 import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
@@ -205,10 +202,10 @@ class _SettingsState extends State<Settings> {
     this.setState(() {
       lockEnabled = lockState;
     });
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    Map<String, dynamic> packageInfo = await SystemChannel().getPackageInfo();
     setState(() {
-      version = packageInfo.version;
-      buildNumber = packageInfo.buildNumber;
+      version = packageInfo['version'];
+      buildNumber = packageInfo['buildNumber'];
     });
   }
 

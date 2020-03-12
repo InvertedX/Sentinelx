@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.invertedx.sentinelx.MainActivity
@@ -14,14 +15,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.params.TestNet3Params
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.app.ActivityCompat.finishAffinity
-import androidx.core.content.ContextCompat.startActivity
-import android.app.AlarmManager
-import androidx.core.content.ContextCompat.getSystemService
-import android.app.PendingIntent
-import com.invertedx.sentinelx.i
-import io.flutter.embedding.android.SplashScreen
+import java.util.*
 
 
 class SystemChannel(private val applicationContext: Context, private val activity: MainActivity) : MethodChannel.MethodCallHandler {
@@ -105,6 +99,20 @@ class SystemChannel(private val applicationContext: Context, private val activit
                         }
                     }
                 }
+            }
+
+            "getPackageInfo" -> {
+                val pm = applicationContext.packageManager
+                val info = pm.getPackageInfo(applicationContext.packageName, 0)
+                val map: MutableMap<String, String> = HashMap()
+                map["appName"] = info.applicationInfo.loadLabel(pm).toString()
+                map["packageName"] = applicationContext.packageName
+                map["version"] = info.versionName
+                map["buildNumber"] = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    info.longVersionCode.toString()
+                } else info.versionCode.toString()
+                
+                result.success(map)
             }
 
         }
