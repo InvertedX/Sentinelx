@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+  <string name="app_description">Orbot é um aplicativo de proxy livre que capacita outros aplicativos a usar a internet com mais segurança. Orbot usa o Tor para criptografar seu tráfego na internet e então o esconde \"saltando\" entre uma série de computadores ao redor do mundo. Tor é um software livre e de rede aberta que ajuda você a se defender de certas formas de vigilância que ameaçam privacidade e liberdade pessoais, atividades e relações comerciais confidenciais e segurança estatal conhecida como análise de tráfego.</string>
+    <string name="status_starting_up">Orbot está iniciando...</string>
+  <string name="status_activated">Conectado à rede Tor</string>
+  <string name="status_disabled">Orbot está desativado</string>
+  <string name="status_shutting_down">TorService está desligando</string>
+  <string name="tor_process_starting">Iniciando cliente Tor...</string>
+  <string name="tor_process_complete">completo.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+    <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">Não foi possível iniciar o processo Tor: </string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">Suas configurações de Endereços Acessíveis causou uma exceção!</string>
+  <string name="your_relay_settings_caused_an_exception_">Suas configurações de retransmissão causaram uma exceção!</string>
+    <string name="found_existing_tor_process">procurando processos Tor existentes...</string>
+  <string name="something_bad_happened">Algo ruim aconteceu. Cheque o lo</string>
+    <string name="unable_to_read_hidden_service_name">habilitar ler o nome do serviço oculto</string>
+  <string name="unable_to_start_tor">Habilitar iniciar o Tor:</string>
+    <string name="no_internet_connection_tor">Sem conexão na internet; Tor está na espera...</string>
+    <string name="newnym">Você trocou para uma nova identidade Tor!</string>
+    <string name="no_network_connectivity_putting_tor_to_sleep_">Sem conectividade na rede. Colocando o Tor para dormir...</string>
+  <string name="network_connectivity_is_good_waking_tor_up_">Conectividade da rede está boa. Acordando Tor</string>
+  <string name="updating_settings_in_tor_service">atualizando configurações no serviço Tor</string>
+</resources>

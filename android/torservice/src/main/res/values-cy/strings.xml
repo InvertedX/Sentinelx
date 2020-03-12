@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+    <string name="status_starting_up">Mae Orbot yn cychwyn...</string>
+  <string name="status_activated">Wedi cysylltu â rhwydwaith Tor</string>
+  <string name="tor_process_starting">Yn cychwyn cleient Tor</string>
+  <string name="tor_process_complete">Wedi ei gwblhau.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+  <!--Warning screen-->
+    <!--Permissions screen-->
+  <!--TipsAndTricks screen-->
+  <!--Transparent Proxy screen-->
+</resources>

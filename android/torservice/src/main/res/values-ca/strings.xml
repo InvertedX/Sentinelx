@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+    <string name="status_starting_up">L\'Orbot s\'està iniciant...</string>
+  <string name="status_activated">Esteu connectat a la xarxa Tor</string>
+  <string name="status_disabled">L\'Orbot està desactivat</string>
+  <string name="tor_process_starting">S\'està iniciant el client Tor...</string>
+  <string name="tor_process_complete">fet.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+  <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">No s\'ha pogut iniciar el procés Tor:</string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">Els paràmetres d\'adreces accessibles han provocat una excepció.</string>
+  <string name="your_relay_settings_caused_an_exception_">Els paràmetres de reemissió han causat una excepció.</string>
+    <string name="found_existing_tor_process">s\'ha trobat un procés Tor existent...</string>
+  <string name="something_bad_happened">Ha fallat alguna cosa. Comproveu el registre</string>
+    <string name="unable_to_read_hidden_service_name">ha estat impossible llegir el nom del servei ocult</string>
+  <string name="unable_to_start_tor">Ha estat impossible iniciar Tor:</string>
+    <string name="newnym">Heu canviat a una nova identitat Tor.</string>
+</resources>

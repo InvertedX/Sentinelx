@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+  <string name="app_description">Orbotは他のアプリがインターネットをより安全に使うことを可能にするフリーのプロキシアプリです。Orbotでは、Torを用いてあなたの端末のトラフィックを暗号化し、世界中のコンピューターを中継することで、そのトラフィックを隠します。Torはフリーのソフトウェアとオープンなネットワークであり、ユーザーの自由とプライバシーを脅かす監視活動や、機密のビジネス活動、国家によるトラフィック分析から身を守ることを助けてくれます。</string>
+    <string name="status_starting_up">Orbotが開始されています...</string>
+  <string name="status_activated">Torネットワークに接続しています</string>
+  <string name="status_disabled">\"Orbotが解除されました</string>
+  <string name="status_shutting_down">TorServiceが終了しています</string>
+  <string name="tor_process_starting">Torクライエントを開始しています...</string>
+  <string name="tor_process_complete">完了</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+    <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">Torプロセスの起動に失敗:</string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">あなたのReachableAddresses設定により例外が発生しました!</string>
+  <string name="your_relay_settings_caused_an_exception_">あなたのリレー設定により例外が発生しました!</string>
+    <string name="found_existing_tor_process">Torプロセスを発見</string>
+  <string name="something_bad_happened">何かが起こりました。ログを確認してください。</string>
+    <string name="unable_to_read_hidden_service_name">hidden serviceの名前読込不能</string>
+  <string name="unable_to_start_tor">Torを実行できませんでした</string>
+    <string name="no_internet_connection_tor">インターネット接続なし。Torは待機中です...</string>
+    <string name="newnym">新たな Tor の身元に切り替えました。</string>
+    <string name="no_network_connectivity_putting_tor_to_sleep_">ネットワーク接続がありません。Torはスリープします…</string>
+  <string name="network_connectivity_is_good_waking_tor_up_">ネットワーク接続は良好です。Torを有効にします…</string>
+  <string name="updating_settings_in_tor_service">Torサービスの設定を更新中</string>
+</resources>

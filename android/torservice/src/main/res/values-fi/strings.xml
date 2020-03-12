@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+  <string name="app_description">Orbot on ilmainen välityspalvelinsovellus, joka tarjoaa muille sovelluksille mahdollisuuden käyttää internetiä turvallisemmin. Orbot käyttää Toria kryptaamaan verkkoliikenteesi ja sitten piilottaa sen kierrättämällä sitä usean tietokoneen kautta ympäri maailman. Tor on vapaa ohjelmisto ja avoin verkosto, jotka auttavat puolustautumaan vapautta ja yksityisyyttä uhkaavalta verkkovalvonnalta ja valtioiden verkonseurannalta sekä suojaamaan salaisia liiketoimintoja ja -yhteyksiä.</string>
+    <string name="status_starting_up">Orbot käynnistyy...</string>
+  <string name="status_activated">Yhdistetty Tor-verkkoon</string>
+  <string name="status_disabled">Orbot on poistettu käytöstä</string>
+  <string name="tor_process_starting">Käynnistetään Tor-ohjelmaa...</string>
+  <string name="tor_process_complete">valmis.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+    <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">Tor-prosessin käynnistäminen epäonnistui:</string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">ReachableAccess-asetuksesi aiheuttivat virheen!</string>
+  <string name="your_relay_settings_caused_an_exception_">Releasetuksesi aiheuttivat virheen!</string>
+    <string name="found_existing_tor_process">löytyi olemassaoleva Tor-prosessi...</string>
+  <string name="something_bad_happened">Jotain pahaa tapahtui. Tarkista loki</string>
+    <string name="unable_to_read_hidden_service_name">piilopalvelunimen lukeminen epäonnistui</string>
+  <string name="unable_to_start_tor">Torin käynnistys epäonnistui:</string>
+    <string name="no_internet_connection_tor">Ei internet-yhteyttä; Tor on valmiustilassa...</string>
+    <string name="newnym">Vaihdoit Tor-identiteettisi uuteen!</string>
+    <string name="no_network_connectivity_putting_tor_to_sleep_">Ei verkkoyhteyttä. Tor siirtyy valmiustilaan...</string>
+  <string name="network_connectivity_is_good_waking_tor_up_">Verkkoyhteys toimii. Herätetään Tor...</string>
+  <string name="updating_settings_in_tor_service">päivitetään Tor-palvelun asetuksia</string>
+</resources>

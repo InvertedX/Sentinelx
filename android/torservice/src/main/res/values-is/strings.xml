@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+  <string name="app_description">Orbot er ókeypis proxy smáforrit sem gerir öðrum smáforritum kleift að nota veraldarvefinn á öruggari hátt. Orbot notar Tor til að dulkóða umferð þína á netinu og felur hana svo með að hoppa í gegnum fjölda tölva um allan heim. Tor er ókeypis hugbúnaður og opið net sem aðstoðar þig við að verjast gegn eftirliti á netinu sem vinnur gegn frelsi einkalífsins og friðhelgi, trúnaðar viðskiptamálum og samböndum, og ríkisöryggi þekkt sem umferðargreining.</string>
+    <string name="status_starting_up">Orbot er að ræsa...</string>
+  <string name="status_activated">Tengdur við Tor netið</string>
+  <string name="status_disabled">Orbot er slökkt</string>
+  <string name="tor_process_starting">Kveiki á Tor notanda...</string>
+  <string name="tor_process_complete">lokið.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+    <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">Gat ekki kveikt á Tor þráð:</string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">Þitt ReachableAddressur stillingar ollu undanþágu!</string>
+  <string name="your_relay_settings_caused_an_exception_">Endurvarp stillingar þínar ollu undanþágu!</string>
+    <string name="found_existing_tor_process">fann annan Tor þráð...</string>
+  <string name="something_bad_happened">Eitthvað slæmt gerðist. Athugaðu skráninguna</string>
+    <string name="unable_to_read_hidden_service_name">get ekki lesið nafn földu þjónustunnar</string>
+  <string name="unable_to_start_tor">Get ekki kveikt á Tor:</string>
+    <string name="no_internet_connection_tor">Engin tenging við netið; Tor er í biðstöðu...</string>
+    <string name="newnym">Þú ert komin með nýtt Tor auðkenni!</string>
+    <string name="no_network_connectivity_putting_tor_to_sleep_">Engin tenging við netið. Tor verður svæfður...</string>
+  <string name="network_connectivity_is_good_waking_tor_up_">Tenging við netið er góð. Tor verður vakinn...</string>
+  <string name="updating_settings_in_tor_service">uppfæri stillingar í Tor þjónustu</string>
+</resources>

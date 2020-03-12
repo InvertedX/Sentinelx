@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Орбот</string>
+  <string name="app_description">Орбот је бесплатна прокси апликација која даје моћ другим апликацијама да безбедније користе интернет. Орбот користи Тор за шифровање вашег интернет саобраћаја и онда га скрива слањем кроз низ рачунара широм света. Тор је слободан софтвер и отворена мрежа која помаже да се одбраните од разних облика надзора мрежа који угрожавају личну слободу и приватност, поверљиве пословне активности и личне односе и државне безбедности познате као анализа саобраћаја.</string>
+    <string name="status_starting_up">Орбот се покреће...</string>
+  <string name="status_activated">Повезан са Тор мрежом</string>
+  <string name="status_disabled">Орбот је деактивиран</string>
+  <string name="tor_process_starting">Покреће се Тор клијент...</string>
+  <string name="tor_process_complete">завршено.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+  <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">Није могуће покренути Тор процес:</string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">Ваше ReachableAddresses поставке су изазвале изузетак!</string>
+  <string name="your_relay_settings_caused_an_exception_">Ваше поставке релеја су изазвале изузетак!</string>
+    <string name="found_existing_tor_process">нађен покренути Тор процес...</string>
+  <string name="something_bad_happened">Нешто лоше се догодило. Прегледајте логове</string>
+    <string name="unable_to_read_hidden_service_name">нисам у могућности да прочитам име сакривеног сервиса</string>
+  <string name="unable_to_start_tor">Тор није у могућности да се покрене:</string>
+</resources>
