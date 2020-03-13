@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+  <string name="app_description">Az Orbot egy ingyenes proxy alkalmazás, ami képessé tesz alkalmazásokat, hogy biztonságosabban használhassák az internetet. Az Orbot Tor-t használ, hogy titkosítsa az internetforgalmadat és elrejtse azáltal, hogy pattogtatja számítógépek sorozatain keresztül a világ körül. A Tor ingyenes szoftver és nyitott hálózat, ami segít megvédeni a hálózati felügyelettől, ami fenyegeti a személyi szabadságot és magánéletet, a bizalmas céges tevékenységeket és kapcsolatokat, és állambiztonság címén a forgalomelemzéstől.</string>
+    <string name="status_starting_up">Az Orbot indul...</string>
+  <string name="status_activated">Csatlakozva a Tor hálózathoz</string>
+  <string name="status_disabled">Az Orbot deaktiválva</string>
+  <string name="status_shutting_down">A TorService leáll</string>
+  <string name="tor_process_starting">A Tor kliens indítása...</string>
+  <string name="tor_process_complete">kész.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+    <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">Nem indítható el a Tor folyamat:</string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">Az elérhető címeid beállításai kivételt okoztak!</string>
+  <string name="your_relay_settings_caused_an_exception_">Az átjátszód beállításai kivételt okoztak!</string>
+    <string name="found_existing_tor_process">létező Tor folyamat találva...</string>
+  <string name="something_bad_happened">Valami rossz történt. Nézd meg a naplót.</string>
+    <string name="unable_to_read_hidden_service_name">nem olvasható a rejtett szolgáltatás neve</string>
+  <string name="unable_to_start_tor">A Tor indítása sikertelen:</string>
+    <string name="no_internet_connection_tor">Nincs internetkapcsolat; Tor készenlétben...</string>
+    <string name="newnym">Új Tor identitásra váltottál!</string>
+    <string name="no_network_connectivity_putting_tor_to_sleep_">Nincs hálózati kapcsolat. Tor alvó állapotba helyezése...</string>
+  <string name="network_connectivity_is_good_waking_tor_up_">A hálózati kapcsolat jó. Tor felébresztése...</string>
+  <string name="updating_settings_in_tor_service">a Tor szolgáltatás beállításainak frissítése</string>
+</resources>

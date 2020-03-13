@@ -4,17 +4,19 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
+import android.util.Log
+import android.widget.Toast
 import com.invertedx.sentinelx.MainActivity
 import com.invertedx.sentinelx.tor.TorManager
 import com.invertedx.sentinelx.tor.TorService
 import com.invertedx.sentinelx.utils.Connectivity
+import com.invertedx.torservice.TorProxyManager
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
@@ -38,15 +40,23 @@ class NetworkChannel(private val applicationContext: Context, private val activi
         EventChannel(activity.flutterView, TOR_LOG_STREAM)
                 .setStreamHandler(object : EventChannel.StreamHandler {
                     override fun onListen(arg: Any?, eventSink: EventChannel.EventSink?) {
-                        val logger = Observable.interval(2, TimeUnit.SECONDS, Schedulers.io())
-                                .map { TorManager.getInstance(applicationContext).latestLogs }
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe({
-                                    eventSink?.success(it)
-                                }, {
 
-                                })
-                        compositeDisposable.add(logger)
+                        val circuitLogs =  TorManager.getInstance(applicationContext)!!
+                                .circuitLogs;
+
+
+                        val logs =  TorManager.getInstance(applicationContext)!!
+                                .torLogs;
+
+
+                        val logger  = Observable.merge(circuitLogs,logs)
+                                ?.subscribeOn(Schedulers.io())
+                                ?.observeOn(AndroidSchedulers.mainThread())
+                                ?.subscribe {
+                                    eventSink?.success(it)
+                                }
+
+                        logger?.let { compositeDisposable.add(it) }
 
                     }
 
@@ -81,23 +91,23 @@ class NetworkChannel(private val applicationContext: Context, private val activi
                     startIntent.action = TorService.START_SERVICE
                     applicationContext.startService(startIntent)
                     val disposable = TorManager.getInstance(applicationContext)
-                            .torStatus
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe ({
+                            ?.torStatus
+                            ?.subscribeOn(Schedulers.io())
+                            ?.observeOn(AndroidSchedulers.mainThread())
+                            ?.subscribe({
                                 if (it != null)
                                     when (it) {
-                                        TorManager.CONNECTION_STATES.CONNECTED -> {
+                                        TorProxyManager.ConnectionStatus.CONNECTED -> {
 
                                             result.success(true)
                                         }
-                                        TorManager.CONNECTION_STATES.IDLE -> {
+                                        TorProxyManager.ConnectionStatus.IDLE -> {
 
                                         }
-                                        TorManager.CONNECTION_STATES.DISCONNECTED -> {
+                                        TorProxyManager.ConnectionStatus.DISCONNECTED -> {
 
                                         }
-                                        TorManager.CONNECTION_STATES.CONNECTING -> {
+                                        TorProxyManager.ConnectionStatus.CONNECTING -> {
                                         }
                                     }
                             }, {
@@ -127,22 +137,42 @@ class NetworkChannel(private val applicationContext: Context, private val activi
             }
 
             "torStatus" -> {
-                if (TorManager.getInstance(applicationContext).state == null) {
+                if (TorManager.getInstance(applicationContext)?.state == null) {
                     return result.success("IDLE")
                 }
-                return when (TorManager.getInstance(applicationContext).state) {
-                    TorManager.CONNECTION_STATES.CONNECTED -> {
+                return when (TorManager.getInstance(applicationContext)?.state) {
+                    TorProxyManager.ConnectionStatus.CONNECTED -> {
                         result.success("CONNECTED")
                     }
-                    TorManager.CONNECTION_STATES.IDLE -> {
+                    TorProxyManager.ConnectionStatus.IDLE -> {
                         result.success("IDLE")
                     }
-                    TorManager.CONNECTION_STATES.DISCONNECTED -> {
+                    TorProxyManager.ConnectionStatus.DISCONNECTED -> {
                         result.success("DISCONNECTED")
                     }
-                    TorManager.CONNECTION_STATES.CONNECTING -> {
+                    TorProxyManager.ConnectionStatus.CONNECTING -> {
                         result.success("CONNECTING")
                     }
+                    else -> {
+                        result.success("WAITING")
+
+                    }
+                }
+            }
+
+            "setTorSocksPort" -> {
+                try {
+                    val port = methodCall.arguments as Int
+                    port?.let {
+                        TorManager.getInstance(applicationContext)?.setPort(it);
+                        Toast.makeText(applicationContext, "Reloading tor configurations...", Toast.LENGTH_SHORT).show()
+                        result.success(true);
+                        return
+                    }
+                    
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                    result.error(null, ex.message, null);
                 }
             }
 
@@ -152,28 +182,28 @@ class NetworkChannel(private val applicationContext: Context, private val activi
     override fun onListen(args: Any?, events: EventChannel.EventSink?) {
 
         val disposable = TorManager.getInstance(applicationContext)
-                .torStatus
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
+                ?.torStatus
+                ?.subscribeOn(Schedulers.io())
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribe {
                     if (it != null && events != null)
                         when (it) {
-                            TorManager.CONNECTION_STATES.CONNECTED -> {
+                            TorProxyManager.ConnectionStatus.CONNECTED -> {
                                 events.success("CONNECTED")
                             }
-                            TorManager.CONNECTION_STATES.IDLE -> {
+                            TorProxyManager.ConnectionStatus.IDLE -> {
                                 events.success("IDLE")
                             }
-                            TorManager.CONNECTION_STATES.DISCONNECTED -> {
+                            TorProxyManager.ConnectionStatus.DISCONNECTED -> {
                                 events.success("DISCONNECTED")
                             }
-                            TorManager.CONNECTION_STATES.CONNECTING -> {
+                            TorProxyManager.ConnectionStatus.CONNECTING -> {
                                 events.success("CONNECTING")
 
                             }
                         }
                 }
-        compositeDisposable.add(disposable)
+        disposable?.let { compositeDisposable.add(it) }
 
     }
 

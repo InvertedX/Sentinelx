@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+  <string name="app_description">Orbot är en gratis proxyapp som möjliggör andra appar att använda internet mer säkert. Orbot använder Tor för att kryptera din internettrafik och döljer den genom att den studsar genom ett antal datorer världen över. Tor är fri programvara och ett öppet nätverk som hjälper dig att skydda dig mot en form av nätverksövervakning som hotar personlig integritet och frihet, hemliga affärsaktiviteter och relationer, och skyddar mot statlig övervakning även kallad trafikanalys.</string>
+    <string name="status_starting_up">Orbot startar...</string>
+  <string name="status_activated">Uppkopplad till Tor nätverket</string>
+  <string name="status_disabled">Orbot är inaktiverad</string>
+  <string name="status_shutting_down">TorService avslutas</string>
+  <string name="tor_process_starting">Startar Tor klient...</string>
+  <string name="tor_process_complete">färdig.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+    <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">Kunde inte starta Tor-process:</string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">Din NåbaraAdresser inställning orsakade ett undantag!</string>
+  <string name="your_relay_settings_caused_an_exception_">Din relä inställning orsakade ett undantag!</string>
+    <string name="found_existing_tor_process">hittade existerande Tor process...</string>
+  <string name="something_bad_happened">Något dåligt hände. Kolla loggen.</string>
+    <string name="unable_to_read_hidden_service_name">kan inte läsa gömda tjänstens namn</string>
+  <string name="unable_to_start_tor">Kan inte starta Tor:</string>
+    <string name="no_internet_connection_tor">Ingen internetanslutning; Tor är i standby-läge...</string>
+    <string name="newnym">Du har bytt till en ny Tor identitet!</string>
+    <string name="no_network_connectivity_putting_tor_to_sleep_">Ingen nätverksanslutning. Försätter Tor i dvala...</string>
+  <string name="network_connectivity_is_good_waking_tor_up_">Nätverksanslutningen fungerar. Väcker Tor...</string>
+  <string name="updating_settings_in_tor_service">uppdaterar inställningar i Tor-tjänsten</string>
+</resources>

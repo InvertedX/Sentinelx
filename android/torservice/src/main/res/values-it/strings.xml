@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+  <string name="app_description">Orbot è un\'applicazione proxy che permette alle altre applicazioni di accedere a internet in maniera più sicura. Orbot usa Tor per cifrare il  traffico internet e lo nasconde poi facendolo rimbalzare attraverso una serie di computer attorno al mondo. Tor è un software libero e una rete aperta che aiuta a difendersi da una forma di sorveglianza della rete conosciuta come analisi del traffico. Quest\'ultima minaccia libertà e privacy personale, attività commerciali riservate, rapporti interpersonali, e persino la sicurezza di stato.</string>
+    <string name="status_starting_up">Orbot è in esecuzione...</string>
+  <string name="status_activated">Connesso alla rete Tor</string>
+  <string name="status_disabled">\"Orbot è disattivato</string>
+  <string name="status_shutting_down">TorService si sta spegnendo</string>
+  <string name="tor_process_starting">Avvio client Tor...</string>
+  <string name="tor_process_complete">completa.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+    <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">Impossibile avviare il processo Tor:</string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">La tua configurazione dell\'indirizzo raggiungibile ha causato un\'eccezione!</string>
+  <string name="your_relay_settings_caused_an_exception_">La configurazione del tuo relay ha causato un\'eccezione!</string>
+    <string name="found_existing_tor_process">trovato un processo Tor esistente...</string>
+  <string name="something_bad_happened">E\' accaduto un evento indesiderato. Controllare i log.</string>
+    <string name="unable_to_read_hidden_service_name">Impossibile leggere il nome del servizio nascosto.</string>
+  <string name="unable_to_start_tor">Impossibile avviare Tor:</string>
+    <string name="no_internet_connection_tor">Nessuna connessione ad internet; Tor è in standby...</string>
+    <string name="newnym">Sei passato a una nuova identità Tor!</string>
+    <string name="no_network_connectivity_putting_tor_to_sleep_">Nessuna connettività di rete. Mettendo Tor a riposo...</string>
+  <string name="network_connectivity_is_good_waking_tor_up_">Connettività di rete buona. Svegliando Tor...</string>
+  <string name="updating_settings_in_tor_service">aggiornamento impostazioni nel servizio Tor</string>
+</resources>

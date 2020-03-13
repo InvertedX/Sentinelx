@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+    <string name="status_starting_up">Orbot abiarazten ari da...</string>
+  <string name="status_activated">Tor sarera konektatuta</string>
+  <string name="status_disabled">\"Orbot desaktibatuta dago</string>
+  <string name="tor_process_starting">Tor bezeroa hasten...</string>
+  <string name="tor_process_complete">eginda.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+  <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">Ezin izan da Tor prozesua hasi:</string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">Zure helbide atzigarriak salbuespena sortu du!</string>
+  <string name="your_relay_settings_caused_an_exception_">Zure errele ezarpenak salbuespena sortu dute!</string>
+    <string name="found_existing_tor_process">Aurreko Tor prozesua topatuta...</string>
+  <string name="something_bad_happened">Zerbait txarra gertatu da. Begiratu logetan</string>
+    <string name="unable_to_read_hidden_service_name">ezkutuko zerbitzuare izena ezin da irakurri</string>
+  <string name="unable_to_start_tor">Ezin izan da Tor hasi:</string>
+    <string name="no_internet_connection_tor">Ez dago Interneterako konexiorik; Tor egonean dago...</string>
+    <string name="newnym">ChatSecure - Andriodentzako berehalako mezulari bezero ziurra</string>
+</resources>

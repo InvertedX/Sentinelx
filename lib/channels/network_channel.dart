@@ -26,8 +26,7 @@ class NetworkChannel {
   }
 
   NetworkChannel._internal() {
-    _torStreamSubscription =
-        stream.receiveBroadcastStream().listen(this._onEvents);
+    _torStreamSubscription = stream.receiveBroadcastStream().listen(this._onEvents);
     checkStatus();
   }
 
@@ -103,6 +102,14 @@ class NetworkChannel {
     return platform.invokeMethod<bool>("startAndWait");
   }
 
+  Future<bool> setTorPort(int port) async {
+    if (NetworkState().torStatus == TorStatus.CONNECTED) {
+      return platform.invokeMethod<bool>("setTorSocksPort", port);
+    }else{
+      return Future.value(false);
+    }
+  }
+
   void stopTor() async {
     await platform.invokeMethod("stopTor");
   }
@@ -118,8 +125,7 @@ class NetworkChannel {
   }
 
   StreamController<String> listenToTorLogs() {
-    _torLogSubscription =
-        logStream.receiveBroadcastStream().listen((dynamic log) {
+    _torLogSubscription = logStream.receiveBroadcastStream().listen((dynamic log) {
       logStreamController.sink.add(log as String);
     });
 
@@ -135,9 +141,7 @@ class NetworkChannel {
   void checkStatus() {
     platform.invokeMethod("torStatus").then((va) => {_onEvents(va)});
 
-    platform
-        .invokeMethod("connectivityStatus")
-        .then((va) => {_onConnectivityEvent(va)});
+    platform.invokeMethod("connectivityStatus").then((va) => {_onConnectivityEvent(va)});
   }
 
   Future<dynamic> renewTor() {

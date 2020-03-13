@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+  <string name="app_description">Orbot - это свободная программа для прокси-соединений, она позволяет другим приложениям более безопасно использовать интернет-соединение. Orbot использует Tor для шифрования интернет-трафика, который затем скрывается в ходе пересылки через несколько компьютеров в разных частях планеты. Tor является свободным программным приложением, а также открытой сетью, помогающей защититься от слежки в сетях, угрожающей личной свободе и частной жизни, конфиденциальным бизнес-деятельности и контактам, а также государственной программе безопасности, известной как анализ трафика.</string>
+    <string name="status_starting_up">Запуск Orbot...</string>
+  <string name="status_activated">Подключён к сети Tor</string>
+  <string name="status_disabled">Orbot отключён</string>
+  <string name="status_shutting_down">Служба Tor выключается</string>
+  <string name="tor_process_starting">Запускается клиент Tor...</string>
+  <string name="tor_process_complete">завершено.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+    <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">Невозможно запустить Tor: </string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">Ваши настройки доступных адресов вызвали исключение!</string>
+  <string name="your_relay_settings_caused_an_exception_">Настройки вашего ретранслятора вызвали исключение!</string>
+    <string name="found_existing_tor_process">найден существующий процесс Tor...</string>
+  <string name="something_bad_happened">Произошла какая-то ошибка. Проверьте журнал.</string>
+    <string name="unable_to_read_hidden_service_name">невозможно прочитать имя скрытой службы</string>
+  <string name="unable_to_start_tor">Невозможно запустить Tor:</string>
+    <string name="no_internet_connection_tor">Отсутствует подключение к интернету, Tor находится в режиме ожидания…</string>
+    <string name="newnym">Вы переключились на новый идентификатор Tor!</string>
+    <string name="no_network_connectivity_putting_tor_to_sleep_">Нет подключения к сети. Tor входит в режим сна...</string>
+  <string name="network_connectivity_is_good_waking_tor_up_">Подключение к сети установлено. Tor просыпается...</string>
+  <string name="updating_settings_in_tor_service">обновление настроек в сервисе Tor</string>
+</resources>

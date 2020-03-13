@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+  <string name="app_description">Orbot başka uygulamaların interneti daha güvenli olarak kullanmasını sağlayan ücretsiz bir proxy uygulamasıdır. Orbot Tor\'u kullanarak internet trafiğinizi şifreler ve dünya üzerindeki pek çok farklı bilgisayardan geçirerek gizler. Tor sizin kişisel özgürlüğünüzü ve mahremiyetinizi, gizli ticari aktivitelerinizi ve bağlantılarınızı koruma altına alan bir yazılım ve açık ağdır.</string>
+    <string name="status_starting_up">Orbot başlatılıyor...</string>
+  <string name="status_activated">Tor ağına bağlandı</string>
+  <string name="status_disabled">Orbot devre dışı bırakıldı</string>
+  <string name="status_shutting_down">Tor hizmeti kapatılıyor</string>
+  <string name="tor_process_starting">Tor kullanımı başlatılıyor...</string>
+  <string name="tor_process_complete">tamamlandı.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+  <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">Tor işlemi başlatılamadı</string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">ErişilebilirAdresleriniz ayarlarınız bir istisnaya yol açtı!</string>
+  <string name="your_relay_settings_caused_an_exception_">Tor aktarıcı ayarlarınız bir istisnaya yol açtı!</string>
+    <string name="found_existing_tor_process">varolan bir Tor işlemi bulundu...</string>
+  <string name="something_bad_happened">Kötü bir şey oldu. Kayıtlara bakınız</string>
+    <string name="unable_to_read_hidden_service_name">gizli hizmet adı okunamıyor</string>
+  <string name="unable_to_start_tor">Tor başlatılamadı:</string>
+    <string name="no_internet_connection_tor">İnternet bağlantısı yok; Tor bekleme modunda...</string>
+    <string name="newnym">Yeni bir Tor kimliğine geçiş yaptınız!</string>
+    <string name="no_network_connectivity_putting_tor_to_sleep_">Hiçbir ağ bağlantısı yok. Tor uyku moduna alınıyor...</string>
+  <string name="network_connectivity_is_good_waking_tor_up_">Ağ bağlantısı iyi. Tor uyandırılıyor... </string>
+  <string name="updating_settings_in_tor_service">Tor hizmet ayarları güncellemesi</string>
+</resources>

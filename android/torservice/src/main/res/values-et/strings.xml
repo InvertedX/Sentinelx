@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Orbot</string>
+    <string name="status_starting_up">Orbot käivitub...</string>
+  <string name="status_activated">Ühendatud Tor võrgustikku</string>
+  <string name="status_disabled">Orbot deaktiveeritud</string>
+  <string name="tor_process_starting">Tor kliendi käivitamine...</string>
+  <string name="tor_process_complete">valmis.</string>
+    <!--Welcome Wizard strings (DJH)-->
+    <!--END Welcome Wizard strings (DJH)-->
+    <!--New Wizard Strings-->
+  <!--Title Screen-->
+  <!--Warning screen-->
+    <!--Permissions screen-->
+    <!--TipsAndTricks screen-->
+    <!--Transparent Proxy screen-->
+    <string name="couldn_t_start_tor_process_">Tor protsessi käivitamine ebaõnnestus:</string>
+    <string name="your_reachableaddresses_settings_caused_an_exception_">Teie ReachableAddresses seadistus põhjustas ekse!</string>
+  <string name="your_relay_settings_caused_an_exception_">Teie releeseadistus põhjustas ekse!</string>
+    <string name="found_existing_tor_process">leidus töötav Tor protsess...</string>
+  <string name="something_bad_happened">Juhtus midagi halba. Kontrollige logi</string>
+    <string name="unable_to_read_hidden_service_name">ei õnnestu lugeda varjatud teenuse nime</string>
+  <string name="unable_to_start_tor">Tor käivitamine ebaõnnestus:</string>
+    <string name="newnym">Lülitusite uuele Tor identiteedile!</string>
+    <string name="no_network_connectivity_putting_tor_to_sleep_">Interneti ühendus puudub. Panen Tori magama...</string>
+  <string name="network_connectivity_is_good_waking_tor_up_">Interneti ühendus hea. Äratan Tori üles...</string>
+</resources>
