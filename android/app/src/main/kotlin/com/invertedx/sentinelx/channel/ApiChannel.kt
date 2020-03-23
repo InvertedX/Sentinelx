@@ -5,7 +5,6 @@ import android.util.Log
 import com.invertedx.sentinelx.SentinelxApp
 import com.invertedx.sentinelx.api.ApiService
 import com.invertedx.sentinelx.e
-import com.invertedx.sentinelx.i
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -153,6 +152,27 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
                         })
             }
 
+            "getExchangeRates" -> {
+                val url = methodCall.argument<String>("url")
+                if (url == null) {
+                    result.error("INVAL_URL", "Invalid url supplied", null)
+                    return
+                }
+                ApiService(applicationContext).getRequest(url)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            if(it !=null){
+                                result.success(it);
+                            }else{
+                                result.error("APIError", "Error", "")
+                            }
+
+                        }, {
+                            it.printStackTrace()
+                            result.error("APIError", "Error", it.message)
+                        })
+            }
         }
     }
 
