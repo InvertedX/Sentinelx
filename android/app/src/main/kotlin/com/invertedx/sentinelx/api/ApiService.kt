@@ -10,6 +10,7 @@ import com.invertedx.sentinelx.tor.TorManager
 import com.invertedx.sentinelx.utils.LoggingInterceptor
 import com.invertedx.sentinelx.utils.SentinalPrefs
 import io.reactivex.Observable
+import io.reactivex.Single
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -193,6 +194,7 @@ class ApiService(private val applicationContext: Context) {
         client = builder.build()
     }
 
+
     @Throws(Exception::class)
     private fun getHostNameVerifier(clientBuilder: OkHttpClient.Builder) {
 
@@ -217,6 +219,43 @@ class ApiService(private val applicationContext: Context) {
 
         clientBuilder.sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
         clientBuilder.hostnameVerifier(HostnameVerifier { _, _ -> true })
+
+    }
+
+    //Generic post request handler
+    fun postRequest(url: String, requestBody: RequestBody): Single<String> {
+        return Single.fromCallable {
+            val request = Request.Builder()
+                    .url(url)
+                    .method("POST", requestBody)
+                    .build()
+            val response = client.newCall(request).execute()
+
+            try {
+                val content = response.body!!.string()
+                return@fromCallable content
+            } catch (ex: Exception) {
+                throw  ex
+            }
+        }
+
+    }
+
+    //Generic get request handler
+    fun getRequest(url: String): Single<String> {
+        return Single.fromCallable {
+            val request = Request.Builder()
+                    .url(url)
+                    .build()
+            val response = client.newCall(request).execute()
+
+            try {
+                val content = response.body!!.string()
+                return@fromCallable content
+            } catch (ex: Exception) {
+                throw  ex
+            }
+        }
 
     }
 
