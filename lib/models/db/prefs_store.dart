@@ -13,7 +13,10 @@ class PrefsStore {
   static const TOR_PORT = "TOR_PORT";
   static const SELECTED_THEME = "THEME";
   static const THEME_ACCENT = "THEME_ACCENT";
+  static const CURRENCY = "CURRENCY";
+  static const CURRENCY_RATE = "CURRENCY_RATE";
   static const DOJO = "DOJO";
+
 
   static PrefsStore get instance => _singleton;
 
@@ -77,6 +80,16 @@ class PrefsStore {
     } catch (e) {
       print(e);
       return Future.value(false);
+    }
+  }
+
+  Future<num> getNum(String key) async {
+    try {
+      var _value = await store.record(key).get(database) as num;
+      return Future.value(_value);
+    } catch (e) {
+      print(e);
+      throw e;
     }
   }
 
