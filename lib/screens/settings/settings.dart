@@ -5,6 +5,7 @@ import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/sentinelx_db.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/dojo_configure.dart';
+import 'package:sentinelx/screens/settings/currency_settings.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/port_selector.dart';
@@ -94,6 +95,25 @@ class _SettingsState extends State<Settings> {
               subtitle: Text("Customize theme"),
               onTap: () {
                 showThemeChooser(context);
+              },
+            ),
+            Divider(),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.attach_money),
+              ),
+              title: Text(
+                "Currency Settings",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Choose street price"),
+              onTap: () {
+                Navigator.push(context, new MaterialPageRoute(
+                  builder: (c) {
+                    return CurrencySettings();
+                  },
+                ));
               },
             ),
             Divider(),
