@@ -41,12 +41,6 @@ class RateState extends ChangeNotifier {
 
   formatToBTCRate(int result) {
     var f = NumberFormat.currency(symbol: "");
-    if ((satToBtcAsDouble(result)) > 0.1) {
-      print("------");
-      print("LIO 2 RATE ${this.rate}");
-      print("LIO ${(satToBtcAsDouble(result) * this.rate)}");
-      print("------");
-    }
     return " ${f.format((satToBtcAsDouble(result) * this.rate))} ${this.currency}";
   }
 
@@ -70,12 +64,11 @@ class RateState extends ChangeNotifier {
   void init() async {
     currency = await PrefsStore().getString(PrefsStore.CURRENCY);
     index = await PrefsStore().getNum(PrefsStore.AMOUNT_VIEW_TYPE);
-    print("index ${index}");
     if (index == null) {
       index = 1;
     }
-    if (currency == null) {
-      currency = "BTC";
+    if (currency == null || currency.isEmpty) {
+      currency = "USD";
       this.rate = 1;
     } else {
       this.rate = await PrefsStore().getNum(PrefsStore.CURRENCY_RATE);

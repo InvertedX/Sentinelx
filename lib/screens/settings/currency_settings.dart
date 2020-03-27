@@ -2,7 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
+import 'package:sentinelx/models/exchange/LocalBitcoinRateProvider.dart';
 import 'package:sentinelx/models/exchange/currencies.dart';
+import 'package:sentinelx/models/exchange/exchange_provider.dart';
+import 'package:sentinelx/models/exchange/rate.dart';
 import 'package:sentinelx/shared_state/rate_state.dart';
 
 class CurrencySettings extends StatefulWidget {
@@ -13,15 +16,17 @@ class CurrencySettings extends StatefulWidget {
 class _CurrencySettingsState extends State<CurrencySettings> {
   bool loading = false;
   String selectedCurrency;
+  String selectedPeriod;
 
   @override
   Widget build(BuildContext context) {
-     selectedCurrency = RateState().provider.currency;
+    selectedCurrency = RateState().provider.currency;
+    selectedPeriod = RateState().provider.getSelectedPeriod();
 
     return Scaffold(
       appBar: AppBar(
         title: Text("Currency settings"),
-        bottom: UnderProgress(loading),
+        bottom: AppBarUnderProgress(loading),
       ),
       backgroundColor: Theme.of(context).backgroundColor,
       body: ListView(
@@ -38,6 +43,11 @@ class _CurrencySettingsState extends State<CurrencySettings> {
             subtitle: Text("$selectedCurrency"),
             onTap: showCurrencyChooser,
           ),
+          ListTile(
+            title: Text("Rate period"),
+            subtitle: Text(RateState().provider.getSelectedPeriod() == null ? "Default" : RateState().provider.getSelectedPeriod()),
+            onTap: showRatePeriodChooser,
+          ),
           Divider(),
         ],
       ),
@@ -49,18 +59,25 @@ class _CurrencySettingsState extends State<CurrencySettings> {
         context: context,
         builder: (context) {
           return Card(
-            margin:  const EdgeInsets.all(8.0),
+            margin: const EdgeInsets.all(8.0),
             child: Consumer<RateState>(
               builder: (context, rateState, _) {
                 return Container(
                   height: double.infinity,
                   child: ListView.separated(
-                    separatorBuilder: (b, c) => Divider(height: 1,),
+                    separatorBuilder: (b, c) => Divider(
+                      height: 1,
+                    ),
                     itemBuilder: (BuildContext context, int i) {
                       String curr = rateState.provider.availableCurrencies[i];
                       return ListTile(
                         title: Text(curr),
-                        trailing: selectedCurrency ==  curr  ? Icon(Icons.check,color: Colors.greenAccent,): SizedBox.shrink(),
+                        trailing: selectedCurrency == curr
+                            ? Icon(
+                                Icons.check,
+                                color: Colors.greenAccent,
+                              )
+                            : SizedBox.shrink(),
                         onTap: () {
                           this.setCurrency(rateState.provider.availableCurrencies[i]);
                         },
@@ -68,6 +85,45 @@ class _CurrencySettingsState extends State<CurrencySettings> {
                     },
                     itemCount: rateState.provider.availableCurrencies.length,
                   ),
+                );
+              },
+            ),
+          );
+        });
+  }
+
+  void showRatePeriodChooser() {
+    ExchangeProvider provider = RateState().provider;
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Card(
+            margin: const EdgeInsets.all(8.0),
+            child: Consumer<RateState>(
+              builder: (context, rateState, _) {
+                return Wrap(
+                  children: provider.ratePeriods.map((period) {
+                    return Wrap(
+                      children: <Widget>[
+                        ListTile(
+                          title: Text(period["title"]),
+                          trailing: Radio(
+                            value: period['title'],
+                            groupValue: selectedPeriod,
+                            onChanged: (va) {
+                              this.setPeriod(period);
+                            },
+                          ),
+                          onTap: () {
+                            this.setPeriod(period);
+                          },
+                        ),
+                        Divider(
+                          height: 1,
+                        )
+                      ],
+                    );
+                  }).toList(),
                 );
               },
             ),
@@ -88,12 +144,12 @@ class _CurrencySettingsState extends State<CurrencySettings> {
     });
   }
 
-  showProvider  () {
+  showProvider() {
     List<String> providers = ["LocalBitcoins"];
     String radioGroup = "LocalBitcoins";
     showModalBottomSheet(
         context: context,
-        builder: (context){
+        builder: (context) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: Card(
@@ -103,27 +159,40 @@ class _CurrencySettingsState extends State<CurrencySettings> {
                   return ListTile(
                     dense: true,
                     onTap: () {
-//                      onSelect(timeout);
+                       //TODO
                     },
                     title: Text('$provider'),
                     trailing: Radio(
                       value: provider,
                       groupValue: radioGroup,
-                      onChanged: (va){},
+                      onChanged: (va) {},
                     ),
                   );
                 }).toList(),
               ),
             ),
           );
+        });
+  }
+
+  void setPeriod(Map<String, String> period) async {
+    setState(() {
+      loading = true;
+      selectedPeriod = period['title'];
+    });
+    PrefsStore().put(PrefsStore.CURRENCY_RATE_PERIOD, period['key']);
+    Navigator.pop(context);
+    await RateState().getExchangeRates();
+    setState(() {
+      loading = false;
     });
   }
 }
 
-class UnderProgress extends StatelessWidget implements PreferredSizeWidget {
+class AppBarUnderProgress extends StatelessWidget implements PreferredSizeWidget {
   final bool loading;
 
-  UnderProgress(this.loading);
+  AppBarUnderProgress(this.loading);
 
   @override
   Widget build(BuildContext context) {

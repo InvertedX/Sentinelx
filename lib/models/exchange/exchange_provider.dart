@@ -1,8 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:sentinelx/models/exchange/rate.dart';
 
-class ExchangeProvider {
+abstract class ExchangeProvider {
   String payload;
   String currency = "USD";
+  String _selectedPeriod = "";
+  final List<String> availableCurrencies = [];
+  List<Map<String, String>> ratePeriods = [];
 
   ExchangeProvider(this.payload);
 
@@ -17,5 +21,8 @@ class ExchangeProvider {
   setCurrency(String currency) {
     this.currency = currency;
   }
-}
 
+  String getSelectedPeriod() {
+    //no-op
+  }
+}

@@ -186,9 +186,14 @@ class LocalBitcoinRateProvider implements ExchangeProvider {
 
   @override
   String getSelectedPeriod() {
-    return this.ratePeriods.firstWhere((item) {
-      return item["key"] == _selectedPeriod;
-    })['title'];
+    try {
+      return this.ratePeriods.firstWhere((item) {
+            return item["key"] == _selectedPeriod;
+          })['title'];
+    } catch (e) {
+      print(e);
+      this.ratePeriods.last;
+    }
     return null;
   }
 }

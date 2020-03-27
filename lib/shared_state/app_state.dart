@@ -6,11 +6,15 @@ import 'package:flutter/widgets.dart';
 import 'package:sentinelx/channels/api_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/tx_db.dart';
+import 'package:sentinelx/models/exchange/LocalBitcoinRateProvider.dart';
+import 'package:sentinelx/models/exchange/exchange_provider.dart';
+import 'package:sentinelx/models/exchange/rate.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/unspent.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
+import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/shared_state/theme_provider.dart';
 import 'package:sentinelx/utils/utils.dart';
 
@@ -27,7 +31,9 @@ class AppState extends ChangeNotifier {
 
   List<Wallet> wallets = [];
   Wallet selectedWallet = Wallet(walletName: "WalletSTUB", xpubs: []);
-  bool isTestnet = false;
+  bool isTestNet = false;
+  Rate selectedRate;
+  ExchangeProvider exchangeProvider;
   ThemeProvider theme = ThemeProvider();
   int pageIndex = 0;
   bool offline = false;
@@ -81,13 +87,13 @@ class AppState extends ChangeNotifier {
   Future getUnspent() async {
     try {
       List<String> xpubsAndAddresses =
-      selectedWallet.xpubs.map((item) => item.xpub).toList();
+          selectedWallet.xpubs.map((item) => item.xpub).toList();
       var response = await ApiChannel().getUnspent(xpubsAndAddresses);
       Map<String, dynamic> json = jsonDecode(response);
       if (json.containsKey("unspent_outputs")) {
         List<dynamic> items = json['unspent_outputs'];
         List<Unspent> unspent =
-        items.map((item) => Unspent.fromJson(item)).toList();
+            items.map((item) => Unspent.fromJson(item)).toList();
         await TxDB.insertOrUpdateUnspent(unspent);
       }
     } catch (e) {
@@ -116,7 +122,7 @@ class AppState extends ChangeNotifier {
 
   void updateTransactions(String address) async {
     XPUBModel xpubModel =
-    this.selectedWallet.xpubs.firstWhere((item) => item.xpub == address);
+        this.selectedWallet.xpubs.firstWhere((item) => item.xpub == address);
     if (this.pageIndex == this.selectedWallet.xpubs.indexOf(xpubModel)) {
       this.selectedWallet.txState.addTxes(await TxDB.getTxes(xpubModel.xpub));
     }

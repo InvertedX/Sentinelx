@@ -6,6 +6,7 @@ import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/screens/Track/track_screen.dart';
 import 'package:sentinelx/screens/watch_list.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
+import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/widgets/balance_card_widget.dart';
 import 'package:sentinelx/widgets/card_widget.dart';
 

@@ -9,12 +9,13 @@ import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
 import 'package:sentinelx/screens/dojo_configure.dart';
-import 'package:sentinelx/screens/settings.dart';
+import 'package:sentinelx/screens/settings/settings.dart';
 import 'package:sentinelx/screens/tx_details.dart';
 import 'package:sentinelx/screens/watch_list.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/network_state.dart';
+import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/shared_state/tx_state.dart';
 import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
@@ -258,6 +259,7 @@ class _HomeState extends State<Home> {
             print(e);
           }
         }
+        RateState().getExchangeRates();
 //      await refreshUnspent();
         return;
       }
@@ -311,7 +313,7 @@ class _HomeState extends State<Home> {
         await SystemChannel().setNetwork(false);
       }
     } else {
-      AppState().isTestnet = await SystemChannel().isTestNet();
+      AppState().isTestNet = await SystemChannel().isTestNet();
     }
   }
 

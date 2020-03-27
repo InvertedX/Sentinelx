@@ -15,6 +15,8 @@ class PrefsStore {
   static const THEME_ACCENT = "THEME_ACCENT";
   static const CURRENCY = "CURRENCY";
   static const CURRENCY_RATE = "CURRENCY_RATE";
+  static const CURRENCY_RATE_PERIOD = "CURRENCY_RATE_PERIOD";
+  static const AMOUNT_VIEW_TYPE = "AMOUNT_VIEW_TYPE";
   static const DOJO = "DOJO";
 
 

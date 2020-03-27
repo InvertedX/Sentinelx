@@ -12,11 +12,12 @@ import 'package:sentinelx/models/dojo.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/home.dart';
-import 'package:sentinelx/screens/settings.dart';
+import 'package:sentinelx/screens/settings/settings.dart';
 import 'package:sentinelx/screens/splash_screen.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/network_state.dart';
+import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/shared_state/sentinel_state.dart';
 import 'package:sentinelx/shared_state/theme_provider.dart';
 import 'package:sentinelx/shared_state/tx_state.dart';
@@ -38,6 +39,7 @@ Future main() async {
     providers: [
       Provider<AppState>.value(value: AppState()),
       ChangeNotifierProvider<NetworkState>.value(value: NetworkState()),
+      ChangeNotifierProvider<RateState>.value(value: RateState()),
       ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
       ChangeNotifierProvider<Wallet>.value(value: AppState().selectedWallet),
       ChangeNotifierProvider<TxState>.value(
@@ -86,6 +88,8 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
   void dispose() {
     PrefsStore().dispose();
     SentinelxDB.instance.closeConnection();
+    RateState().save();
+    RateState().dispose();
     AppState().dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
