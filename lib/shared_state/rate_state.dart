@@ -1,22 +1,23 @@
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:sentinelx/channels/api_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/exchange/LocalBitcoinRateProvider.dart';
 import 'package:sentinelx/models/exchange/exchange_provider.dart';
 import 'package:sentinelx/utils/format_util.dart';
 
-class RateModel extends ChangeNotifier {
+class RateState extends ChangeNotifier {
   ExchangeProvider provider;
 
-  int index = 0;
+  int index = 1;
 
-  RateModel._privateConstructor() {
+  RateState._privateConstructor() {
     init();
   }
 
-  static final RateModel _instance = RateModel._privateConstructor();
+  static final RateState _instance = RateState._privateConstructor();
 
-  factory RateModel() {
+  factory RateState() {
     return _instance;
   }
 
@@ -24,7 +25,6 @@ class RateModel extends ChangeNotifier {
   num rate = 1;
 
   update(ExchangeProvider provider) {
-    print("rateProvider ${provider.getRate()}");
     this.provider = provider;
     this.provider.setCurrency(currency);
     this.rate = this.provider.getRate().rate;
@@ -34,30 +34,46 @@ class RateModel extends ChangeNotifier {
 
   Future getExchangeRates() async {
     String ratePayload = await ApiChannel().getExchangeRates(LocalBitcoinRateProvider.API);
-    LocalBitcoinRateProvider rateProvider = new LocalBitcoinRateProvider(ratePayload);
-    rateProvider.setCurrency(currency);
-    this.update(rateProvider);
+    String period = await PrefsStore().getString(PrefsStore.CURRENCY_RATE_PERIOD);
+    LocalBitcoinRateProvider rateProvider = new LocalBitcoinRateProvider(ratePayload, period);
+    update(rateProvider);
   }
 
   formatToBTCRate(int result) {
-//    double satRate = (rate / 100000000).toDouble();
-    if (result != null) {
-      if (currency == "BTC") {
-
-      }
+    var f = NumberFormat.currency(symbol: "");
+    if ((satToBtcAsDouble(result)) > 0.1) {
+      print("------");
+      print("LIO 2 RATE ${this.rate}");
+      print("LIO ${(satToBtcAsDouble(result) * this.rate)}");
+      print("------");
     }
-    return " ${ (satToBtcAsDouble(result) * this.rate ).toStringAsFixed(2)} ${this.currency}";
+    return " ${f.format((satToBtcAsDouble(result) * this.rate))} ${this.currency}";
   }
-  
-   formatRate(int result) {
 
-//    double satRate = (rate / 100000000).toDouble();
-     return "${satToBtc(result)} BTC";
+  formatRate(int result) {
+    var f = NumberFormat.currency(symbol: "", decimalDigits: 8);
+    return "${satToBtc(result)} BTC";
+  }
+
+  String formatSatRate(num result) {
+    var f = NumberFormat.currency(symbol: "", decimalDigits: 0);
+    return "${f.format(result)} sat";
+  }
+
+  Future setCurrency(String curr) {
+    this.currency = curr;
+    this.index = 0;
+    this.notifyListeners();
+    return this.getExchangeRates();
   }
 
   void init() async {
-    String currency = await PrefsStore().getString(PrefsStore.CURRENCY);
-    print("currency ${currency}");
+    currency = await PrefsStore().getString(PrefsStore.CURRENCY);
+    index = await PrefsStore().getNum(PrefsStore.AMOUNT_VIEW_TYPE);
+    print("index ${index}");
+    if (index == null) {
+      index = 1;
+    }
     if (currency == null) {
       currency = "BTC";
       this.rate = 1;
@@ -67,28 +83,17 @@ class RateModel extends ChangeNotifier {
         this.rate = 1;
       }
     }
+    this.notifyListeners();
   }
 
-  void setIn(int index){
+  void setViewIndex(int index) {
     this.index = index;
     this.notifyListeners();
+    this.save();
   }
 
   void save() async {
     await PrefsStore().put(PrefsStore.CURRENCY_RATE, this.rate);
+    await PrefsStore().put(PrefsStore.AMOUNT_VIEW_TYPE, this.index);
   }
 }
-//  Map<String, dynamic> toJson() {
-//    final Map<String, dynamic> data = new Map<String, dynamic>();
-//    if (this.balance != null) {
-//      data['balance'] = this.balance;
-//    }
-//    return data;
-//  }
-//
-//  void fromJSON(Map<String, dynamic> json) {
-//    if (json['balance'] != null) {
-//      this.balance = json['balance'];
-//    }
-//  }
-//}
