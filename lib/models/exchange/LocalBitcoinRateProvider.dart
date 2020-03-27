@@ -4,8 +4,14 @@ import 'package:sentinelx/models/exchange/exchange_provider.dart';
 import 'package:sentinelx/models/exchange/rate.dart';
 
 class LocalBitcoinRateProvider implements ExchangeProvider {
-  static String API =
-      "https://localbitcoins.com/bitcoinaverage/ticker-all-currencies/";
+  static String API = "https://localbitcoins.com/bitcoinaverage/ticker-all-currencies/";
+
+  List<Map<String, String>> ratePeriods = [
+    {"key": "avg_1h", "title": "1 hour Average"},
+    {"key": "avg_6h", "title": "6 hour Average"},
+    {"key": "avg_12h", "title": "12 hour Average"},
+    {"key": "avg_24h", "title": "24 hour Average"},
+  ];
 
   @override
   String payload;
@@ -13,35 +19,77 @@ class LocalBitcoinRateProvider implements ExchangeProvider {
   @override
   String currency;
 
+  @override
+  String _selectedPeriod = "avg_24h";
+
   Map<String, dynamic> rates = new Map();
 
-  LocalBitcoinRateProvider(this.payload) {
-    rates = jsonDecode(this.payload);
+  LocalBitcoinRateProvider(this.payload, String period) {
+    if (period != null || period.isNotEmpty) {
+      this._selectedPeriod = period;
+    }
+    var tempRate = rates;
+    try {
+      rates = jsonDecode(this.payload);
+    } on Exception catch (ex) {
+      rates = tempRate;
+    }
   }
 
   @override
   Rate getRate() {
     Rate rate = new Rate();
     rate.currency = this.currency;
-    print("rate.currencyrate.currencyrate.currency ${rate.rate}");
+
     if (rates.containsKey(this.currency)) {
       LBTCRateModel rateModel = LBTCRateModel.fromJson(rates[this.currency]);
-      if (rateModel.avg6h != null) {
-        rate.rate = double.parse(rateModel.avg6h);
+      switch (_selectedPeriod) {
+        case "avg_24h":
+          {
+            if (rateModel.avg24h != null) {
+              rate.rate = double.parse(rateModel.avg24h);
+            }
+            break;
+          }
+        case "avg_12h":
+          {
+            if (rateModel.avg12h != null) {
+              rate.rate = double.parse(rateModel.avg12h);
+            }
+            break;
+          }
+        case "avg_6h":
+          {
+            if (rateModel.avg6h != null) {
+              rate.rate = double.parse(rateModel.avg6h);
+            }
+            break;
+          }
+        case "avg_1h":
+          {
+            if (rateModel.avg1h != null) {
+              rate.rate = double.parse(rateModel.avg1h);
+            }
+            break;
+          }
+        default:
+          {
+            if (rateModel.avg24h != null) {
+              rate.rate = double.parse(rateModel.avg24h);
+            }
+          }
       }
-//      else if (rateModel.avg12h != null) {
-//        rate.rate = double.parse(rateModel.avg12h);
-//        print("rate } avg12h");
-//
-//      } else if (rateModel.avg24h != null) {
-//        rate.rate = double.parse(rateModel.avg24h);
-//        print("rate } avg24h");
-//
-//      }
       return rate;
-
+    } else {
+      rate.rate = 1;
+      this.currency = "BTC";
+      rate.currency = "BTC";
+      return rate;
     }
-    print("rate } _____ ${rate.toJson()}");
+  }
+
+  set selectedPeriod(String value) {
+    _selectedPeriod = value;
   }
 
   @override
@@ -50,8 +98,98 @@ class LocalBitcoinRateProvider implements ExchangeProvider {
   }
 
   @override
+  final List<String> availableCurrencies = [
+    "USD",
+    "EUR",
+    "INR",
+    "COP",
+    "BOB",
+    "TWD",
+    "GHS",
+    "NGN",
+    "EGP",
+    "IDR",
+    "BGN",
+    "SZL",
+    "CRC",
+    "PEN",
+    "AMD",
+    "ILS",
+    "GBP",
+    "MWK",
+    "DOP",
+    "BAM",
+    "XRP",
+    "DKK",
+    "RSD",
+    "AUD",
+    "PKR",
+    "JPY",
+    "TZS",
+    "VND",
+    "KWD",
+    "RON",
+    "HUF",
+    "CLP",
+    "MYR",
+    "GTQ",
+    "JMD",
+    "ZMW",
+    "UAH",
+    "JOD",
+    "LTC",
+    "SAR",
+    "ETH",
+    "CAD",
+    "SEK",
+    "SGD",
+    "HKD",
+    "GEL",
+    "BWP",
+    "VES",
+    "CHF",
+    "IRR",
+    "BBD",
+    "KRW",
+    "CNY",
+    "XOF",
+    "BDT",
+    "HRK",
+    "NZD",
+    "TRY",
+    "THB",
+    "XAF",
+    "BYN",
+    "ARS",
+    "UYU",
+    "RWF",
+    "KZT",
+    "NOK",
+    "RUB",
+    "ZAR",
+    "PYG",
+    "PAB",
+    "MXN",
+    "CZK",
+    "BRL",
+    "MAD",
+    "PLN",
+    "PHP",
+    "KES",
+    "AED"
+  ];
+
+  @override
   setCurrency(String currency) {
-    return this.currency = currency;
+    this.currency = currency;
+  }
+
+  @override
+  String getSelectedPeriod() {
+    return this.ratePeriods.firstWhere((item) {
+      return item["key"] == _selectedPeriod;
+    })['title'];
+    return null;
   }
 }
 
@@ -64,13 +202,7 @@ class LBTCRateModel {
   Rates rates;
   String avg6h;
 
-  LBTCRateModel(
-      {this.avg12h,
-      this.volumeBtc,
-      this.avg24h,
-      this.avg1h,
-      this.rates,
-      this.avg6h});
+  LBTCRateModel({this.avg12h, this.volumeBtc, this.avg24h, this.avg1h, this.rates, this.avg6h});
 
   LBTCRateModel.fromJson(Map<String, dynamic> json) {
     avg12h = json['avg_12h'];
@@ -91,6 +223,7 @@ class LBTCRateModel {
       data['rates'] = this.rates.toJson();
     }
     data['avg_6h'] = this.avg6h;
+
     return data;
   }
 }

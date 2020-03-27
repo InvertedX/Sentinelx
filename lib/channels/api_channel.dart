@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:sentinelx/models/dojo.dart';
+import 'package:sentinelx/models/exchange_rate.dart';
 import 'package:sentinelx/models/tx_details_response.dart';
 
 class ApiChannel {
@@ -38,8 +39,8 @@ class ApiChannel {
   Future<TxDetailsResponse> getTx(String txid) async {
     try {
       String response = await platform.invokeMethod("getTx", {'txid': txid});
-      TxDetailsResponse txDetailsResponse = TxDetailsResponse.fromJson(
-          jsonDecode(response));
+      TxDetailsResponse txDetailsResponse =
+          TxDetailsResponse.fromJson(jsonDecode(response));
       return txDetailsResponse;
     } catch (error) {
       print(error);
@@ -61,12 +62,19 @@ class ApiChannel {
     return Future.value(auth);
   }
 
-  Future<bool> setDojo(String accessToken, String refreshToken, String url) async {
+  Future<bool> setDojo(
+      String accessToken, String refreshToken, String url) async {
     await platform.invokeMethod("setDojo", {
       'accessToken': accessToken,
       "refreshToken": refreshToken,
       "dojoUrl": url
     });
     return Future.value(true);
+  }
+
+  Future<String> getExchangeRates(String url) async {
+    String response =
+        await platform.invokeMethod("getExchangeRates", {"url": url});
+    return Future.value(response);
   }
 }
