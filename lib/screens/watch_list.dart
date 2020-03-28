@@ -79,10 +79,10 @@ class _WatchListState extends State<WatchList> with SingleTickerProviderStateMix
           }
           return ListView.builder(
             controller: scrollController,
-            itemCount: 12,
+            itemCount: model.xpubs.length,
             itemBuilder: (context, index) {
               return ChangeNotifierProvider.value(
-                value: model.xpubs[0],
+                value: model.xpubs[index],
                 child: SlideUpWrapper(
                   Card(
                     elevation: 4,

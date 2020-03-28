@@ -45,11 +45,6 @@ String getTorStatusInText(TorStatus torStatus) {
   return "";
 }
 
-String formattedRate(int rate) {
-  Rate selectedRate = AppState().selectedRate;
-  double satRate = (rate / 100000000).toDouble();
-  return " ${satRate * selectedRate.rate} ${selectedRate.currency}";
-}
 
 Future<bool> checkNetworkStatusBeforeApiCall(
     Function(SnackBar) callback) async {
