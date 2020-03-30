@@ -4,10 +4,14 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.invertedx.sentinelx.MainActivity
 import com.invertedx.sentinelx.SentinelxApp
 import com.invertedx.sentinelx.api.ApiService
@@ -16,6 +20,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.params.TestNet3Params
+import java.io.File
 import java.util.*
 
 
@@ -130,6 +135,38 @@ class SystemChannel(private val applicationContext: Context, private val activit
                 } else info.versionCode.toString()
 
                 result.success(map)
+            }
+
+            "shareDirectory" -> {
+                val dir = applicationContext.filesDir;
+                val imageDir = File("${dir.path}/images");
+                if (!imageDir.exists()) {
+                    imageDir.mkdirs();
+                }
+                return result.success(imageDir.path)
+            }
+
+            "shareQR" -> {
+                Log.i("TAG", "SHARE QR CALLED");
+                val dir = applicationContext.filesDir;
+                val imageDir = File("${dir.path}/images");
+                val cacheFile = File(imageDir, "/qr.jpg")
+                Log.i("TAG", "cacheFile ${cacheFile.path}");
+                val uri = FileProvider.getUriForFile(activity, "${applicationContext.packageName}.provider", cacheFile)
+
+                val intent: Intent = ShareCompat.IntentBuilder.from(activity)
+                        .setType("image/jpg")
+                        .setSubject("Qr code")
+                        .setStream(uri)
+                        .setChooserTitle("Share QR image")
+                        .createChooserIntent()
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION )
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                result.success(true)
+
+                activity.startActivity(intent)
+
             }
 
         }

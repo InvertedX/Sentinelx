@@ -107,4 +107,23 @@ class SystemChannel {
       return null;
     }
   }
+
+  Future<String> getShareDir() async {
+    try {
+      var run = await platform.invokeMethod<String>("shareDirectory");
+      return run;
+    } catch (exception) {
+      print(exception);
+      return null;
+    }
+  }
+  shareImageQR() async {
+    try {
+      var run = await platform.invokeMethod<bool>("shareQR");
+      return run;
+    } catch (exception) {
+      print(exception);
+      return null;
+    }
+  }
 }
