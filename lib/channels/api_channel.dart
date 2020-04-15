@@ -77,4 +77,10 @@ class ApiChannel {
         await platform.invokeMethod("getExchangeRates", {"url": url});
     return Future.value(response);
   }
+
+  Future<String> getNetworkLog() async {
+    String response =
+        await platform.invokeMethod("getNetworkLog");
+    return Future.value(response);
+  }
 }

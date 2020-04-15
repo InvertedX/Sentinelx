@@ -6,6 +6,7 @@ import 'package:sentinelx/models/db/sentinelx_db.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/dojo_configure.dart';
 import 'package:sentinelx/screens/settings/currency_settings.dart';
+import 'package:sentinelx/screens/settings/network_log.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/port_selector.dart';
@@ -204,6 +205,35 @@ class _SettingsState extends State<Settings> {
                     new MaterialPageRoute(
                         builder: (c) {
                           return DojoConfigureScreen();
+                        },
+                        fullscreenDialog: true));
+//                  showDojoPanel(context);
+              },
+            ),
+            Divider(),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+              child: Text(
+                "Troubleshoot",
+                style: TextStyle(color: Theme.of(context).accentColor),
+              ),
+            ),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.network_cell),
+              ),
+              title: Text(
+                "Network Logs",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("View recent network requests"),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (c) {
+                          return NetWorkLogScreen();
                         },
                         fullscreenDialog: true));
 //                  showDojoPanel(context);

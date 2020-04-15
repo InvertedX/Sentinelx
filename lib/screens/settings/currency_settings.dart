@@ -7,6 +7,7 @@ import 'package:sentinelx/models/exchange/currencies.dart';
 import 'package:sentinelx/models/exchange/exchange_provider.dart';
 import 'package:sentinelx/models/exchange/rate.dart';
 import 'package:sentinelx/shared_state/rate_state.dart';
+import 'package:sentinelx/widgets/appbar_bottom_progress.dart';
 
 class CurrencySettings extends StatefulWidget {
   @override
@@ -189,24 +190,3 @@ class _CurrencySettingsState extends State<CurrencySettings> {
   }
 }
 
-class AppBarUnderProgress extends StatelessWidget implements PreferredSizeWidget {
-  final bool loading;
-
-  AppBarUnderProgress(this.loading);
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedOpacity(
-      opacity: loading ? 1 : 0,
-      duration: Duration(milliseconds: 600),
-      child: Container(
-        height: 1,
-        child: LinearProgressIndicator(),
-      ),
-    );
-  }
-
-  @override
-  // TODO: implement preferredSize
-  Size get preferredSize => Size(double.infinity, 1);
-}
