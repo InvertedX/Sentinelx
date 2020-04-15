@@ -1,20 +1,17 @@
 package com.invertedx.sentinelx.api
 
 import android.content.Context
-import android.preference.PreferenceManager
 import android.util.Log
 import com.invertedx.sentinelx.BuildConfig
 import com.invertedx.sentinelx.SentinelxApp
-import com.invertedx.sentinelx.i
 import com.invertedx.sentinelx.tor.TorManager
 import com.invertedx.sentinelx.utils.LoggingInterceptor
 import com.invertedx.sentinelx.utils.SentinalPrefs
 import io.reactivex.Observable
 import io.reactivex.Single
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.*
+import org.json.JSONObject
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
@@ -173,7 +170,7 @@ class ApiService(private val applicationContext: Context) {
         }
     }
 
-  
+
     fun makeClient() {
         val builder = OkHttpClient.Builder()
         if (BuildConfig.DEBUG) {
@@ -183,6 +180,7 @@ class ApiService(private val applicationContext: Context) {
             getHostNameVerifier(builder)
             builder.proxy(TorManager.getInstance(this.applicationContext)?.getProxy())
         }
+        builder.addInterceptor(LogEntry(this))
         val prefs = SentinalPrefs(applicationContext)
 
         var timeout = 90L;
@@ -259,4 +257,35 @@ class ApiService(private val applicationContext: Context) {
 
     }
 
+
+    internal class LogEntry(val apiService: ApiService) : Interceptor {
+
+        @Throws(IOException::class)
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val obj = JSONObject();
+            val request = chain.request()
+            val t1 = System.nanoTime()
+            obj.put("url", request.url.toString());
+            obj.put("method", request.method);
+            obj.put("init_time", System.currentTimeMillis());
+            val response = chain.proceed(request)
+            val t2 = System.nanoTime()
+            obj.put("time", (t2 - t1) / 1e6);
+            obj.put("status", response.code);
+            obj.put("network", "");
+            if (SentinelxApp.dojoUrl.isNotBlank()) {
+                Log.i("UR", request.url.toUri().host)
+                Log.i("URS", SentinelxApp.dojoUrl)
+                if (SentinelxApp.dojoUrl.contains(request.url.toUri().host) ) {
+                    obj.put("network", "DOJO");
+                }
+            }
+
+            SentinelxApp.netWorkLog.put(obj);
+            return response
+        }
+    }
+
+
 }
+

@@ -162,9 +162,9 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
-                            if(it !=null){
+                            if (it != null) {
                                 result.success(it);
-                            }else{
+                            } else {
                                 result.error("APIError", "Error", "")
                             }
 
@@ -172,6 +172,11 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
                             it.printStackTrace()
                             result.error("APIError", "Error", it.message)
                         })
+            }
+
+
+            "getNetworkLog" -> {
+                result.success(SentinelxApp.netWorkLog.toString());
             }
         }
     }
