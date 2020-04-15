@@ -19,6 +19,7 @@ import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/shared_state/tx_state.dart';
 import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/account_pager.dart';
+import 'package:sentinelx/widgets/appbar_bottom_progress.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/tor_control_panel.dart';
@@ -33,8 +34,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _ScaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<RefreshIndicatorState> _refreshIndicator =
-  new GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicator = new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -51,31 +51,12 @@ class _HomeState extends State<Home> {
       key: _ScaffoldKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        bottom: HomeAppBarProgress(),
         title: Text(
           'Sentinel X',
           style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
         ),
         actions: <Widget>[
-          Consumer<LoaderState>(builder: (context, model, child) {
-            return model.state == States.LOADING
-                ? Container(
-              color: Theme
-                  .of(context)
-                  .primaryColor,
-              margin: EdgeInsets.symmetric(
-                vertical: 22,
-              ),
-              child: SizedBox(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1,
-                    valueColor:
-                    new AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                  width: 12,
-                  height: 12),
-            )
-                : SizedBox.shrink();
-          }),
           Consumer<NetworkState>(
             builder: (context, model, child) {
               return IconButton(
@@ -85,32 +66,29 @@ class _HomeState extends State<Home> {
                   ),
                   onPressed: () {
                     showTorPanel(context);
-                  }
-              );
+                  });
             },
           ),
           IconButton(
             icon: Icon(Icons.remove_red_eye),
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    ChangeNotifierProvider.value(
-                      child: WatchList(),
-                      value: AppState().selectedWallet,
-                    ),
+                builder: (context) => ChangeNotifierProvider.value(
+                  child: WatchList(),
+                  value: AppState().selectedWallet,
+                ),
               ));
             },
           ),
           IconButton(
             icon: Icon(Icons.menu),
             onPressed: () {
-              Navigator.of(context).push(
-                  new MaterialPageRoute<Null>(builder: (BuildContext context) {
-                    return Provider.value(
-                      child: Settings(),
-                      value: AppState(),
-                    );
-                  }));
+              Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
+                return Provider.value(
+                  child: Settings(),
+                  value: AppState(),
+                );
+              }));
             },
           ),
         ],
@@ -118,9 +96,7 @@ class _HomeState extends State<Home> {
         primary: true,
         elevation: 18,
       ),
-      backgroundColor: Theme
-          .of(context)
-          .backgroundColor,
+      backgroundColor: Theme.of(context).backgroundColor,
       body: WillPopScope(
         onWillPop: () => onPop(context),
         child: RefreshIndicator(
@@ -139,10 +115,7 @@ class _HomeState extends State<Home> {
                   margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                   child: Text(
                     "Transactions",
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .subhead,
+                    style: Theme.of(context).textTheme.subhead,
                   ),
                 ),
               ),
@@ -150,38 +123,25 @@ class _HomeState extends State<Home> {
                 builder: (context, model, child) {
                   return SliverList(
                       delegate: SliverChildBuilderDelegate(
-                            (BuildContext context, int index) {
-                          Tx tx = model.txList[index];
-                          if (tx is ListSection) {
-                            return Container(
-                              color: Theme
-                                  .of(context)
-                                  .primaryColorDark
-                                  .withOpacity(
-                                  Theme
-                                      .of(context)
-                                      .brightness == Brightness.light
-                                      ? 0.1
-                                      : 0.8),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 18, horizontal: 12),
-                              child: Text(tx.section,
-                                  style: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .subhead),
-                            );
-                          } else {
-                            return Container(
-                              child: TxWidget(
-                                tx: tx,
-                                callback: onTxClick,
-                              ),
-                            );
-                          }
-                        },
-                        childCount: model.txList.length,
-                      ));
+                    (BuildContext context, int index) {
+                      Tx tx = model.txList[index];
+                      if (tx is ListSection) {
+                        return Container(
+                          color: Theme.of(context).primaryColorDark.withOpacity(Theme.of(context).brightness == Brightness.light ? 0.1 : 0.8),
+                          padding: EdgeInsets.symmetric(vertical: 18, horizontal: 12),
+                          child: Text(tx.section, style: Theme.of(context).textTheme.subhead),
+                        );
+                      } else {
+                        return Container(
+                          child: TxWidget(
+                            tx: tx,
+                            callback: onTxClick,
+                          ),
+                        );
+                      }
+                    },
+                    childCount: model.txList.length,
+                  ));
                 },
               ),
             ],
@@ -194,31 +154,27 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButton: AppState().selectedWallet.xpubs.length != 0
           ? FloatingActionButton(
-        child: Icon(
-          SentinelxIcons.qrcode,
-          color: Colors.white,
-          size: 18,
-        ),
-        backgroundColor: Theme
-            .of(context)
-            .accentColor,
-        onPressed: () {
-          if (AppState().selectedWallet.xpubs.length == 0) {
-            return;
-          }
-          Navigator.of(context).push(new MaterialPageRoute<Null>(
-              builder: (BuildContext context) {
-                return Receive();
-              }));
-        },
-      )
+              child: Icon(
+                SentinelxIcons.qrcode,
+                color: Colors.white,
+                size: 18,
+              ),
+              backgroundColor: Theme.of(context).accentColor,
+              onPressed: () {
+                if (AppState().selectedWallet.xpubs.length == 0) {
+                  return;
+                }
+                Navigator.of(context).push(new MaterialPageRoute<Null>(builder: (BuildContext context) {
+                  return Receive();
+                }));
+              },
+            )
           : SizedBox.shrink(),
     );
   }
 
   Future onPress() async {
-    await Navigator.of(context)
-        .push(new MaterialPageRoute<dynamic>(builder: (BuildContext context) {
+    await Navigator.of(context).push(new MaterialPageRoute<dynamic>(builder: (BuildContext context) {
       return new Track();
     }));
   }
@@ -245,11 +201,7 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    bool networkOkay = await checkNetworkStatusBeforeApiCall(
-            (snackBar) =>
-        {
-          _ScaffoldKey.currentState.showSnackBar(snackBar)
-        });
+    bool networkOkay = await checkNetworkStatusBeforeApiCall((snackBar) => {_ScaffoldKey.currentState.showSnackBar(snackBar)});
     if (networkOkay) {
       if (AppState().pageIndex == 0) {
         for (int i = 0; i < AppState().selectedWallet.xpubs.length; i++) {
@@ -297,11 +249,7 @@ class _HomeState extends State<Home> {
     if (first) {
       var selection = await showConfirmModel(
         context: context,
-        title:
-        Text("Select network?", style: Theme
-            .of(context)
-            .textTheme
-            .subhead),
+        title: Text("Select network?", style: Theme.of(context).textTheme.subhead),
         textPositive: new Text(
           'TestNet ',
         ),
