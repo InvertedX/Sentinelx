@@ -3,8 +3,10 @@ package com.invertedx.sentinelx.tor
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Typeface
 import android.os.Handler
 import android.os.IBinder
@@ -12,8 +14,10 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.GROUP_ALERT_SUMMARY
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.invertedx.sentinelx.BuildConfig
 import com.invertedx.sentinelx.R
 import com.invertedx.torservice.TorProxyManager
@@ -31,6 +35,7 @@ import kotlin.math.roundToInt
 
 class TorService : Service() {
 
+
     private var lastRead: Long = -1
     private var lastWritten: Long = -1
     private var mTotalTrafficWritten: Long = 0
@@ -42,6 +47,7 @@ class TorService : Service() {
     private var identityChanging = false
 
     private var log = ""
+    private var stopping = false;
     private var bandwidth = ""
     private var circuit = ""
 
@@ -85,10 +91,18 @@ class TorService : Service() {
 //                Toast.makeText(getApplicationContext(), "You cannot stop Tor service when dojo is connected", Toast.LENGTH_SHORT).show();
 //                return START_STICKY;
 //            }
+                this.stopping = true;
                 val disposable = TorManager.getInstance(applicationContext)
-                        ?.stopTor()?.subscribe {
+                        ?.stopTor()?.subscribe({
+                            compositeDisposable.clear()
+                            this.stopForeground(true)
                             this.stopSelf()
-                        }
+                        }, {
+                            compositeDisposable.clear()
+                            this.stopForeground(true)
+                            this.stopSelf()
+                        })
+
 
                 disposable?.let { compositeDisposable.add(disposable) }
 
@@ -167,12 +181,15 @@ class TorService : Service() {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { connectionStatus ->
+                        if (this.stopping) {
+                            return@subscribe
+                        }
                         updateNotification();
                         if (BuildConfig.DEBUG && connectionStatus == TorProxyManager.ConnectionStatus.CONNECTED) {
                             checkIp()
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe { ip -> Log.i("Tor", "IP:${ip}") }
+                                    .subscribe({ ip -> Log.i("Tor", "IP:${ip}") },{})
                         }
                     }
             it.torLogs
@@ -265,21 +282,11 @@ class TorService : Service() {
             TorProxyManager.ConnectionStatus.CONNECTED -> {
                 notification.setColorized(true)
                 notification.setContentTitle("Tor : Connected")
-                notification.addAction(getStopAction("Stop"))
                 notification.addAction(renewAction)
             }
             TorProxyManager.ConnectionStatus.CONNECTING -> {
                 notification.setContentTitle("Tor : Connecting...")
 
-            }
-            TorProxyManager.ConnectionStatus.DISCONNECTING -> {
-                notification.setContentTitle("Tor : Disconnecting...")
-                notification.addAction(getStopAction("Stop"))
-
-            }
-            TorProxyManager.ConnectionStatus.DISCONNECTED -> {
-                notification.setContentTitle("Tor : Disconnected...")
-                notification.addAction(getStopAction("Stop"))
             }
             null -> {
 
@@ -303,6 +310,7 @@ class TorService : Service() {
         private const val TAG = "TorService"
     }
 
+
     private fun formatCount(count: Long): String? {
         val mNumberFormat = NumberFormat.getInstance(Locale.getDefault()) //localized numbers!
 // Under 2Mb, returns "xxx.xKb"
@@ -310,5 +318,6 @@ class TorService : Service() {
         return if (count < 1e6) mNumberFormat.format(((count * 10 / 1024).toInt().toFloat() / 10).roundToInt().toLong()) + "kbps" else mNumberFormat.format(((count * 100 / 1024 / 1024).toInt().toFloat() / 100).roundToInt().toLong()) + "mbps"
         //return count+" kB";
     }
+
 
 }
