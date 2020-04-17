@@ -126,7 +126,8 @@ class _NetWorkLogScreenState extends State<NetWorkLogScreen> {
     log.forEach((v) {
       networkLogs.add(NetworkLog.fromJson(v));
     });
-    return networkLogs;
+    return networkLogs.reversed.toList();
+
   }
 
   format(num time) {
