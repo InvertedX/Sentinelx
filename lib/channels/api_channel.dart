@@ -83,4 +83,15 @@ class ApiChannel {
         await platform.invokeMethod("getNetworkLog");
     return Future.value(response);
   }
+
+  pushTx(String text) async{
+    try {
+      String address =
+          await platform.invokeMethod<String>("pushTx", {'hex': text});
+      return address;
+    } catch (exception) {
+      print(exception);
+      throw exception;
+    }
+  }
 }

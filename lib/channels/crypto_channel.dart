@@ -74,4 +74,16 @@ class CryptoChannel {
       throw exception;
     }
   }
+  Future<String> validateHEX(String hex) async {
+    try {
+      String address =
+          await platform.invokeMethod<String>("validateTxHex", {'hex': hex});
+      return address;
+    } catch (exception) {
+      print(exception);
+      throw exception;
+    }
+  }
+
+
 }
