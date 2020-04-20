@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:sentinelx/models/exchange/rate.dart';
 
-abstract class ExchangeProvider {
+ class ExchangeProvider {
   String payload;
   String currency = "USD";
   String _selectedPeriod = "";

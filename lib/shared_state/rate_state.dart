@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/api_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/exchange/LocalBitcoinRateProvider.dart';
@@ -7,7 +8,7 @@ import 'package:sentinelx/models/exchange/exchange_provider.dart';
 import 'package:sentinelx/utils/format_util.dart';
 
 class RateState extends ChangeNotifier {
-  ExchangeProvider provider;
+  ExchangeProvider provider = new ExchangeProvider("{}");
 
   int index = 1;
 

@@ -23,6 +23,7 @@ class MainActivity : FlutterActivity() {
 
     private lateinit var networkChannel: NetworkChannel
     private lateinit var onPermissionResultCallback: OnPermissionResult
+    private lateinit var apiChannel:ApiChannel;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +32,11 @@ class MainActivity : FlutterActivity() {
         setUpPrefs()
         createNotificationChannels()
         networkChannel = NetworkChannel(applicationContext, this);
+        apiChannel = ApiChannel(applicationContext);
+        
         MethodChannel(flutterView, "system.channel").setMethodCallHandler(SystemChannel(applicationContext, this))
         MethodChannel(flutterView, "crypto.channel").setMethodCallHandler(CryptoChannel(applicationContext))
-        MethodChannel(flutterView, "api.channel").setMethodCallHandler(ApiChannel(applicationContext))
+        MethodChannel(flutterView, "api.channel").setMethodCallHandler(apiChannel)
         MethodChannel(flutterView, "network.channel").setMethodCallHandler(networkChannel)
         QRCameraPlugin.registerWith(this.registrarFor("plugins.sentinelx.qr_camera"), this)
 
@@ -60,6 +63,7 @@ class MainActivity : FlutterActivity() {
 
     override fun onDestroy() {
         networkChannel.dispose()
+        apiChannel.dispose();
         super.onDestroy()
     }
 

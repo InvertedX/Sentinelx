@@ -21,15 +21,18 @@ class _CurrencySettingsState extends State<CurrencySettings> {
 
   @override
   Widget build(BuildContext context) {
-    selectedCurrency = RateState().provider.currency;
-    selectedPeriod = RateState().provider.getSelectedPeriod();
-
+    try {
+      selectedCurrency = RateState().provider.currency;
+      selectedPeriod = RateState().provider.getSelectedPeriod();
+    } catch (e) {}
     return Scaffold(
       appBar: AppBar(
         title: Text("Currency settings"),
         bottom: AppBarUnderProgress(loading),
       ),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme
+          .of(context)
+          .backgroundColor,
       body: ListView(
         children: <Widget>[
           Divider(),
@@ -66,18 +69,19 @@ class _CurrencySettingsState extends State<CurrencySettings> {
                 return Container(
                   height: double.infinity,
                   child: ListView.separated(
-                    separatorBuilder: (b, c) => Divider(
-                      height: 1,
-                    ),
+                    separatorBuilder: (b, c) =>
+                        Divider(
+                          height: 1,
+                        ),
                     itemBuilder: (BuildContext context, int i) {
                       String curr = rateState.provider.availableCurrencies[i];
                       return ListTile(
                         title: Text(curr),
                         trailing: selectedCurrency == curr
                             ? Icon(
-                                Icons.check,
-                                color: Colors.greenAccent,
-                              )
+                          Icons.check,
+                          color: Colors.greenAccent,
+                        )
                             : SizedBox.shrink(),
                         onTap: () {
                           this.setCurrency(rateState.provider.availableCurrencies[i]);
@@ -160,7 +164,7 @@ class _CurrencySettingsState extends State<CurrencySettings> {
                   return ListTile(
                     dense: true,
                     onTap: () {
-                       //TODO
+                      //TODO
                     },
                     title: Text('$provider'),
                     trailing: Radio(
