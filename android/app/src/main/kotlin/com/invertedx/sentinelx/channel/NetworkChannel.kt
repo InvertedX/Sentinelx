@@ -7,6 +7,8 @@ import android.net.wifi.WifiManager
 import android.util.Log
 import android.widget.Toast
 import com.invertedx.sentinelx.MainActivity
+import com.invertedx.sentinelx.SentinelxApp
+import com.invertedx.sentinelx.api.ApiService
 import com.invertedx.sentinelx.tor.TorManager
 import com.invertedx.sentinelx.tor.TorService
 import com.invertedx.sentinelx.utils.Connectivity
@@ -18,6 +20,8 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import org.bitcoinj.core.Transaction
+import org.bouncycastle.util.encoders.Hex
 import java.util.concurrent.TimeUnit
 
 
@@ -178,7 +182,7 @@ class NetworkChannel(private val applicationContext: Context, private val activi
 
         }
     }
-
+    
     override fun onListen(args: Any?, events: EventChannel.EventSink?) {
 
         val disposable = TorManager.getInstance(applicationContext)

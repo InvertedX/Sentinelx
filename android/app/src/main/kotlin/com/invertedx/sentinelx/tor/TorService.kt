@@ -46,8 +46,8 @@ class TorService : Service() {
     private var torDisposable: Disposable? = null
     private var identityChanging = false
 
-    private var log = ""
     private var stopping = false;
+    private var log = ""
     private var bandwidth = ""
     private var circuit = ""
 
@@ -91,7 +91,7 @@ class TorService : Service() {
 //                Toast.makeText(getApplicationContext(), "You cannot stop Tor service when dojo is connected", Toast.LENGTH_SHORT).show();
 //                return START_STICKY;
 //            }
-                this.stopping = true;
+                stopping = true;
                 val disposable = TorManager.getInstance(applicationContext)
                         ?.stopTor()?.subscribe({
                             compositeDisposable.clear()
@@ -177,40 +177,38 @@ class TorService : Service() {
     private fun logger() {
 
         TorManager.getInstance(applicationContext)?.let {
-            it.torStatus
+            val status = it.torStatus
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { connectionStatus ->
-                        if (this.stopping) {
-                            return@subscribe
-                        }
                         updateNotification();
                         if (BuildConfig.DEBUG && connectionStatus == TorProxyManager.ConnectionStatus.CONNECTED) {
                             checkIp()
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe({ ip -> Log.i("Tor", "IP:${ip}") },{})
+                                    .subscribe({ ip -> Log.i("Tor", "IP:${ip}") }, {})
                         }
                     }
-            it.torLogs
+            val logs = it.torLogs
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { logMessage ->
                         this.log = logMessage
                         updateNotification()
                     }
-            it.circuitLogs
+            val circLog = it.circuitLogs
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { circuitMessage ->
                         this.circuit = circuitMessage
                         updateNotification()
                     }
-            it.bandWidth
-                    ?.subscribeOn(Schedulers.io())
-                    ?.observeOn(AndroidSchedulers.mainThread())
-                    ?.subscribe { bandwidth ->
-                        if (bandwidth != null) {
+            val bandW = it.bandWidth
+                    ?.subscribeOn(Schedulers.io())!!
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .throttleFirst(1, TimeUnit.SECONDS)
+                    .subscribe { bandwidth ->
+                        if (bandwidth != null && !stopping) {
                             val read: Long = if (bandwidth.containsKey("read")) bandwidth["read"]!! else 0L
                             val written: Long = if (bandwidth.containsKey("written")) bandwidth["written"]!! else 0L
                             if (read != lastRead || written != lastWritten) {
@@ -227,13 +225,22 @@ class TorService : Service() {
                             lastRead = read
                         }
                     }
+            compositeDisposable.add(logs)
+            compositeDisposable.add(circLog)
+            compositeDisposable.add(status)
+            compositeDisposable.add(bandW)
 
         }
 
     }
 
     override fun onDestroy() {
+        stopping = true;
         compositeDisposable.dispose()
+        try {
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancelAll();
+        } catch (e: Exception) {
+        }
         super.onDestroy()
     }
 
@@ -298,6 +305,20 @@ class TorService : Service() {
 
     override fun onBind(intent: Intent): IBinder? {
         return null
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+
+        try {
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancelAll();
+        } catch (e: Exception) {
+        }
+
+        super.onTaskRemoved(rootIntent)
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
     }
 
     companion object {
