@@ -139,6 +139,34 @@ class ApiService(private val applicationContext: Context) {
         }
     }
 
+
+    fun pushTx(hex: String): Observable<String> {
+        makeClient()
+
+        val baseAddress = getBaseUrl()
+        val baseUrl = if (SentinelxApp.accessToken.isNotEmpty()) "${baseAddress}pushtx/?at=${SentinelxApp.accessToken}" else "${baseAddress}pushtx";
+
+        return Observable.fromCallable {
+
+            val request = Request.Builder()
+                    .url(baseUrl)
+                    .method("POST",FormBody.Builder()
+                            .add("tx",hex)
+                            .build())
+                    .build()
+
+            val response = client.newCall(request).execute()
+            try {
+                val content = response.body!!.string()
+                return@fromCallable content
+            } catch (ex: Exception) {
+                throw  ex;
+            }
+
+        }
+    }
+
+
     fun addHDAccount(xpub: String, bip: String): Observable<String> {
 
         makeClient()
