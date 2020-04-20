@@ -4,15 +4,21 @@ import android.content.Context
 import android.util.Log
 import com.invertedx.sentinelx.SentinelxApp
 import com.invertedx.sentinelx.api.ApiService
+import com.invertedx.sentinelx.d
 import com.invertedx.sentinelx.e
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import org.bitcoinj.core.Transaction
+import org.bouncycastle.util.encoders.Hex
 import org.json.JSONObject
 
 
 class ApiChannel(private val applicationContext: Context) : MethodChannel.MethodCallHandler {
+
+    val disposables = CompositeDisposable()
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
         when (methodCall.method) {
@@ -178,7 +184,40 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
             "getNetworkLog" -> {
                 result.success(SentinelxApp.netWorkLog.toString());
             }
+
+
+            "pushTx" -> {
+                this.pushTx(methodCall.argument<String>("hex"), result)
+            }
         }
+
+    }
+
+    private fun pushTx(hex: String?, result: MethodChannel.Result) {
+        if (hex == null) {
+            result.error("ER", "Invalid hex", null);
+        }
+        try {
+            Transaction(SentinelxApp.networkParameters, Hex.decode(hex))
+            val dis = ApiService(applicationContext)
+                    .pushTx(hex!!)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        result.success(it)
+                    }, {
+                        it.printStackTrace()
+                        result.error("Err", it.message, null);
+                    })
+            disposables.add(dis);
+        } catch (e: Exception) {
+            e.printStackTrace()
+            result.error("ER", "Invalid hex", null);
+        }
+    }
+
+    fun dispose() {
+        disposables.dispose()
     }
 
 }
