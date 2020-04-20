@@ -15,6 +15,8 @@ import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/theme_chooser.dart';
 import 'package:sentinelx/widgets/tor_control_panel.dart';
 
+import 'broadcast_tx_widget.dart';
+
 class Settings extends StatefulWidget {
   @override
   _SettingsState createState() => _SettingsState();
@@ -52,6 +54,7 @@ class _SettingsState extends State<Settings> {
         child: ListView(
           physics: BouncingScrollPhysics(),
           children: <Widget>[
+            Divider(),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
@@ -83,7 +86,6 @@ class _SettingsState extends State<Settings> {
                 deleteConfirmModal();
               },
             ),
-            Divider(),
             ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -98,7 +100,6 @@ class _SettingsState extends State<Settings> {
                 showThemeChooser(context);
               },
             ),
-            Divider(),
             ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -148,6 +149,19 @@ class _SettingsState extends State<Settings> {
             ),
             Divider(),
             ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.cloud_upload),
+              ),
+              title: Text(
+                "Broadcast Tx",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Broadcast transaction hex to network"),
+              onTap: () {
+                showBroadcastPanel(context);
+              },
+            ), ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Icon(SentinelxIcons.onion_tor),
@@ -218,6 +232,7 @@ class _SettingsState extends State<Settings> {
                 style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ),
+            Divider(),
             ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -373,6 +388,14 @@ class _SettingsState extends State<Settings> {
         context: context,
         builder: (context) {
           return TimeoutChooser();
+        });
+  }
+
+  void showBroadcastPanel(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return BroadCastTx(scaffoldKey);
         });
   }
 }
