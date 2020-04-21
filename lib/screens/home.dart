@@ -100,51 +100,69 @@ class _HomeState extends State<Home> {
       body: WillPopScope(
         onWillPop: () => onPop(context),
         child: RefreshIndicator(
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverFixedExtentList(
-                  itemExtent: 220.0,
-                  delegate: SliverChildListDelegate(
-                    [
-                      AccountsPager(),
+          child: Container(
+            child: CustomScrollView(
+              slivers: <Widget>[
+                SliverFixedExtentList(
+                    itemExtent: 220.0,
+                    delegate: SliverChildListDelegate(
+                      [
+                        AccountsPager(),
+                      ],
+                    )),
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                        child: Text(
+                          "Transactions",
+                          style: Theme.of(context).textTheme.title,
+                        ),
+                      ),
                     ],
-                  )),
-              SliverToBoxAdapter(
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                  child: Text(
-                    "Transactions",
-                    style: Theme.of(context).textTheme.subhead,
                   ),
                 ),
-              ),
-              Consumer<TxState>(
-                builder: (context, model, child) {
-                  return SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      Tx tx = model.txList[index];
-                      if (tx is ListSection) {
-                        return Container(
-                          color: Theme.of(context).primaryColorDark.withOpacity(Theme.of(context).brightness == Brightness.light ? 0.1 : 0.8),
-                          padding: EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-                          child: Text(tx.section, style: Theme.of(context).textTheme.subhead),
-                        );
-                      } else {
-                        return Container(
-                          child: TxWidget(
-                            tx: tx,
-                            callback: onTxClick,
-                          ),
-                        );
-                      }
-                    },
-                    childCount: model.txList.length,
-                  ));
-                },
-              ),
-            ],
+                Consumer<TxState>(
+                  builder: (context, model, child) {
+                    return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                        Tx tx = model.txList[index];
+                        if (tx is ListSection) {
+                          return Wrap(
+                            children: <Widget>[
+                              Divider(),
+                              Container(
+//                          color: Theme.of(context).primaryColorDark.withOpacity(Theme.of(context).brightness == Brightness.light ? 0.1 : 0.8),
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                child: Text(tx.section,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .subtitle
+                                        .copyWith(fontWeight: FontWeight.w700,
+                                        color: tx.section == "Pending"? Colors.orangeAccent.withOpacity(0.5) : Theme.of(context).textTheme.subtitle.color.withOpacity(0.5)
+                                        )),
+                              ),
+                              Divider(),
+                            ],
+                          );
+                        } else {
+                          return Container(
+                            child: TxWidget(
+                              tx: tx,
+                              callback: onTxClick,
+                            ),
+                          );
+                        }
+                      },
+                      childCount: model.txList.length,
+                    ));
+                  },
+                ),
+              ],
+            ),
           ),
           onRefresh: () async {
             refreshTx();
