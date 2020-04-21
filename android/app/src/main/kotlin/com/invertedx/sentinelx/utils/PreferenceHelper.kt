@@ -131,6 +131,8 @@ class SentinalPrefs(context: Context) : Preferences(context) {
     var firstRunComplete by booleanPref()
     var locked by booleanPref()
     var timeout by intPref()
+    var dojoUrl by stringPref()
+    var dojoKey by stringPref()
 }
 
 
