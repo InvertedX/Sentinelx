@@ -54,8 +54,16 @@ class AppState extends ChangeNotifier {
       if (json.containsKey("addresses")) {
         List<dynamic> items = json['addresses'];
         var balance = 0;
+        var latestBlock = 0;
         if (json.containsKey("wallet")) {
           balance = json['wallet']['final_balance'];
+        }
+        if (json.containsKey("info")) {
+          try {
+            latestBlock = json['info']['latest_block']['height'];
+          } catch (e) {
+            print(e);
+          }
         }
         if (items.length == 1) {
           Map<String, dynamic> address = items.first;
@@ -63,10 +71,22 @@ class AppState extends ChangeNotifier {
           AppState().selectedWallet.updateXpubState(addressObj, balance);
           if (json.containsKey("txs")) {
             List<dynamic> txes = json['txs'];
+            try {
+              txes = txes.map((item) {
+                if (item['block_height'] != null) {
+                  var height = item['block_height'];
+                  item['confirmations'] = latestBlock - height;
+                } else {
+                  item['block_height'] = 0;
+                }
+                return item;
+              }).toList();
+            } catch (e) {
+              debugPrint(e);
+//              print(e);
+            }
             await TxDB.insertOrUpdate(txes, addressObj, true);
-//            final count = this.selectedWallet.xpubs.length == 0 ? 1 : this.selectedWallet.xpubs.length + 2;
-            if (pageIndex == 0 ||
-                pageIndex > this.selectedWallet.xpubs.length - 1) {
+            if (pageIndex == 0 || pageIndex > this.selectedWallet.xpubs.length - 1) {
               setPageIndex(0);
             } else {
               setPageIndex(pageIndex);
@@ -86,14 +106,12 @@ class AppState extends ChangeNotifier {
 
   Future getUnspent() async {
     try {
-      List<String> xpubsAndAddresses =
-          selectedWallet.xpubs.map((item) => item.xpub).toList();
+      List<String> xpubsAndAddresses = selectedWallet.xpubs.map((item) => item.xpub).toList();
       var response = await ApiChannel().getUnspent(xpubsAndAddresses);
       Map<String, dynamic> json = jsonDecode(response);
       if (json.containsKey("unspent_outputs")) {
         List<dynamic> items = json['unspent_outputs'];
-        List<Unspent> unspent =
-            items.map((item) => Unspent.fromJson(item)).toList();
+        List<Unspent> unspent = items.map((item) => Unspent.fromJson(item)).toList();
         await TxDB.insertOrUpdateUnspent(unspent);
       }
     } catch (e) {
@@ -105,10 +123,7 @@ class AppState extends ChangeNotifier {
     pageIndex = index;
     notifyListeners();
     if (pageIndex == 0) {
-      this
-          .selectedWallet
-          .txState
-          .addTxes(await TxDB.getAllTxes(this.selectedWallet.xpubs));
+      this.selectedWallet.txState.addTxes(await TxDB.getAllTxes(this.selectedWallet.xpubs));
       return;
     }
     if ((this.selectedWallet.xpubs.length < pageIndex)) {
@@ -121,8 +136,7 @@ class AppState extends ChangeNotifier {
   }
 
   void updateTransactions(String address) async {
-    XPUBModel xpubModel =
-        this.selectedWallet.xpubs.firstWhere((item) => item.xpub == address);
+    XPUBModel xpubModel = this.selectedWallet.xpubs.firstWhere((item) => item.xpub == address);
     if (this.pageIndex == this.selectedWallet.xpubs.indexOf(xpubModel)) {
       this.selectedWallet.txState.addTxes(await TxDB.getTxes(xpubModel.xpub));
     }
