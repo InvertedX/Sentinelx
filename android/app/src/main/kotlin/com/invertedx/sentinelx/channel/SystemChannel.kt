@@ -160,13 +160,31 @@ class SystemChannel(private val applicationContext: Context, private val activit
                         .setStream(uri)
                         .setChooserTitle("Share QR image")
                         .createChooserIntent()
-                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION )
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
                 result.success(true)
 
                 activity.startActivity(intent)
 
+            }
+
+            "setDojo" -> {
+                val dojoUrl = methodCall.argument<String>("dojoUrl");
+                val dojoKey = methodCall.argument<String>("dojoKey");
+
+                SentinalPrefs(applicationContext).dojoUrl = dojoUrl
+                SentinalPrefs(applicationContext).dojoKey = dojoKey
+
+                result.success(true)
+            }
+
+            "clearDojo" -> {
+
+                SentinalPrefs(applicationContext).dojoUrl = null
+                SentinalPrefs(applicationContext).dojoKey = null
+
+                result.success(true)
             }
 
         }

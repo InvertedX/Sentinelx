@@ -35,6 +35,8 @@ class ApiService(private val applicationContext: Context) {
 
 
     fun getTxAndXPUBData(XpubOrAddress: String): Observable<String> {
+        makeClient();
+
         val baseAddress = getBaseUrl()
         val url = if (SentinelxApp.accessToken.isNotEmpty()) "${baseAddress}multiaddr?active=$XpubOrAddress&at=${SentinelxApp.accessToken}" else "${baseAddress}multiaddr?active=$XpubOrAddress"
 
@@ -66,6 +68,12 @@ class ApiService(private val applicationContext: Context) {
             return SentinelxApp.dojoUrl
         }
 
+        if (SentinalPrefs(applicationContext).dojoKey != null) {
+            SentinelxApp.accessToken = SentinalPrefs(applicationContext).dojoKey!!
+        }
+        if (SentinalPrefs(applicationContext).dojoUrl != null) {
+            return SentinalPrefs(applicationContext).dojoUrl!!
+        }
         return if (TorManager.getInstance(this.applicationContext)?.isConnected!!) {
             if (SentinelxApp.isTestNet()) SAMOURAI_API2_TESTNET_TOR_DIST else SAMOURAI_API2_TOR_DIST
         } else {
@@ -97,6 +105,9 @@ class ApiService(private val applicationContext: Context) {
 
 
     fun authenticate(url: String, key: String): Observable<String> {
+
+        makeClient();
+
         val targetUrl = "$url/auth/login?apikey=$key"
         return Observable.fromCallable {
 
@@ -117,6 +128,7 @@ class ApiService(private val applicationContext: Context) {
 
 
     fun getUnspent(xpubOrAddress: String): Observable<String> {
+
         makeClient()
 
         val baseAddress = getBaseUrl()
@@ -141,6 +153,7 @@ class ApiService(private val applicationContext: Context) {
 
 
     fun pushTx(hex: String): Observable<String> {
+
         makeClient()
 
         val baseAddress = getBaseUrl()
@@ -150,8 +163,8 @@ class ApiService(private val applicationContext: Context) {
 
             val request = Request.Builder()
                     .url(baseUrl)
-                    .method("POST",FormBody.Builder()
-                            .add("tx",hex)
+                    .method("POST", FormBody.Builder()
+                            .add("tx", hex)
                             .build())
                     .build()
 
@@ -302,9 +315,7 @@ class ApiService(private val applicationContext: Context) {
             obj.put("status", response.code);
             obj.put("network", "");
             if (SentinelxApp.dojoUrl.isNotBlank()) {
-                Log.i("UR", request.url.toUri().host)
-                Log.i("URS", SentinelxApp.dojoUrl)
-                if (SentinelxApp.dojoUrl.contains(request.url.toUri().host) ) {
+                if (SentinelxApp.dojoUrl.contains(request.url.toUri().host)) {
                     obj.put("network", "DOJO");
                 }
             }
