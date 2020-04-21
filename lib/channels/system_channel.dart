@@ -117,9 +117,31 @@ class SystemChannel {
       return null;
     }
   }
+
   shareImageQR() async {
     try {
       var run = await platform.invokeMethod<bool>("shareQR");
+      return run;
+    } catch (exception) {
+      print(exception);
+      return null;
+    }
+  }
+
+  //Fail safe data storage for dojo
+  setDojo(String url, String apikey) async {
+    try {
+      var run = await platform.invokeMethod<bool>("setDojo", {"dojoUrl": url, "dojoKey": apikey});
+      return run;
+    } catch (exception) {
+      print(exception);
+      return null;
+    }
+  }
+
+  clearDojo() async {
+    try {
+      var run = await platform.invokeMethod<bool>("clearDojo");
       return run;
     } catch (exception) {
       print(exception);
