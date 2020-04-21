@@ -26,6 +26,7 @@ class _TxWidgetState extends State<TxWidget> {
 
   @override
   Widget build(BuildContext context) {
+    Color txColor = widget.tx.result > 0 ? Colors.greenAccent : Colors.redAccent;
     return InkWell(
       onTap: () {
         widget.callback(widget.tx);
@@ -40,8 +41,17 @@ class _TxWidgetState extends State<TxWidget> {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Icon(widget.tx.result > 0 ? Icons.call_received : Icons.call_made,
-                      color: widget.tx.result > 0 ? Colors.greenAccent : Colors.redAccent),
+                  ClipOval(
+                    child: Container(
+                      color: txColor.withOpacity(0.03),
+                      padding: EdgeInsets.all(2),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Icon(widget.tx.result > 0 ? Icons.call_received : Icons.call_made,
+                            color: txColor),
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     height: 6,
                   ),
