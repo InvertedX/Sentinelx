@@ -65,6 +65,11 @@ class ApiChannel {
     return Future.value(true);
   }
 
+  Future<String> getRequest( String url) async {
+    String status =  await platform.invokeMethod("GET", {'url': url});
+    return status;
+  }
+
   Future<String> getExchangeRates(String url) async {
     String response = await platform.invokeMethod("getExchangeRates", {"url": url});
     return Future.value(response);
@@ -85,11 +90,11 @@ class ApiChannel {
     }
   }
 
-  Future<Map<String, dynamic>> parseJSON(String data) async {
+  static Future<dynamic> parseJSON(String data) async {
     return compute(decodeJSON, data);
   }
 
-  static Map<String, dynamic> decodeJSON(String string) {
+  static dynamic decodeJSON(String string) {
     return jsonDecode(string);
   }
 }
