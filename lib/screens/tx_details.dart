@@ -70,6 +70,8 @@ class _TxDetailsState extends State<TxDetails> {
               children: <Widget>[
                 _buildRow("Date", "${formatDateAndTime(widget.tx.time)}"),
                 Divider(),
+                _buildRow("Confirmation", "${ widget.tx.confirmations}"),
+                Divider(),
                 _buildRow("Fees", fees),
                 Divider(),
                 _buildRow("Feerate", feeRate),
@@ -160,8 +162,8 @@ class _TxDetailsState extends State<TxDetails> {
 
         setState(() {
           isLoading = false;
-//          feeRate = "${txDetailsResponse.feerate} sats";
-//          fees = "${txDetailsResponse.fees} sats";
+          feeRate = txDetailsResponse.feerate != null ? "${txDetailsResponse.feerate} sats" : "";
+          fees = txDetailsResponse.fees != null ? "${txDetailsResponse.fees} sats" : "";
           blockHeight = "${txDetailsResponse.block.height}";
         });
       } catch (exception) {
