@@ -7,6 +7,7 @@ import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/dojo_configure.dart';
 import 'package:sentinelx/screens/settings/currency_settings.dart';
 import 'package:sentinelx/screens/settings/network_log.dart';
+import 'package:sentinelx/screens/settings/update_screen.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/port_selector.dart';
@@ -116,6 +117,27 @@ class _SettingsState extends State<Settings> {
                     return CurrencySettings();
                   },
                 ));
+              },
+            ),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.update),
+              ),
+              title: Text(
+                "Update",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Check latest version"),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (c) {
+                          return UpdateCheck();
+                        },
+                        fullscreenDialog: false));
+//                  showDojoPanel(context);
               },
             ),
             Divider(),
