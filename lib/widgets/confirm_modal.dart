@@ -20,9 +20,10 @@ Future<bool> showConfirmModel({
             child: new Wrap(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
                   child: title,
                 ),
+                Divider(),
                 new ListTile(
                     leading: iconPositive,
                     title: textPositive,
