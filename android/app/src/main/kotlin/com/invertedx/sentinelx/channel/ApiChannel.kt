@@ -64,6 +64,7 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
                             result.error("APIError", "Error", it.message)
                         })
             }
+
             "addHDAccount" -> {
                 val xpub = methodCall.argument<String>("xpub")
                 val bip = methodCall.argument<String>("bip")
@@ -115,8 +116,6 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
             }
             "setDojo" -> {
                 try {
-
-
                     val accessToken = methodCall.argument<String>("accessToken")
                     var url = methodCall.argument<String>("dojoUrl")
                     val refreshToken = methodCall.argument<String>("refreshToken")
@@ -188,6 +187,25 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
 
             "pushTx" -> {
                 this.pushTx(methodCall.argument<String>("hex"), result)
+            }
+
+            "GET" -> {
+
+                methodCall.argument<String>("url")?.let {
+                    ApiService(applicationContext).getRequest(it)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({ response ->
+                                if (response != null) {
+                                    result.success(response.toString())
+                                } else {
+                                    result.success(false)
+                                }
+                            }, { throwable ->
+                                throwable.printStackTrace()
+                                result.error("APIError", "Error", throwable.message)
+                            })
+                }
             }
         }
 
