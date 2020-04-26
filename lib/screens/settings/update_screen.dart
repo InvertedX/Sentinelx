@@ -2,14 +2,17 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:sentinelx/channels/api_channel.dart';
 import 'package:sentinelx/channels/system_channel.dart';
+import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/widgets/appbar_bottom_progress.dart';
+import 'package:sentinelx/widgets/circular_check_box.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 
 class UpdateCheck extends StatefulWidget {
@@ -26,6 +29,7 @@ class _UpdateCheckState extends State<UpdateCheck> {
   bool isUpToDate = false;
   List<Assets> downloadAssets = [];
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  bool showUpdateNotification = false;
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +48,37 @@ class _UpdateCheckState extends State<UpdateCheck> {
                 title: Text("Version: $version "),
                 subtitle: Text("Build: $buildNumber ", style: Theme.of(context).textTheme.caption),
               ),
+              Divider(),
               ListTile(
                 onTap: this.checkVersion,
                 title: Text("Check for Update"),
                 subtitle: Text("This action will use github api to check new releases", style: Theme.of(context).textTheme.caption),
               ),
+              Divider(),
+              ListTile(
+                onTap: () async {
+                  bool val = !showUpdateNotification;
+                  await PrefsStore().put(PrefsStore.SHOW_UPDATE_NOTIFICATION, val);
+                  setState(() {
+                    showUpdateNotification = val;
+                  });
+                },
+                title: Text("Notify new updates"),
+                trailing: Switch(
+                  value: showUpdateNotification,
+                  onChanged: (val) async {
+                    await PrefsStore().put(PrefsStore.SHOW_UPDATE_NOTIFICATION, val);
+                    setState(() {
+                      showUpdateNotification = val;
+                    });
+                  },
+                ),
+                subtitle: Text(
+                    "Show notification when new update released.\n"
+                    "note: app will only check updates every start up",
+                    style: Theme.of(context).textTheme.caption),
+              ),
+              Divider(),
               ListTile(
                 onTap: () async {
                   await SystemChannel().openURL("https://github.com/InvertedX/sentinelx");
@@ -58,7 +88,19 @@ class _UpdateCheckState extends State<UpdateCheck> {
                   style: Theme.of(context).textTheme.subhead,
                 ),
                 subtitle: Text("github.com/InvertedX/sentinelx", style: Theme.of(context).textTheme.caption),
-              )
+              ),
+              (changeLog.isNotEmpty && downloadAssets.length == 0)
+                  ? ListTile(
+                      onTap: () async {
+                        this.showChangeLog(version);
+                      },
+                      title: Text(
+                        "Show Change Log",
+                        style: Theme.of(context).textTheme.subhead,
+                      ),
+                      subtitle: Text("View current change log", style: Theme.of(context).textTheme.caption),
+                    )
+                  : SizedBox.shrink()
             ]),
           ),
           SliverToBoxAdapter(
@@ -111,7 +153,7 @@ class _UpdateCheckState extends State<UpdateCheck> {
                           "Open change log",
                           style: Theme.of(context).textTheme.subtitle,
                         ),
-                        onTap: this.showChangeLog,
+                        onTap: () => this.showChangeLog(newVersion),
                       ),
                       Divider(
                         thickness: 2,
@@ -126,17 +168,17 @@ class _UpdateCheckState extends State<UpdateCheck> {
                     children: <Widget>[
                       Divider(),
                       Padding(
-                        padding: EdgeInsets.all(12),
+                        padding: EdgeInsets.all(9),
                       ),
                       ClipRRect(
                         child: Container(
                           child: Icon(
                             Icons.check,
                             color: Colors.white,
-                            size: 24,
+                            size: 22,
                           ),
                           padding: EdgeInsets.all(12),
-                          color: Colors.greenAccent[700],
+                          color: Colors.greenAccent[700].withOpacity(0.8),
                         ),
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -168,10 +210,13 @@ class _UpdateCheckState extends State<UpdateCheck> {
 
   void init() async {
     Map<String, dynamic> packageInfo = await SystemChannel().getPackageInfo();
+    bool enabledNotifications = await PrefsStore().getBool(PrefsStore.SHOW_UPDATE_NOTIFICATION, defaultValue: true);
     setState(() {
       version = packageInfo["version"];
+      showUpdateNotification = enabledNotifications;
       buildNumber = packageInfo['buildNumber'];
     });
+    checkVersion();
   }
 
   void checkVersion() async {
@@ -245,14 +290,15 @@ class _UpdateCheckState extends State<UpdateCheck> {
     }
   }
 
-  void showChangeLog() {
+  void showChangeLog(String version) {
+    String log = "## version $version \n\n ${changeLog}";
     showModalBottomSheet(
         context: context,
         builder: (context) {
           return Card(
             child: Container(
               child: Markdown(
-                data: changeLog,
+                data: log,
               ),
             ),
           );

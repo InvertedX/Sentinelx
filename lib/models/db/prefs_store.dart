@@ -18,6 +18,7 @@ class PrefsStore {
   static const CURRENCY_RATE_PERIOD = "CURRENCY_RATE_PERIOD";
   static const AMOUNT_VIEW_TYPE = "AMOUNT_VIEW_TYPE";
   static const DOJO = "DOJO";
+  static const SHOW_UPDATE_NOTIFICATION  = "SHOW_UPDATE_NOTIFICATION";
 
 
   static PrefsStore get instance => _singleton;
@@ -72,11 +73,15 @@ class PrefsStore {
     }
   }
 
-  Future<bool> getBool(String key) async {
+  Future<bool> getBool(String key,{bool defaultValue}) async {
     try {
       var _value = await store.record(key).get(database) as bool;
       if (_value == null) {
-        return Future.value(false);
+        if(defaultValue == null){
+          return Future.value(false);
+        }else{
+          return Future.value(defaultValue);
+        }
       }
       return Future.value(_value);
     } catch (e) {

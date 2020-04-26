@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/network_channel.dart';
 import 'package:sentinelx/channels/system_channel.dart';
+import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
 import 'package:sentinelx/screens/dojo_configure.dart';
@@ -333,15 +334,18 @@ class _HomeState extends State<Home> {
   }
 
   void checkUpdate() async {
-    try {
-      Map<String, dynamic> update = await AppState().checkUpdate();
-      if (update.containsKey("isUpToDate")) {
-        if (update['isUpToDate'] as bool == false) {
-          SystemChannel().showUpdateNotification(update['newVersion']);
+    bool check = await PrefsStore().getBool(PrefsStore.SHOW_UPDATE_NOTIFICATION, defaultValue: true);
+    if (check) {
+      try {
+        Map<String, dynamic> update = await AppState().checkUpdate();
+        if (update.containsKey("isUpToDate")) {
+          if (update['isUpToDate'] as bool == false) {
+            SystemChannel().showUpdateNotification(update['newVersion']);
+          }
         }
+      } catch (e) {
+        print(e);
       }
-    } catch (e) {
-      print(e);
     }
   }
 

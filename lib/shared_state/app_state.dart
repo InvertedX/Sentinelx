@@ -159,7 +159,8 @@ class AppState extends ChangeNotifier {
     Map<String, dynamic> latest = jsonArray[0];
     String latestVersion = latest['tag_name'].replaceFirst("v", "");
     String changeLogBody = latest['body'];
-    Version current = Version.parse("0.1.3");
+//    Version current = Version.parse("0.1.3");
+    Version current = Version.parse(packageInfo["version"]);
     if (current.compareTo(Version.parse(latestVersion)) < 0) {
       return {
         "newVersion": latestVersion,
@@ -169,7 +170,7 @@ class AppState extends ChangeNotifier {
         "downloadAssets": latest.containsKey("assets") ? latest['assets'] : []
       };
     } else {
-      return {"newVersion": "", "isUpToDate": true, "changeLog": "", "isUpToDate": true, "downloadAssets": []};
+      return {"newVersion": "", "isUpToDate": true, "changeLog": changeLogBody, "isUpToDate": true, "downloadAssets": []};
     }
   }
 
