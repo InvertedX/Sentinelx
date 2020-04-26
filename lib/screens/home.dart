@@ -10,6 +10,7 @@ import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
 import 'package:sentinelx/screens/dojo_configure.dart';
 import 'package:sentinelx/screens/settings/settings.dart';
+import 'package:sentinelx/screens/settings/update_screen.dart';
 import 'package:sentinelx/screens/tx_details.dart';
 import 'package:sentinelx/screens/watch_list.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
@@ -34,7 +35,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _ScaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<RefreshIndicatorState> _refreshIndicator = new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -138,12 +138,11 @@ class _HomeState extends State<Home> {
 //                          color: Theme.of(context).primaryColorDark.withOpacity(Theme.of(context).brightness == Brightness.light ? 0.1 : 0.8),
                                 padding: EdgeInsets.symmetric(horizontal: 12),
                                 child: Text(tx.section,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .subtitle
-                                        .copyWith(fontWeight: FontWeight.w700,
-                                        color: tx.section == "Pending"? Colors.orangeAccent.withOpacity(0.5) : Theme.of(context).textTheme.subtitle.color.withOpacity(0.5)
-                                        )),
+                                    style: Theme.of(context).textTheme.subtitle.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: tx.section == "Pending"
+                                            ? Colors.orangeAccent.withOpacity(0.5)
+                                            : Theme.of(context).textTheme.subtitle.color.withOpacity(0.5))),
                               ),
                               Divider(),
                             ],
@@ -286,6 +285,8 @@ class _HomeState extends State<Home> {
   void setUp() {
     askPermission();
     askNetwork();
+    checkUpdate();
+    registerListeners(context);
   }
 
   void askPermission() async {
@@ -329,5 +330,32 @@ class _HomeState extends State<Home> {
         );
       },
     );
+  }
+
+  void checkUpdate() async {
+    try {
+      Map<String, dynamic> update = await AppState().checkUpdate();
+      if (update.containsKey("isUpToDate")) {
+        if (update['isUpToDate'] as bool == false) {
+          SystemChannel().showUpdateNotification(update['newVersion']);
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void registerListeners(BuildContext context) {
+    SystemChannel().onNotificationCalls((event) {
+      if (event == SystemChannel.UPDATE_NOTIFICATION_EVENT) {
+        Navigator.push(
+            context,
+            new MaterialPageRoute(
+                builder: (c) {
+                  return UpdateCheck();
+                },
+                fullscreenDialog: false));
+      }
+    });
   }
 }
