@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:sentinelx/channels/api_channel.dart';
+import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/tx_db.dart';
 import 'package:sentinelx/models/exchange/LocalBitcoinRateProvider.dart';
@@ -13,6 +15,7 @@ import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/unspent.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
+import 'package:sentinelx/screens/settings/update_screen.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/shared_state/theme_provider.dart';
@@ -147,6 +150,27 @@ class AppState extends ChangeNotifier {
   Future clearWalletData() async {
     await PrefsStore().clear();
     await selectedWallet.clear();
+  }
+
+  Future<Map<String, dynamic>> checkUpdate() async {
+    Map<String, dynamic> packageInfo = await SystemChannel().getPackageInfo();
+    String response = await ApiChannel().getRequest("https://api.github.com/repos/InvertedX/sentinelx/releases");
+    List<dynamic> jsonArray = await ApiChannel.parseJSON(response);
+    Map<String, dynamic> latest = jsonArray[0];
+    String latestVersion = latest['tag_name'].replaceFirst("v", "");
+    String changeLogBody = latest['body'];
+    Version current = Version.parse("0.1.3");
+    if (current.compareTo(Version.parse(latestVersion)) < 0) {
+      return {
+        "newVersion": latestVersion,
+        "isUpToDate": false,
+        "changeLog": changeLogBody,
+        "isUpToDate": false,
+        "downloadAssets": latest.containsKey("assets") ? latest['assets'] : []
+      };
+    } else {
+      return {"newVersion": "", "isUpToDate": true, "changeLog": "", "isUpToDate": true, "downloadAssets": []};
+    }
   }
 
   static Address parse(Map<String, dynamic> addressObjs) {

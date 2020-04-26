@@ -8,6 +8,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:sentinelx/channels/api_channel.dart';
 import 'package:sentinelx/channels/system_channel.dart';
+import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/widgets/appbar_bottom_progress.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 
@@ -179,31 +180,16 @@ class _UpdateCheckState extends State<UpdateCheck> {
     });
 
     try {
-      String response = await ApiChannel().getRequest("https://api.github.com/repos/InvertedX/sentinelx/releases");
-      List<dynamic> jsonArray = await ApiChannel.parseJSON(response);
-      Map<String, dynamic> latest = jsonArray[0];
-      String latestVersion = latest['tag_name'].replaceFirst("v", "");
-      String changeLogBody = latest['body'];
-      Version current = Version.parse(version);
-      print("objec ${current.compareTo(Version.parse("0.1.8"))}");
-      if (current.compareTo(Version.parse(latestVersion)) < 0) {
-        List<dynamic> assets = latest.containsKey("assets") ? latest['assets'] : [];
-        List<Assets> assetsDownloadable = assets.map((item) => Assets.fromJson(item)).toList();
-        setState(() {
-          loading = false;
-          newVersion = latestVersion;
-          changeLog = changeLogBody;
-          isUpToDate = false;
-          downloadAssets = assetsDownloadable;
-        });
-      } else {
-        setState(() {
-          loading = false;
-          changeLog = "";
-          isUpToDate = true;
-          downloadAssets = [];
-        });
-      }
+      Map<String, dynamic> payload = await AppState().checkUpdate();
+      List<dynamic> assets = payload.containsKey("downloadAssets") ? payload['downloadAssets'] : [];
+      List<Assets> assetsDownloadable = assets.map((item) => Assets.fromJson(item)).toList();
+      setState(() {
+        loading = false;
+        newVersion = payload['newVersion'];
+        changeLog = payload['changeLog'];
+        isUpToDate = payload['isUpToDate'];
+        downloadAssets = assetsDownloadable;
+      });
     } catch (e) {
       setState(() {
         loading = false;
@@ -217,7 +203,6 @@ class _UpdateCheckState extends State<UpdateCheck> {
             style: Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),
           ),
           backgroundColor: Colors.redAccent,
-          duration: Duration(milliseconds: 900),
           behavior: SnackBarBehavior.floating,
           elevation: 1,
         ),
@@ -297,5 +282,4 @@ class Assets {
     updatedAt = json['updated_at'];
     browserDownloadUrl = json['browser_download_url'];
   }
-
 }
