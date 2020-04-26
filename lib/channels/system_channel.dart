@@ -1,9 +1,15 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
 
 class SystemChannel {
+  static const UPDATE_NOTIFICATION_EVENT = "UPDATE_NOTIFICATION";
   static const platform = const MethodChannel('system.channel');
+
+  Function(String event) onStreamCallBack;
+
+  static const notificationStream = const EventChannel("NOTIFICATION_STREAM");
 
   static final SystemChannel _singleton = new SystemChannel._internal();
 
@@ -11,7 +17,15 @@ class SystemChannel {
     return _singleton;
   }
 
-  SystemChannel._internal();
+  SystemChannel._internal() {
+    notificationStream.receiveBroadcastStream().listen((dynamic log) {
+      if (onStreamCallBack != null) {
+        if (log is String) {
+          onStreamCallBack(log);
+        }
+      }
+    });
+  }
 
   Future<Directory> getDataDir() async {
     var path = await platform.invokeMethod<String>("documentPath");
@@ -147,5 +161,19 @@ class SystemChannel {
       print(exception);
       return null;
     }
+  }
+
+  Future<bool> showUpdateNotification(String update) async {
+    try {
+      var run = await platform.invokeMethod<bool>("showUpdateNotification", {"newVersion": update});
+      return run;
+    } catch (exception) {
+      print(exception);
+      return null;
+    }
+  }
+
+  void onNotificationCalls(void Function(String event) callback) {
+    onStreamCallBack = callback;
   }
 }
