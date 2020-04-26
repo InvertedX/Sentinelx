@@ -40,7 +40,6 @@ class ApiService(private val applicationContext: Context) {
         val baseAddress = getBaseUrl()
         val url = if (SentinelxApp.accessToken.isNotEmpty()) "${baseAddress}multiaddr?active=$XpubOrAddress&at=${SentinelxApp.accessToken}" else "${baseAddress}multiaddr?active=$XpubOrAddress"
 
-        Log.i("API", "CALL url -> $url")
         return Observable.fromCallable {
             val request = Request.Builder()
                     .url(url)
@@ -48,7 +47,6 @@ class ApiService(private val applicationContext: Context) {
             val response = client.newCall(request).execute()
             try {
                 val content = response.body!!.string()
-                Log.i("API", "response -> $content")
                 return@fromCallable content
             } catch (ex: Exception) {
                 return@fromCallable "{}"
@@ -94,7 +92,6 @@ class ApiService(private val applicationContext: Context) {
             val response = client.newCall(request).execute()
             try {
                 val content = response.body!!.string()
-                Log.i("API", "response -> $content")
                 return@fromCallable content
             } catch (ex: Exception) {
                 throw  ex
@@ -193,8 +190,6 @@ class ApiService(private val applicationContext: Context) {
                 .add("segwit", bip)
                 .build()
 
-        Log.i("url", baseUrl.toString())
-        Log.i("requestBody", requestBody.toString())
         return Observable.fromCallable {
 
             val request = Request.Builder()
@@ -205,7 +200,6 @@ class ApiService(private val applicationContext: Context) {
             client.connectTimeoutMillis
             val response = client.newCall(request).execute()
             val content = response.body!!.string()
-            Log.i("API", "response -> $content")
             return@fromCallable content
 
         }

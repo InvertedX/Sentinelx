@@ -33,7 +33,6 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             if (it != null) {
-                                Log.i("API", it.toString())
                                 result.success(it)
                             }
                         }, {
@@ -53,7 +52,6 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             if (it != null) {
-                                Log.i("API", it.toString())
                                 val obj: JSONObject = JSONObject(it)
                                 result.success(obj.toString());
                             } else {
@@ -77,7 +75,6 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             if (it != null) {
-                                Log.i("API", it.toString())
                                 val obj: JSONObject = JSONObject(it)
                                 if (obj.has("status") && obj.get("status") == "ok") {
                                     result.success(true)
