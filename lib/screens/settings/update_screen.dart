@@ -12,7 +12,6 @@ import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/widgets/appbar_bottom_progress.dart';
-import 'package:sentinelx/widgets/circular_check_box.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 
 class UpdateCheck extends StatefulWidget {
