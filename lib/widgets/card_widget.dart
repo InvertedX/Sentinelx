@@ -4,6 +4,7 @@ import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/utils/format_util.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
+import 'package:sentinelx/widgets/tx_amount_widget.dart';
 
 class CardWidget extends StatefulWidget {
   @override
@@ -66,14 +67,8 @@ class _CardWidgetState extends State<CardWidget> {
                   flex: 3,
                   child: Container(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      "BTC ${satToBtc(xpubModel.final_balance)}",
-                      maxLines: 1,
-                      textAlign: TextAlign.start,
-                      overflow: TextOverflow.ellipsis,
-                      style:
-                      TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                    ),
+                    child: AmountWidget(xpubModel.final_balance, style:
+                    TextStyle(fontSize: 26, fontWeight: FontWeight.bold),height: 40,align: TextAlign.start,),
                   )),
               Expanded(
                 child: Row(

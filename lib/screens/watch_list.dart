@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -15,10 +16,31 @@ class WatchList extends StatefulWidget {
   _WatchListState createState() => _WatchListState();
 }
 
-class _WatchListState extends State<WatchList> {
+class _WatchListState extends State<WatchList> with SingleTickerProviderStateMixin {
   int index = 0;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String label = "";
+  ScrollController scrollController;
+  Animation<double> fabSlideAnimation;
+  AnimationController fabSlideAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController = ScrollController();
+    fabSlideAnimationController = new AnimationController(duration: Duration(milliseconds: 100), vsync: this)
+      ..addListener(() => setState(() {}));
+
+    fabSlideAnimation = Tween(begin: 0.0, end: 100.0).animate(fabSlideAnimationController);
+    scrollController.addListener(() {
+      bool isVisible = scrollController.position.userScrollDirection == ScrollDirection.forward;
+      if (isVisible) {
+        fabSlideAnimationController.reverse();
+      } else {
+        fabSlideAnimationController.forward();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +61,9 @@ class _WatchListState extends State<WatchList> {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Padding(padding: EdgeInsets.all(12),),
+                    Padding(
+                      padding: EdgeInsets.all(12),
+                    ),
                     FloatingActionButton.extended(
                       label: Text("Create new watch list"),
                       icon: Icon(Icons.add),
@@ -54,6 +78,7 @@ class _WatchListState extends State<WatchList> {
             );
           }
           return ListView.builder(
+            controller: scrollController,
             itemCount: model.xpubs.length,
             itemBuilder: (context, index) {
               return ChangeNotifierProvider.value(
@@ -90,28 +115,18 @@ class _WatchListState extends State<WatchList> {
                                         context: context,
                                         builder: (con) {
                                           return Card(
-                                              color: Theme
-                                                  .of(context)
-                                                  .backgroundColor,
+                                              color: Theme.of(context).backgroundColor,
                                               elevation: 12,
                                               child: Container(
-                                                margin: EdgeInsets.symmetric(
-                                                    vertical: 22,
-                                                    horizontal: 12),
+                                                margin: EdgeInsets.symmetric(vertical: 22, horizontal: 12),
                                                 child: TextField(
-                                                    controller:
-                                                    TextEditingController()
-                                                      ..text = model
-                                                          .xpubs[index]
-                                                          .label,
+                                                    controller: TextEditingController()..text = model.xpubs[index].label,
                                                     onSubmitted: (str) {
-                                                      _update(
-                                                          str, index, context);
+                                                      _update(str, index, context);
                                                       Navigator.pop(context);
                                                     },
                                                     autofocus: true,
-                                                    keyboardType:
-                                                    TextInputType.text,
+                                                    keyboardType: TextInputType.text,
                                                     decoration: InputDecoration(
                                                       labelText: 'Label',
                                                     )),
@@ -141,18 +156,21 @@ class _WatchListState extends State<WatchList> {
           );
         }),
       ),
-      floatingActionButton: Consumer<Wallet>(builder: (context, model, child) {
-        if (model.xpubs.length == 0) {
-          return SizedBox.shrink();
-        }
-        return FloatingActionButton(
-          child: Icon(Icons.add),
-          heroTag: "actionbtn",
-          onPressed: () {
-            _navigate(context);
-          },
-        );
-      }),
+      floatingActionButton: Transform.translate(
+        offset: Offset(0, fabSlideAnimation.value),
+        child: Consumer<Wallet>(builder: (context, model, child) {
+          if (model.xpubs.length == 0) {
+            return SizedBox.shrink();
+          }
+          return FloatingActionButton(
+            child: Icon(Icons.add),
+            heroTag: "actionbtn",
+            onPressed: () {
+              _navigate(context);
+            },
+          );
+        }),
+      ),
     );
   }
 
@@ -171,8 +189,7 @@ class _WatchListState extends State<WatchList> {
   _delete(BuildContext context, int index) async {
     bool confirm = await showConfirmModel(
       context: context,
-      title: Text("Are you sure want to Remove?",
-          style: Theme.of(context).textTheme.subhead),
+      title: Text("Are you sure want to Remove?", style: Theme.of(context).textTheme.subhead),
       iconPositive: new Icon(
         Icons.check_circle,
         color: Colors.greenAccent[200],
@@ -195,10 +212,7 @@ class _WatchListState extends State<WatchList> {
         context: context,
         builder: (context) {
           return Container(
-            height: MediaQuery
-                .of(context)
-                .size
-                .height,
+            height: MediaQuery.of(context).size.height,
             child: Card(
               margin: EdgeInsets.symmetric(vertical: 2),
               child: Center(
@@ -220,8 +234,7 @@ class _WatchListState extends State<WatchList> {
 //      return Track();
 //    }));
 
-    int result = await Navigator.of(context)
-        .push(new MaterialPageRoute<int>(builder: (BuildContext context) {
+    int result = await Navigator.of(context).push(new MaterialPageRoute<int>(builder: (BuildContext context) {
       return Track();
     }));
     if (result != null) {
@@ -243,6 +256,12 @@ class _WatchListState extends State<WatchList> {
       }
     }
   }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
 }
 
 class SlideUpWrapper extends StatefulWidget {
@@ -254,8 +273,7 @@ class SlideUpWrapper extends StatefulWidget {
   _SlideUpWrapperState createState() => _SlideUpWrapperState();
 }
 
-class _SlideUpWrapperState extends State<SlideUpWrapper>
-    with SingleTickerProviderStateMixin {
+class _SlideUpWrapperState extends State<SlideUpWrapper> with SingleTickerProviderStateMixin {
   AnimationController controller;
   Animation<double> animation;
 
@@ -269,8 +287,7 @@ class _SlideUpWrapperState extends State<SlideUpWrapper>
       ..addListener(() => setState(() {}))
       ..addStatusListener((state) {});
 
-    final Animation curve =
-        CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
+    final Animation curve = CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
     animation = Tween(begin: 200.0, end: 260.0).animate(curve);
   }
 
@@ -297,5 +314,11 @@ class _SlideUpWrapperState extends State<SlideUpWrapper>
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 }

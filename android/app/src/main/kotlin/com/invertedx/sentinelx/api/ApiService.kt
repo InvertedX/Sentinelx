@@ -1,19 +1,17 @@
 package com.invertedx.sentinelx.api
 
 import android.content.Context
-import android.preference.PreferenceManager
 import android.util.Log
 import com.invertedx.sentinelx.BuildConfig
 import com.invertedx.sentinelx.SentinelxApp
-import com.invertedx.sentinelx.i
 import com.invertedx.sentinelx.tor.TorManager
 import com.invertedx.sentinelx.utils.LoggingInterceptor
 import com.invertedx.sentinelx.utils.SentinalPrefs
 import io.reactivex.Observable
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
+import io.reactivex.Single
+import okhttp3.*
+import org.json.JSONObject
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
@@ -37,10 +35,11 @@ class ApiService(private val applicationContext: Context) {
 
 
     fun getTxAndXPUBData(XpubOrAddress: String): Observable<String> {
+        makeClient();
+
         val baseAddress = getBaseUrl()
         val url = if (SentinelxApp.accessToken.isNotEmpty()) "${baseAddress}multiaddr?active=$XpubOrAddress&at=${SentinelxApp.accessToken}" else "${baseAddress}multiaddr?active=$XpubOrAddress"
 
-        Log.i("API", "CALL url -> $url")
         return Observable.fromCallable {
             val request = Request.Builder()
                     .url(url)
@@ -48,7 +47,6 @@ class ApiService(private val applicationContext: Context) {
             val response = client.newCall(request).execute()
             try {
                 val content = response.body!!.string()
-                Log.i("API", "response -> $content")
                 return@fromCallable content
             } catch (ex: Exception) {
                 return@fromCallable "{}"
@@ -68,6 +66,12 @@ class ApiService(private val applicationContext: Context) {
             return SentinelxApp.dojoUrl
         }
 
+        if (SentinalPrefs(applicationContext).dojoKey != null) {
+            SentinelxApp.accessToken = SentinalPrefs(applicationContext).dojoKey!!
+        }
+        if (SentinalPrefs(applicationContext).dojoUrl != null) {
+            return SentinalPrefs(applicationContext).dojoUrl!!
+        }
         return if (TorManager.getInstance(this.applicationContext)?.isConnected!!) {
             if (SentinelxApp.isTestNet()) SAMOURAI_API2_TESTNET_TOR_DIST else SAMOURAI_API2_TOR_DIST
         } else {
@@ -88,7 +92,6 @@ class ApiService(private val applicationContext: Context) {
             val response = client.newCall(request).execute()
             try {
                 val content = response.body!!.string()
-                Log.i("API", "response -> $content")
                 return@fromCallable content
             } catch (ex: Exception) {
                 throw  ex
@@ -99,6 +102,9 @@ class ApiService(private val applicationContext: Context) {
 
 
     fun authenticate(url: String, key: String): Observable<String> {
+
+        makeClient();
+
         val targetUrl = "$url/auth/login?apikey=$key"
         return Observable.fromCallable {
 
@@ -119,6 +125,7 @@ class ApiService(private val applicationContext: Context) {
 
 
     fun getUnspent(xpubOrAddress: String): Observable<String> {
+
         makeClient()
 
         val baseAddress = getBaseUrl()
@@ -141,6 +148,35 @@ class ApiService(private val applicationContext: Context) {
         }
     }
 
+
+    fun pushTx(hex: String): Observable<String> {
+
+        makeClient()
+
+        val baseAddress = getBaseUrl()
+        val baseUrl = if (SentinelxApp.accessToken.isNotEmpty()) "${baseAddress}pushtx/?at=${SentinelxApp.accessToken}" else "${baseAddress}pushtx";
+
+        return Observable.fromCallable {
+
+            val request = Request.Builder()
+                    .url(baseUrl)
+                    .method("POST", FormBody.Builder()
+                            .add("tx", hex)
+                            .build())
+                    .build()
+
+            val response = client.newCall(request).execute()
+            try {
+                val content = response.body!!.string()
+                return@fromCallable content
+            } catch (ex: Exception) {
+                throw  ex;
+            }
+
+        }
+    }
+
+
     fun addHDAccount(xpub: String, bip: String): Observable<String> {
 
         makeClient()
@@ -154,8 +190,6 @@ class ApiService(private val applicationContext: Context) {
                 .add("segwit", bip)
                 .build()
 
-        Log.i("url", baseUrl.toString())
-        Log.i("requestBody", requestBody.toString())
         return Observable.fromCallable {
 
             val request = Request.Builder()
@@ -166,13 +200,12 @@ class ApiService(private val applicationContext: Context) {
             client.connectTimeoutMillis
             val response = client.newCall(request).execute()
             val content = response.body!!.string()
-            Log.i("API", "response -> $content")
             return@fromCallable content
 
         }
     }
 
-  
+
     fun makeClient() {
         val builder = OkHttpClient.Builder()
         if (BuildConfig.DEBUG) {
@@ -182,6 +215,7 @@ class ApiService(private val applicationContext: Context) {
             getHostNameVerifier(builder)
             builder.proxy(TorManager.getInstance(this.applicationContext)?.getProxy())
         }
+        builder.addInterceptor(LogEntry(this))
         val prefs = SentinalPrefs(applicationContext)
 
         var timeout = 90L;
@@ -192,6 +226,7 @@ class ApiService(private val applicationContext: Context) {
         builder.readTimeout(timeout, TimeUnit.SECONDS)
         client = builder.build()
     }
+
 
     @Throws(Exception::class)
     private fun getHostNameVerifier(clientBuilder: OkHttpClient.Builder) {
@@ -220,4 +255,70 @@ class ApiService(private val applicationContext: Context) {
 
     }
 
+    //Generic post request handler
+    fun postRequest(url: String, requestBody: RequestBody): Single<String> {
+        return Single.fromCallable {
+            val request = Request.Builder()
+                    .url(url)
+                    .method("POST", requestBody)
+                    .build()
+            val response = client.newCall(request).execute()
+
+            try {
+                val content = response.body!!.string()
+                return@fromCallable content
+            } catch (ex: Exception) {
+                throw  ex
+            }
+        }
+
+    }
+
+    //Generic get request handler
+    fun getRequest(url: String): Single<String> {
+        return Single.fromCallable {
+            val request = Request.Builder()
+                    .url(url)
+                    .build()
+            val response = client.newCall(request).execute()
+
+            try {
+                val content = response.body!!.string()
+                return@fromCallable content
+            } catch (ex: Exception) {
+                throw  ex
+            }
+        }
+
+    }
+
+
+    internal class LogEntry(val apiService: ApiService) : Interceptor {
+
+        @Throws(IOException::class)
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val obj = JSONObject();
+            val request = chain.request()
+            val t1 = System.nanoTime()
+            obj.put("url", request.url.toString());
+            obj.put("method", request.method);
+            obj.put("init_time", System.currentTimeMillis());
+            val response = chain.proceed(request)
+            val t2 = System.nanoTime()
+            obj.put("time", (t2 - t1) / 1e6);
+            obj.put("status", response.code);
+            obj.put("network", "");
+            if (SentinelxApp.dojoUrl.isNotBlank()) {
+                if (SentinelxApp.dojoUrl.contains(request.url.toUri().host)) {
+                    obj.put("network", "DOJO");
+                }
+            }
+
+            SentinelxApp.netWorkLog.put(obj);
+            return response
+        }
+    }
+
+
 }
+

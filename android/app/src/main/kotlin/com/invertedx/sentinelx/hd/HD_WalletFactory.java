@@ -61,7 +61,6 @@ public class HD_WalletFactory	{
 
         if(data.startsWith("xpub") || data.startsWith("ypub") || data.startsWith("zpub") || data.startsWith("tpub") || data.startsWith("upub") || data.startsWith("vpub")) {
             String[] xpub = data.split(":");
-            Log.i("HD_WalletFactory", "xpubs:" + xpub.length);
             hdw = new HD_Wallet(params, xpub);
         }
 

@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:sentinelx/channels/network_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
+import 'package:sentinelx/models/exchange/rate.dart';
+import 'package:sentinelx/shared_state/app_state.dart';
 
 Future<Map<String, dynamic>> parseJsonResponse(String response) async {
   Map<String, dynamic> json = jsonDecode(response);
@@ -42,6 +44,7 @@ String getTorStatusInText(TorStatus torStatus) {
   }
   return "";
 }
+
 
 Future<bool> checkNetworkStatusBeforeApiCall(
     Function(SnackBar) callback) async {

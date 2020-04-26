@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/shared_state/balance.dart';
 import 'package:sentinelx/utils/format_util.dart';
+import 'package:sentinelx/widgets/tx_amount_widget.dart';
 
 class BalanceCardWidget extends StatefulWidget {
 //  XPUBModel model;
@@ -53,14 +54,20 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
                       value: wallet.balanceModel,
                       child: Consumer<BalanceModel>(
                         builder: (context, model, c) {
-                          return Text(
-                            "BTC ${satToBtc(model.balance)}",
-                            maxLines: 1,
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontSize: 26, fontWeight: FontWeight.bold),
+                          return AmountWidget(
+                            model.balance,
+                            style:    TextStyle(
+                              fontSize: 26, fontWeight: FontWeight.bold),
+                            height: 100,
                           );
+//                          return Text(
+//                            "BTC ${satToBtc(model.balance)}",
+//                            maxLines: 1,
+//                            textAlign: TextAlign.start,
+//                            overflow: TextOverflow.ellipsis,
+//                            style: TextStyle(
+//                                fontSize: 26, fontWeight: FontWeight.bold),
+//                          );
                         },
                       ),
                     ),

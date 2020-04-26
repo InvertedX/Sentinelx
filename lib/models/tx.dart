@@ -33,6 +33,7 @@ class Tx {
   List<Inputs> inputs;
   List<Out> out;
   int blockHeight;
+  int confirmations;
   int balance;
   String key;
   static const String STORE_NAME = 'txs';
@@ -43,16 +44,7 @@ class Tx {
   static Future<Database> get _db async => await TxDB.instance(AppState().selectedWallet.getTxDb()).database;
   static final txStore = stringMapStoreFactory.store(STORE_NAME);
 
-  Tx(
-      {this.hash,
-      this.time,
-      this.version,
-      this.locktime,
-      this.result,
-      this.inputs,
-      this.out,
-      this.blockHeight,
-      this.balance});
+  Tx({this.hash, this.time, this.version, this.locktime, this.result, this.inputs, this.out, this.blockHeight, this.balance});
 
   Tx.fromJson(Map<String, dynamic> json) {
     hash = json['hash'];
@@ -66,6 +58,9 @@ class Tx {
         inputs.add(new Inputs.fromJson(v));
       });
     }
+    if (json.containsKey('confirmations')) {
+      confirmations = json['confirmations'];
+    }
     if (json['out'] != null) {
       out = new List<Out>();
       json['out'].forEach((v) {
@@ -73,7 +68,7 @@ class Tx {
       });
     }
     if (json['associatedWallets'] != null) {
-      List<String> wallets =  json['associatedWallets'].cast<String>();
+      List<String> wallets = json['associatedWallets'].cast<String>();
       this.associatedWallets = wallets.toList();
     }
     blockHeight = json['block_height'];
@@ -94,6 +89,7 @@ class Tx {
       data['out'] = this.out.map((v) => v.toJson()).toList();
     }
     data['block_height'] = this.blockHeight;
+    data['confirmations'] = this.confirmations;
     data['balance'] = this.balance;
 //    data['key'] = this.hash;
 
@@ -119,6 +115,11 @@ class Tx {
         case "version":
           {
             version = jsonTx['version'];
+            break;
+          }
+        case "confirmations":
+          {
+            confirmations = jsonTx['confirmations'];
             break;
           }
         case "locktime":
@@ -270,9 +271,9 @@ class Address {
   }
 }
 
-class ListSection extends Tx{
-  String section ="";
-  DateTime timeStamp =  DateTime.now();
-  ListSection({this.section, this.timeStamp});
+class ListSection extends Tx {
+  String section = "";
+  DateTime timeStamp = DateTime.now();
 
+  ListSection({this.section, this.timeStamp});
 }

@@ -5,6 +5,9 @@ import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/sentinelx_db.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/dojo_configure.dart';
+import 'package:sentinelx/screens/settings/currency_settings.dart';
+import 'package:sentinelx/screens/settings/network_log.dart';
+import 'package:sentinelx/screens/settings/update_screen.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/port_selector.dart';
@@ -12,6 +15,8 @@ import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/theme_chooser.dart';
 import 'package:sentinelx/widgets/tor_control_panel.dart';
+
+import 'broadcast_tx_widget.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -50,6 +55,7 @@ class _SettingsState extends State<Settings> {
         child: ListView(
           physics: BouncingScrollPhysics(),
           children: <Widget>[
+            Divider(),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
               child: Text(
@@ -81,7 +87,6 @@ class _SettingsState extends State<Settings> {
                 deleteConfirmModal();
               },
             ),
-            Divider(),
             ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -94,6 +99,45 @@ class _SettingsState extends State<Settings> {
               subtitle: Text("Customize theme"),
               onTap: () {
                 showThemeChooser(context);
+              },
+            ),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.attach_money),
+              ),
+              title: Text(
+                "Currency Settings",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Choose street price"),
+              onTap: () {
+                Navigator.push(context, new MaterialPageRoute(
+                  builder: (c) {
+                    return CurrencySettings();
+                  },
+                ));
+              },
+            ),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.update),
+              ),
+              title: Text(
+                "Update",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Check latest version"),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (c) {
+                          return UpdateCheck();
+                        },
+                        fullscreenDialog: false));
+//                  showDojoPanel(context);
               },
             ),
             Divider(),
@@ -127,6 +171,19 @@ class _SettingsState extends State<Settings> {
             ),
             Divider(),
             ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.cloud_upload),
+              ),
+              title: Text(
+                "Broadcast Tx",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Broadcast transaction hex to network"),
+              onTap: () {
+                showBroadcastPanel(context);
+              },
+            ), ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Icon(SentinelxIcons.onion_tor),
@@ -184,6 +241,36 @@ class _SettingsState extends State<Settings> {
                     new MaterialPageRoute(
                         builder: (c) {
                           return DojoConfigureScreen();
+                        },
+                        fullscreenDialog: true));
+//                  showDojoPanel(context);
+              },
+            ),
+            Divider(),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+              child: Text(
+                "Troubleshoot",
+                style: TextStyle(color: Theme.of(context).accentColor),
+              ),
+            ),
+            Divider(),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.network_cell),
+              ),
+              title: Text(
+                "Network Logs",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("View recent network requests"),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (c) {
+                          return NetWorkLogScreen();
                         },
                         fullscreenDialog: true));
 //                  showDojoPanel(context);
@@ -323,6 +410,14 @@ class _SettingsState extends State<Settings> {
         context: context,
         builder: (context) {
           return TimeoutChooser();
+        });
+  }
+
+  void showBroadcastPanel(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return BroadCastTx(scaffoldKey);
         });
   }
 }

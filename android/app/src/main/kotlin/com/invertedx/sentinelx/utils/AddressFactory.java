@@ -142,7 +142,6 @@ public class AddressFactory {
     }
 
     public void setHighestTxReceiveIdx(int account, int idx) {
-        //       Log.i("AddressFactory", "setting highestTxReceiveIdx to " + idx);
         highestTxReceiveIdx.put(account, idx);
     }
 
@@ -156,7 +155,6 @@ public class AddressFactory {
     }
 
     public void setHighestTxChangeIdx(int account, int idx) {
-        //       Log.i("AddressFactory", "setting highestTxChangeIdx to " + idx);
         highestTxChangeIdx.put(account, idx);
     }
 

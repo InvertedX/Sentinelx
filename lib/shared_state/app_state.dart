@@ -3,14 +3,21 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:sentinelx/channels/api_channel.dart';
+import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/tx_db.dart';
+import 'package:sentinelx/models/exchange/LocalBitcoinRateProvider.dart';
+import 'package:sentinelx/models/exchange/exchange_provider.dart';
+import 'package:sentinelx/models/exchange/rate.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/unspent.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
+import 'package:sentinelx/screens/settings/update_screen.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
+import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/shared_state/theme_provider.dart';
 import 'package:sentinelx/utils/utils.dart';
 
@@ -27,7 +34,9 @@ class AppState extends ChangeNotifier {
 
   List<Wallet> wallets = [];
   Wallet selectedWallet = Wallet(walletName: "WalletSTUB", xpubs: []);
-  bool isTestnet = false;
+  bool isTestNet = false;
+  Rate selectedRate;
+  ExchangeProvider exchangeProvider;
   ThemeProvider theme = ThemeProvider();
   int pageIndex = 0;
   bool offline = false;
@@ -48,8 +57,16 @@ class AppState extends ChangeNotifier {
       if (json.containsKey("addresses")) {
         List<dynamic> items = json['addresses'];
         var balance = 0;
+        var latestBlock = 0;
         if (json.containsKey("wallet")) {
           balance = json['wallet']['final_balance'];
+        }
+        if (json.containsKey("info")) {
+          try {
+            latestBlock = json['info']['latest_block']['height'];
+          } catch (e) {
+            print(e);
+          }
         }
         if (items.length == 1) {
           Map<String, dynamic> address = items.first;
@@ -57,10 +74,22 @@ class AppState extends ChangeNotifier {
           AppState().selectedWallet.updateXpubState(addressObj, balance);
           if (json.containsKey("txs")) {
             List<dynamic> txes = json['txs'];
+            try {
+              txes = txes.map((item) {
+                if (item['block_height'] != null) {
+                  var height = item['block_height'];
+                  item['confirmations'] = latestBlock - height;
+                } else {
+                  item['block_height'] = 0;
+                }
+                return item;
+              }).toList();
+            } catch (e) {
+              debugPrint(e);
+//              print(e);
+            }
             await TxDB.insertOrUpdate(txes, addressObj, true);
-//            final count = this.selectedWallet.xpubs.length == 0 ? 1 : this.selectedWallet.xpubs.length + 2;
-            if (pageIndex == 0 ||
-                pageIndex > this.selectedWallet.xpubs.length - 1) {
+            if (pageIndex == 0 || pageIndex > this.selectedWallet.xpubs.length - 1) {
               setPageIndex(0);
             } else {
               setPageIndex(pageIndex);
@@ -80,14 +109,12 @@ class AppState extends ChangeNotifier {
 
   Future getUnspent() async {
     try {
-      List<String> xpubsAndAddresses =
-      selectedWallet.xpubs.map((item) => item.xpub).toList();
+      List<String> xpubsAndAddresses = selectedWallet.xpubs.map((item) => item.xpub).toList();
       var response = await ApiChannel().getUnspent(xpubsAndAddresses);
       Map<String, dynamic> json = jsonDecode(response);
       if (json.containsKey("unspent_outputs")) {
         List<dynamic> items = json['unspent_outputs'];
-        List<Unspent> unspent =
-        items.map((item) => Unspent.fromJson(item)).toList();
+        List<Unspent> unspent = items.map((item) => Unspent.fromJson(item)).toList();
         await TxDB.insertOrUpdateUnspent(unspent);
       }
     } catch (e) {
@@ -99,10 +126,7 @@ class AppState extends ChangeNotifier {
     pageIndex = index;
     notifyListeners();
     if (pageIndex == 0) {
-      this
-          .selectedWallet
-          .txState
-          .addTxes(await TxDB.getAllTxes(this.selectedWallet.xpubs));
+      this.selectedWallet.txState.addTxes(await TxDB.getAllTxes(this.selectedWallet.xpubs));
       return;
     }
     if ((this.selectedWallet.xpubs.length < pageIndex)) {
@@ -115,8 +139,7 @@ class AppState extends ChangeNotifier {
   }
 
   void updateTransactions(String address) async {
-    XPUBModel xpubModel =
-    this.selectedWallet.xpubs.firstWhere((item) => item.xpub == address);
+    XPUBModel xpubModel = this.selectedWallet.xpubs.firstWhere((item) => item.xpub == address);
     if (this.pageIndex == this.selectedWallet.xpubs.indexOf(xpubModel)) {
       this.selectedWallet.txState.addTxes(await TxDB.getTxes(xpubModel.xpub));
     }
@@ -127,6 +150,28 @@ class AppState extends ChangeNotifier {
   Future clearWalletData() async {
     await PrefsStore().clear();
     await selectedWallet.clear();
+  }
+
+  Future<Map<String, dynamic>> checkUpdate() async {
+    Map<String, dynamic> packageInfo = await SystemChannel().getPackageInfo();
+    String response = await ApiChannel().getRequest("https://api.github.com/repos/InvertedX/sentinelx/releases");
+    List<dynamic> jsonArray = await ApiChannel.parseJSON(response);
+    Map<String, dynamic> latest = jsonArray[0];
+    String latestVersion = latest['tag_name'].replaceFirst("v", "");
+    String changeLogBody = latest['body'];
+//    Version current = Version.parse("0.1.3");
+    Version current = Version.parse(packageInfo["version"]);
+    if (current.compareTo(Version.parse(latestVersion)) < 0) {
+      return {
+        "newVersion": latestVersion,
+        "isUpToDate": false,
+        "changeLog": changeLogBody,
+        "isUpToDate": false,
+        "downloadAssets": latest.containsKey("assets") ? latest['assets'] : []
+      };
+    } else {
+      return {"newVersion": "", "isUpToDate": true, "changeLog": changeLogBody, "isUpToDate": true, "downloadAssets": []};
+    }
   }
 
   static Address parse(Map<String, dynamic> addressObjs) {

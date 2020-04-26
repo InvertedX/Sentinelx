@@ -57,6 +57,11 @@ android {
             resValue "string", "app_name", "Sentinelx Staging"
             debuggable true
         }
+        profile {
+            applicationIdSuffix ".debug"
+            resValue "string", "app_name", "Sentinelx Staging"
+            debuggable true
+        }
     }
     splits {
 

@@ -1,6 +1,15 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sentinelx/models/exchange/rate.dart';
 import 'package:sentinelx/models/tx.dart';
+import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/utils/format_util.dart';
+import 'package:sentinelx/utils/utils.dart';
+import 'dart:math' as math;
+
+import 'package:sentinelx/widgets/tx_amount_widget.dart';
 
 class TxWidget extends StatefulWidget {
   final Tx tx;
@@ -17,6 +26,7 @@ class _TxWidgetState extends State<TxWidget> {
 
   @override
   Widget build(BuildContext context) {
+    Color txColor = widget.tx.result > 0 ? Colors.greenAccent : Colors.redAccent;
     return InkWell(
       onTap: () {
         widget.callback(widget.tx);
@@ -31,13 +41,17 @@ class _TxWidgetState extends State<TxWidget> {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Icon(
-                      widget.tx.result > 0
-                          ? Icons.call_received
-                          : Icons.call_made,
-                      color: widget.tx.result > 0
-                          ? Colors.greenAccent
-                          : Colors.redAccent),
+                  ClipOval(
+                    child: Container(
+                      color: txColor.withOpacity(0.03),
+                      padding: EdgeInsets.all(2),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Icon(widget.tx.result > 0 ? Icons.call_received : Icons.call_made,
+                            color: txColor),
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     height: 6,
                   ),
@@ -47,11 +61,11 @@ class _TxWidgetState extends State<TxWidget> {
               flex: 1,
             ),
             Expanded(
-              child: Container(
-                child: Text(
-                  "${satToBtc(widget.tx.result)} BTC",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+              child: AmountWidget(
+                widget.tx.result,
+                align: TextAlign.center,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                height: 50,
               ),
               flex: 5,
             ),
@@ -59,5 +73,9 @@ class _TxWidgetState extends State<TxWidget> {
         ),
       ),
     );
+  }
+
+  String getAmount() {
+    return "${satToBtc(widget.tx.result)} BTC";
   }
 }

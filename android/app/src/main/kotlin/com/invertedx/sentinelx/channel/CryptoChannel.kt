@@ -1,7 +1,9 @@
 package com.invertedx.sentinelx.channel
 
 import android.content.Context
+import android.util.Log
 import com.invertedx.sentinelx.SentinelxApp
+import com.invertedx.sentinelx.api.ApiService
 import com.invertedx.sentinelx.hd.HD_Account
 import com.invertedx.sentinelx.i
 import com.invertedx.sentinelx.segwit.P2SH_P2WPKH
@@ -9,8 +11,13 @@ import com.invertedx.sentinelx.segwit.SegwitAddress
 import com.invertedx.sentinelx.utils.FormatsUtil
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import org.bitcoinj.core.AddressFormatException
 import org.bitcoinj.core.Base58
+import org.bitcoinj.core.Transaction
+import org.bitcoinj.params.MainNetParams
+import org.bouncycastle.util.encoders.Hex
 import java.nio.ByteBuffer
 
 class CryptoChannel(val applicationContext: Context) : MethodChannel.MethodCallHandler {
@@ -44,9 +51,28 @@ class CryptoChannel(val applicationContext: Context) : MethodChannel.MethodCallH
                 this.validateAddress(methodcall.argument<String>("address"), result)
             }
 
+            "validateTxHex" -> {
+                this.validateTxHex(methodcall.argument<String>("hex"), result)
+            }
+
         }
 
     }
+
+    private fun validateTxHex(argument: String?, result: MethodChannel.Result) {
+        if (argument == null) {
+            result.error("ER", "Invalid hex", null);
+        }
+        try {
+            val tx = Transaction(SentinelxApp.networkParameters, Hex.decode(argument))
+            result.success(tx.hashAsString);
+        } catch (e: Exception) {
+            e.printStackTrace()
+            result.error("ER", "Invalid hex", null);
+        }
+
+    }
+
 
     fun generateAddressBIP49(xpub: String?, account_index: Int?): String {
         if (xpub == null || account_index == null) {

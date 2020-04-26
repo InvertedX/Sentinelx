@@ -196,6 +196,8 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
 
       await PrefsStore().put(PrefsStore.DOJO, jsonEncode(dojo.toJson()));
 
+      await SystemChannel().setDojo(dojo.pairing.url,dojo.pairing.apikey);
+
       setState(() {
         _dojo = dojo;
       });
@@ -235,6 +237,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
     if (confirm) {
       await PrefsStore().put(PrefsStore.DOJO, "");
       await ApiChannel().setDojo("", "", "");
+      await SystemChannel().clearDojo();
       setState(() {
         _dojo = null;
       });

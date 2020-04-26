@@ -4,6 +4,7 @@ import android.util.Log
 import org.bitcoinj.core.NetworkParameters
 import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.params.TestNet3Params
+import org.json.JSONArray
 
 
 fun Any.e(msg: Any? = "No Message provided") {
@@ -30,6 +31,7 @@ object SentinelxApp {
     public var refreshToken = "";
     public var dojoEneabled = false
     public var dojoUrl = ""
+    public var netWorkLog = JSONArray();
 
 
     fun isTestNet(): Boolean {

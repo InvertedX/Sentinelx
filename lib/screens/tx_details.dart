@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/api_channel.dart';
 import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/tx_details_response.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
+import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/utils/format_util.dart';
 import 'package:sentinelx/utils/utils.dart';
+import 'package:sentinelx/widgets/tx_amount_widget.dart';
 
 class TxDetails extends StatefulWidget {
   final Tx tx;
@@ -35,17 +38,30 @@ class _TxDetailsState extends State<TxDetails> {
     return Column(
       children: <Widget>[
         Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 16),
           color: Theme.of(context).primaryColorDark,
-          child: Center(
-              child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 32),
-            child: Text("${satToBtc(widget.tx.result)} BTC",
-                style: Theme.of(context)
-                    .textTheme
-                    .headline
-                    .copyWith(color: Colors.white),
-                textAlign: TextAlign.center),
-          )),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              AmountWidget(
+                widget.tx.result,
+                height: 40,
+                style: Theme.of(context).textTheme.headline.copyWith(
+                      color: Colors.white,
+                    ),
+              )
+            ],
+          ),
+//          child: Container(
+//              color: Colors.redAccent,
+//              alignment: Alignment.center,
+//              padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 32),
+//              child: Container(
+//                child: ,
+//              )),
         ),
         Expanded(
           flex: 2,
@@ -54,6 +70,8 @@ class _TxDetailsState extends State<TxDetails> {
               children: <Widget>[
                 _buildRow("Date", "${formatDateAndTime(widget.tx.time)}"),
                 Divider(),
+                _buildRow("Confirmation", "${ widget.tx.confirmations}"),
+                Divider(),
                 _buildRow("Fees", fees),
                 Divider(),
                 _buildRow("Feerate", feeRate),
@@ -61,24 +79,21 @@ class _TxDetailsState extends State<TxDetails> {
                 _buildRow("Block Height", blockHeight),
                 Divider(),
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                         child: Text(
                           "Tx hash",
                           style: Theme.of(context).textTheme.subtitle,
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 4, horizontal: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
                         child: InkWell(
                             onTap: () => _copy(widget.tx.hash),
                             child: Text(
@@ -94,9 +109,7 @@ class _TxDetailsState extends State<TxDetails> {
                   padding: const EdgeInsets.symmetric(vertical: 22),
                   child: Center(
                       child: FlatButton.icon(
-                          onPressed: () => openInExplorer(context),
-                          icon: Icon(Icons.open_in_browser),
-                          label: Text("Open in explorer"))),
+                          onPressed: () => openInExplorer(context), icon: Icon(Icons.open_in_browser), label: Text("Open in explorer"))),
                 )
               ],
             ),
@@ -145,19 +158,19 @@ class _TxDetailsState extends State<TxDetails> {
         setState(() {
           isLoading = true;
         });
-        TxDetailsResponse txDetailsResponse =
-            await ApiChannel().getTx(widget.tx.hash);
+        TxDetailsResponse txDetailsResponse = await ApiChannel().getTx(widget.tx.hash);
 
         setState(() {
           isLoading = false;
-//          feeRate = "${txDetailsResponse.feerate} sats";
-//          fees = "${txDetailsResponse.fees} sats";
+          feeRate = txDetailsResponse.feerate != null ? "${txDetailsResponse.feerate} sats" : "";
+          fees = txDetailsResponse.fees != null ? "${txDetailsResponse.fees} sats" : "";
           blockHeight = "${txDetailsResponse.block.height}";
         });
       } catch (exception) {
-        setState(() {
-          isLoading = false;
-        });
+        if (this.mounted)
+          setState(() {
+            isLoading = false;
+          });
       }
   }
 
@@ -175,7 +188,7 @@ class _TxDetailsState extends State<TxDetails> {
 
   void openInExplorer(BuildContext context) async {
     var url = '';
-    if (AppState().isTestnet) {
+    if (AppState().isTestNet) {
       url = "https://blockstream.info/testnet/${widget.tx.hash}";
     } else {
       url = "https://oxt.me/transaction/${widget.tx.hash}";
