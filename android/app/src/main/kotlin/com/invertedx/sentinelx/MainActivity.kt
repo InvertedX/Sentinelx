@@ -2,6 +2,7 @@ package com.invertedx.sentinelx
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import com.invertedx.sentinelx.channel.ApiChannel
@@ -24,6 +25,7 @@ class MainActivity : FlutterActivity() {
     private lateinit var networkChannel: NetworkChannel
     private lateinit var onPermissionResultCallback: OnPermissionResult
     private lateinit var apiChannel:ApiChannel;
+    private lateinit var systemChannel: SystemChannel;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +35,9 @@ class MainActivity : FlutterActivity() {
         createNotificationChannels()
         networkChannel = NetworkChannel(applicationContext, this);
         apiChannel = ApiChannel(applicationContext);
-        
-        MethodChannel(flutterView, "system.channel").setMethodCallHandler(SystemChannel(applicationContext, this))
+        systemChannel = SystemChannel(applicationContext, this);
+
+        MethodChannel(flutterView, "system.channel").setMethodCallHandler(systemChannel)
         MethodChannel(flutterView, "crypto.channel").setMethodCallHandler(CryptoChannel(applicationContext))
         MethodChannel(flutterView, "api.channel").setMethodCallHandler(apiChannel)
         MethodChannel(flutterView, "network.channel").setMethodCallHandler(networkChannel)
@@ -77,6 +80,19 @@ class MainActivity : FlutterActivity() {
             )
             serviceChannel.setSound(null, null)
             getSystemService(NotificationManager::class.java)?.createNotificationChannel(serviceChannel)
+
+            val updateChannel = NotificationChannel(
+                    "UPDATE_CHANNEL",
+                    "Update Notifications",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            )
+            getSystemService(NotificationManager::class.java)?.createNotificationChannel(updateChannel)
+
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        intent?.let { systemChannel.onNotificationIntent(it) }
+        super.onNewIntent(intent)
     }
 }
