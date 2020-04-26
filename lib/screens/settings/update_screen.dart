@@ -51,7 +51,7 @@ class _UpdateCheckState extends State<UpdateCheck> {
               Divider(),
               ListTile(
                 onTap: this.checkVersion,
-                title: Text("Check for Update"),
+                title: Text("Check for update"),
                 subtitle: Text("This action will use github api to check new releases", style: Theme.of(context).textTheme.caption),
               ),
               Divider(),
@@ -73,10 +73,13 @@ class _UpdateCheckState extends State<UpdateCheck> {
                     });
                   },
                 ),
-                subtitle: Text(
-                    "Show notification when new update released.\n"
-                    "note: app will only check updates every start up",
-                    style: Theme.of(context).textTheme.caption),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                      "Show notification when new update released.\n"
+                      "note: The app will check updates during the startup",
+                      style: Theme.of(context).textTheme.caption),
+                ),
               ),
               Divider(),
               ListTile(
@@ -84,18 +87,19 @@ class _UpdateCheckState extends State<UpdateCheck> {
                   await SystemChannel().openURL("https://github.com/InvertedX/sentinelx");
                 },
                 title: Text(
-                  "Open Github Repo",
+                  "Open Github repo",
                   style: Theme.of(context).textTheme.subhead,
                 ),
                 subtitle: Text("github.com/InvertedX/sentinelx", style: Theme.of(context).textTheme.caption),
               ),
+              Divider(),
               (changeLog.isNotEmpty && downloadAssets.length == 0)
                   ? ListTile(
                       onTap: () async {
                         this.showChangeLog(version);
                       },
                       title: Text(
-                        "Show Change Log",
+                        "Show current change log",
                         style: Theme.of(context).textTheme.subhead,
                       ),
                       subtitle: Text("View current change log", style: Theme.of(context).textTheme.caption),

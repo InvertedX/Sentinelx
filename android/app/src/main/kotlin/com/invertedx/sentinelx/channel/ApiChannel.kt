@@ -6,6 +6,7 @@ import com.invertedx.sentinelx.SentinelxApp
 import com.invertedx.sentinelx.api.ApiService
 import com.invertedx.sentinelx.d
 import com.invertedx.sentinelx.e
+import com.invertedx.sentinelx.utils.SentinalPrefs
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -137,6 +138,10 @@ class ApiChannel(private val applicationContext: Context) : MethodChannel.Method
                 if (apiKey == null || url == null) {
                     result.notImplemented()
                     return
+                }
+                if(SentinalPrefs(applicationContext).dojoUrl == null){
+                    SentinalPrefs(applicationContext).dojoUrl = url
+                    SentinalPrefs(applicationContext).dojoKey = apiKey
                 }
                 ApiService(applicationContext).authenticate(url, apiKey)
                         .subscribeOn(Schedulers.io())
