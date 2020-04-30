@@ -54,6 +54,7 @@ class AppState extends ChangeNotifier {
 
       String response = await ApiChannel().getXpubOrAddress(xpub);
       Map<String, dynamic> json = await compute(parseJsonResponse, response);
+      print("response ${response}");
       if (json.containsKey("addresses")) {
         List<dynamic> items = json['addresses'];
         var balance = 0;
@@ -80,7 +81,7 @@ class AppState extends ChangeNotifier {
                   var height = item['block_height'];
                   item['confirmations'] = latestBlock - height;
                 } else {
-                  item['block_height'] = 0;
+                  item['confirmations'] = 0;
                 }
                 return item;
               }).toList();
