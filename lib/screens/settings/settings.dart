@@ -5,6 +5,7 @@ import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/sentinelx_db.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
 import 'package:sentinelx/screens/dojo_configure.dart';
+import 'package:sentinelx/screens/settings/back_up.dart';
 import 'package:sentinelx/screens/settings/currency_settings.dart';
 import 'package:sentinelx/screens/settings/network_log.dart';
 import 'package:sentinelx/screens/settings/update_screen.dart';
@@ -99,6 +100,24 @@ class _SettingsState extends State<Settings> {
               subtitle: Text("Customize theme"),
               onTap: () {
                 showThemeChooser(context);
+              },
+            ),
+            ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Icon(Icons.folder_open),
+              ),
+              title: Text(
+                "Backup",
+                style: Theme.of(context).textTheme.subtitle,
+              ),
+              subtitle: Text("Export preference and accounts"),
+              onTap: () {
+                Navigator.push(context, new MaterialPageRoute(
+                  builder: (c) {
+                    return BackUpSettingsScreen();
+                  },
+                ));
               },
             ),
             ListTile(
