@@ -9,12 +9,20 @@ class NetworkState extends ChangeNotifier {
   static final NetworkState _instance = NetworkState._privateConstructor();
 
   TorStatus torStatus = TorStatus.IDLE;
+  bool dojoConnected = false;
+
   factory NetworkState() {
     return _instance;
   }
 
   void startTor() {
     NetworkChannel().startTor();
+  }
+
+
+  void setDojoStatus(bool status){
+    this.dojoConnected =  status;
+    this.notifyListeners();
   }
 
   setTorStatus(TorStatus status) {

@@ -203,9 +203,12 @@ class _LockState extends State<Lock> {
 
     ConnectivityStatus status = await NetworkChannel().getConnectivityStatus();
 
+
+
     if (status == ConnectivityStatus.CONNECTED) {
       bool torVal = await PrefsStore().getBool(PrefsStore.TOR_STATUS);
       String dojoString = await PrefsStore().getString(PrefsStore.DOJO);
+      NetworkState().setDojoStatus(dojoString.length!=0);
       setState(() {
         lockProgressState = LockProgressState.TOR;
       });
@@ -229,6 +232,8 @@ class _LockState extends State<Lock> {
         initDb();
       }
     } else {
+      String dojoString = await PrefsStore().getString(PrefsStore.DOJO);
+      NetworkState().setDojoStatus(dojoString.length!=0);
       final snackBar = SnackBar(
         content: Text(
           "No Internet... going offline mode",

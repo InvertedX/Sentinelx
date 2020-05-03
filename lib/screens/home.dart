@@ -62,6 +62,24 @@ class _HomeState extends State<Home> {
             builder: (context, model, child) {
               return IconButton(
                   icon: Icon(
+                    Icons.router,
+                    color: model.dojoConnected ? Colors.greenAccent : Theme.of(context).iconTheme.color,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (c) {
+                              return DojoConfigureScreen();
+                            },
+                            fullscreenDialog: true));
+                  });
+            },
+          ),
+          Consumer<NetworkState>(
+            builder: (context, model, child) {
+              return IconButton(
+                  icon: Icon(
                     SentinelxIcons.onion_tor,
                     color: getTorIconColor(model.torStatus),
                   ),
