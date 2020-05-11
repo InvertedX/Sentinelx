@@ -1,6 +1,7 @@
 package com.invertedx.sentinelx.channel
 
 import android.Manifest
+import android.app.Activity
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -27,7 +28,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.params.TestNet3Params
-import java.io.File
+import java.io.*
 import java.util.*
 
 
@@ -239,6 +240,49 @@ class SystemChannel(private val applicationContext: Context, private val activit
 
             }
 
+
+            "saveToFile" -> {
+
+                val fileName = methodCall.argument<String>("name");
+                val data = methodCall.argument<String>("data");
+
+                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT);
+
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.type = "text/plain";
+                intent.putExtra(Intent.EXTRA_TITLE, fileName);
+                intent.putExtra(Intent.EXTRA_TITLE, fileName);
+
+                activity.startActivityForResult(intent, 12);
+
+                //This will bind to MainActivity onActivityResult
+                activity.listenResult(ActivityResultListener { intent, resultCode ->
+
+                    if (resultCode == Activity.RESULT_CANCELED) {
+                        result.error("00", "Canceled", null);
+                        return@ActivityResultListener
+                    }
+
+                    if (intent == null) {
+                        result.error("00", "Unable to retrieve intent", null);
+                        return@ActivityResultListener
+                    }
+
+                    try {
+                        val outputStream = activity.contentResolver.openOutputStream(intent.data!!);
+                        val bw = BufferedWriter(OutputStreamWriter(outputStream!!));
+                        bw.write(data!!);
+                        bw.flush();
+                        bw.close();
+                        result.success(true);
+                    } catch (e: IOException) {
+                        result.error("00", "Unable to write file", e.message);
+                        e.printStackTrace();
+                    }
+
+                }, 12);
+            }
+
         }
     }
 
@@ -250,9 +294,9 @@ class SystemChannel(private val applicationContext: Context, private val activit
 
     fun onNotificationIntent(intent: Intent) {
         if (intent.hasExtra("TYPE") && intent.getStringExtra("TYPE") == "NOTIFY") {
-           if(notificationSink !=null){
-               notificationSink!!.success("UPDATE_NOTIFICATION");
-           }
+            if (notificationSink != null) {
+                notificationSink!!.success("UPDATE_NOTIFICATION");
+            }
         }
     }
 
