@@ -1,14 +1,13 @@
 package com.invertedx.sentinelx
 
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import com.invertedx.sentinelx.channel.ApiChannel
-import com.invertedx.sentinelx.channel.CryptoChannel
-import com.invertedx.sentinelx.channel.NetworkChannel
-import com.invertedx.sentinelx.channel.SystemChannel
+import android.util.Log
+import com.invertedx.sentinelx.channel.*
 import com.invertedx.sentinelx.plugins.QRCameraPlugin
 import com.invertedx.sentinelx.tor.TorService
 import com.invertedx.sentinelx.utils.SentinalPrefs
@@ -24,8 +23,9 @@ class MainActivity : FlutterActivity() {
 
     private lateinit var networkChannel: NetworkChannel
     private lateinit var onPermissionResultCallback: OnPermissionResult
-    private lateinit var apiChannel:ApiChannel;
+    private lateinit var apiChannel: ApiChannel;
     private lateinit var systemChannel: SystemChannel;
+    private val resultHandlers: HashMap<Int, ActivityResultListener> = HashMap();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,5 +94,16 @@ class MainActivity : FlutterActivity() {
     override fun onNewIntent(intent: Intent?) {
         intent?.let { systemChannel.onNotificationIntent(it) }
         super.onNewIntent(intent)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultHandlers.containsKey(requestCode)) {
+            resultHandlers[requestCode]!!.onResult(data, resultCode);
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    fun listenResult(listener: ActivityResultListener, key: Int) {
+        resultHandlers[key] = listener;
     }
 }
