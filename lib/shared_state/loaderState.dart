@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
+import 'change_notifier.dart';
+
 enum States {
   LOADING,
   IDLE,
   COMPLETED
 }
-class LoaderState extends ChangeNotifier{
+class LoaderState extends SentinelXChangeNotifier{
   String loadingXpub = "all";
   States state = States.IDLE;
 

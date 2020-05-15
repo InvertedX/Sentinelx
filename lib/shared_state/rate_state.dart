@@ -1,13 +1,13 @@
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/api_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/exchange/LocalBitcoinRateProvider.dart';
 import 'package:sentinelx/models/exchange/exchange_provider.dart';
+import 'package:sentinelx/shared_state/change_notifier.dart';
 import 'package:sentinelx/utils/format_util.dart';
 
-class RateState extends ChangeNotifier {
+class RateState extends SentinelXChangeNotifier {
   ExchangeProvider provider = new ExchangeProvider("{}");
 
   int index = 1;
@@ -87,7 +87,11 @@ class RateState extends ChangeNotifier {
   }
 
   void save() async {
+
     await PrefsStore().put(PrefsStore.CURRENCY_RATE, this.rate);
     await PrefsStore().put(PrefsStore.AMOUNT_VIEW_TYPE, this.index);
   }
+
+
+
 }

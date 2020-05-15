@@ -2,14 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 /// Custom ChangeNotifier with option clear listeners
-class SentinelXChangeNotifier extends ChangeNotifier implements Listenable {
+class SentinelXChangeNotifier extends ChangeNotifier {
   ObserverList<VoidCallback> _listeners = ObserverList<VoidCallback>();
 
   bool _debugAssertNotDisposed() {
     assert(() {
       if (_listeners == null) {
-        throw FlutterError('A $runtimeType was used after being disposed.\n'
-            'Once you have called dispose() on a $runtimeType, it can no longer be used.');
+        throw FlutterError(
+            'A $runtimeType was used after being disposed.\n'
+                'Once you have called dispose() on a $runtimeType, it can no longer be used.'
+        );
       }
       return true;
     }());
@@ -83,10 +85,10 @@ class SentinelXChangeNotifier extends ChangeNotifier implements Listenable {
     _listeners = null;
   }
 
-  void clearListeners() {
-    _listeners = ObserverList<VoidCallback>();
-  }
 
+  void clearListeners(){
+    _listeners  = ObserverList<VoidCallback>();
+  }
   /// Call all the registered listeners.
   ///
   /// Call this method whenever the object changes, to notify any clients the
@@ -110,21 +112,22 @@ class SentinelXChangeNotifier extends ChangeNotifier implements Listenable {
       final List<VoidCallback> localListeners = List<VoidCallback>.from(_listeners);
       for (final VoidCallback listener in localListeners) {
         try {
-          if (_listeners.contains(listener)) listener();
+          if (_listeners.contains(listener))
+            listener();
         } catch (exception, stack) {
-//          FlutterError.reportError(FlutterErrorDetails(
-//            exception: exception,
-//            stack: stack,
-//            library: 'foundation library',
-//            context: ErrorDescription('while dispatching notifications for $runtimeType'),
-//            informationCollector: () sync* {
-//              yield DiagnosticsProperty<SentinelXChangeNotifier>(
-//                'The $runtimeType sending notification was',
-//                this,
-//                style: DiagnosticsTreeStyle.errorProperty,
-//              );
-//            },
-//          ));
+          FlutterError.reportError(FlutterErrorDetails(
+            exception: exception,
+            stack: stack,
+            library: 'foundation library',
+            context: ErrorDescription('while dispatching notifications for $runtimeType'),
+            informationCollector: () sync* {
+              yield DiagnosticsProperty<SentinelXChangeNotifier>(
+                'The $runtimeType sending notification was',
+                this,
+                style: DiagnosticsTreeStyle.errorProperty,
+              );
+            },
+          ));
         }
       }
     }
