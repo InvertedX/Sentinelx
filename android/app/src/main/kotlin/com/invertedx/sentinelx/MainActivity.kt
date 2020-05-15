@@ -66,6 +66,7 @@ class MainActivity : FlutterActivity() {
 
     override fun onDestroy() {
         networkChannel.dispose()
+        systemChannel.dispose();
         apiChannel.dispose();
         super.onDestroy()
     }

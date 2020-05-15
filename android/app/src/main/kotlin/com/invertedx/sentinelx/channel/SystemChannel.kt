@@ -357,5 +357,9 @@ class SystemChannel(private val applicationContext: Context, private val activit
         }
     }
 
+    fun dispose() {
+        disposables .dispose()
+    }
+
 
 }

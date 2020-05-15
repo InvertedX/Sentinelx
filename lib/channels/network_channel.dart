@@ -105,12 +105,12 @@ class NetworkChannel {
   Future<bool> setTorPort(int port) async {
     if (NetworkState().torStatus == TorStatus.CONNECTED) {
       return platform.invokeMethod<bool>("setTorSocksPort", port);
-    }else{
+    } else {
       return Future.value(false);
     }
   }
 
-  void stopTor() async {
+  Future stopTor() async {
     await platform.invokeMethod("stopTor");
   }
 
