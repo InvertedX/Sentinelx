@@ -1,11 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:sentinelx/channels/api_channel.dart';
 import 'package:sentinelx/channels/system_channel.dart';
+import 'package:sentinelx/models/db/database.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/tx_db.dart';
 import 'package:sentinelx/models/exchange/LocalBitcoinRateProvider.dart';
@@ -16,12 +15,16 @@ import 'package:sentinelx/models/unspent.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/screens/settings/update_screen.dart';
+import 'package:sentinelx/shared_state/change_notifier.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
+import 'package:sentinelx/shared_state/network_state.dart';
 import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/shared_state/theme_provider.dart';
+import 'package:sentinelx/shared_state/tx_state.dart';
 import 'package:sentinelx/utils/utils.dart';
+import 'package:sentinelx/widgets/phoenix.dart';
 
-class AppState extends ChangeNotifier {
+class AppState extends SentinelXChangeNotifier {
   AppState._privateConstructor();
 
   TxDB txDB;
@@ -149,8 +152,19 @@ class AppState extends ChangeNotifier {
   }
 
   Future clearWalletData() async {
+    await ApiChannel().setDojo("", "", "");
+    await SystemChannel().clearDojo();
+    await TxState().clear();
     await PrefsStore().clear();
-    await selectedWallet.clear();
+    TxState().clearListeners();
+    NetworkState().clearListeners();
+    RateState().clearListeners();
+    AppState().clearListeners();
+    AppState().loaderState.clearListeners();
+    ThemeProvider().clearListeners();
+    await selectedWallet.txDB.clear();
+    await selectedWallet.dropAll();
+    await initDatabase(null);
   }
 
   Future<Map<String, dynamic>> checkUpdate() async {

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:sentinelx/channels/network_channel.dart';
 import 'package:sentinelx/channels/system_channel.dart';
+import 'package:sentinelx/main.dart';
+import 'package:sentinelx/models/db/database.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/sentinelx_db.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
@@ -10,7 +13,9 @@ import 'package:sentinelx/screens/settings/currency_settings.dart';
 import 'package:sentinelx/screens/settings/network_log.dart';
 import 'package:sentinelx/screens/settings/update_screen.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
+import 'package:sentinelx/shared_state/network_state.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
+import 'package:sentinelx/widgets/phoenix.dart';
 import 'package:sentinelx/widgets/port_selector.dart';
 import 'package:sentinelx/widgets/qr_camera/push_up_camera_wrapper.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
@@ -202,7 +207,8 @@ class _SettingsState extends State<Settings> {
               onTap: () {
                 showBroadcastPanel(context);
               },
-            ), ListTile(
+            ),
+            ListTile(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Icon(SentinelxIcons.onion_tor),
@@ -350,16 +356,21 @@ class _SettingsState extends State<Settings> {
       setState(() {
         loadingErase = true;
       });
-      await AppState().clearWalletData();
       var snackbar = new SnackBar(
-        content: new Text("Wallet erased successfully"),
+        content: new Text("Wallet erased successfully",style: TextStyle(color: Colors.white),),
+        backgroundColor: Colors.greenAccent[700],
         duration: Duration(milliseconds: 800),
         behavior: SnackBarBehavior.fixed,
       );
+
+      await Future.delayed(Duration(milliseconds: 800));
+      await AppState().clearWalletData();
+      scaffoldKey.currentState.showSnackBar(snackbar);
+      await Future.delayed(Duration(milliseconds: 900));
       setState(() {
         loadingErase = false;
       });
-      scaffoldKey.currentState.showSnackBar(snackbar);
+      Phoenix.rebirth(context);
     }
   }
 
