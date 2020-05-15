@@ -1,0 +1,28 @@
+{
+  "name": "SentinelIconSet",
+  "css_prefix_text": "",
+  "css_use_suffix": false,
+  "hinting": true,
+  "units_per_em": 1000,
+  "ascent": 850,
+  "glyphs": [
+    {
+      "uid": "e6t4yvmv401e9gpo2anslq4uqy2iz692",
+      "css": "signal",
+      "code": 59392,
+      "src": "modernpics"
+    },
+    {
+      "uid": "db0ced95901bc474d8550cefae38f870",
+      "css": "content_paste",
+      "code": 59393,
+      "src": "material"
+    },
+    {
+      "uid": "367872db40e0897f68450f819aab9e8b",
+      "css": "restore_page",
+      "code": 59394,
+      "src": "material"
+    }
+  ]
+}
