@@ -13,7 +13,7 @@ import 'package:sentinelx/shared_state/app_state.dart';
 import 'encrypt_codec.dart';
 
 class SentinelxDB {
-  static final SentinelxDB _singleton = SentinelxDB._();
+  static  SentinelxDB _singleton = SentinelxDB._();
 
   static SentinelxDB get instance => _singleton;
 
@@ -87,12 +87,13 @@ class SentinelxDB {
 
   closeConnection() async {
     await this.database.close();
+    _singleton = null;
   }
 
   clear() async {
     final appDocumentDir = await SystemChannel().getDataDir();
     final mainDb = join(appDocumentDir.path, 'sentinalx.semdb');
-    await File(mainDb).delete();
-    init(null);
+    await File(mainDb).writeAsString("");
+//    init(null);
   }
 }

@@ -29,11 +29,10 @@ initDatabase(String pass) async {
 
 initAppStateWithStub() async {
   ///  await SentinelxDB.instance.init(pass);
-  /// final wallets = await Wallet.getAllWallets();
-  AppState appState = AppState();
+   AppState appState = AppState();
 
   //Default account
-  //for future updates app will support multiple account
+  //for future updates app will support multiple account/ grouping
   //A single Account can track multiple xpubs and addresses
   var wallet = new Wallet(walletName: "Wallet 1", xpubs: []);
   print("Init : Wallet created");
