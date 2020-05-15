@@ -182,8 +182,16 @@ class SystemChannel {
       var run = await platform.invokeMethod<bool>("saveToFile", {"name": name, "data": backup});
       return run;
     } catch (exception) {
-      print(exception);
-      return null;
+      throw exception;
+    }
+  }
+
+  Future<String> openFile() async {
+    try {
+      var contents = await platform.invokeMethod<String>("openFile");
+      return contents;
+    } catch (exception) {
+      throw exception;
     }
   }
 }
