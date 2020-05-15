@@ -23,6 +23,7 @@ import 'package:sentinelx/shared_state/theme_provider.dart';
 import 'package:sentinelx/shared_state/tx_state.dart';
 import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/breath_widget.dart';
+import 'package:sentinelx/widgets/phoenix.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 
 Future main() async {
@@ -35,18 +36,19 @@ Future main() async {
   if (!enabled) {
     await initDatabase(null);
   }
-  return runApp(MultiProvider(
-    providers: [
-      Provider<AppState>.value(value: AppState()),
-      ChangeNotifierProvider<NetworkState>.value(value: NetworkState()),
-      ChangeNotifierProvider<RateState>.value(value: RateState()),
-      ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
-      ChangeNotifierProvider<Wallet>.value(value: AppState().selectedWallet),
-      ChangeNotifierProvider<TxState>.value(
-          value: AppState().selectedWallet.txState),
-      ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),
-    ],
-    child: AppWrapper(),
+  return runApp(Phoenix(
+    child: MultiProvider(
+      providers: [
+        Provider<AppState>.value(value: AppState()),
+        ChangeNotifierProvider<NetworkState>.value(value: NetworkState()),
+        ChangeNotifierProvider<RateState>.value(value: RateState()),
+        ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
+        ChangeNotifierProvider<Wallet>.value(value: AppState().selectedWallet),
+        ChangeNotifierProvider<TxState>.value(value: AppState().selectedWallet.txState),
+        ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),
+      ],
+      child: AppWrapper(),
+    ),
   ));
 }
 
@@ -86,12 +88,17 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    PrefsStore().dispose();
-    SentinelxDB.instance.closeConnection();
-    RateState().save();
-    RateState().dispose();
-    AppState().dispose();
-    WidgetsBinding.instance.removeObserver(this);
+    //Dont do  database closing and dispose if local restart is applied
+    if (!Phoenix.isRestarting) {
+      RateState().save();
+      PrefsStore().dispose();
+      SentinelxDB.instance.closeConnection();
+      RateState().dispose();
+      AppState().dispose();
+      WidgetsBinding.instance.removeObserver(this);
+    }else{
+      Phoenix.isRestarting = false;
+    }
     super.dispose();
   }
 }
@@ -144,18 +151,17 @@ class _LockState extends State<Lock> {
           child: sessionStates == SessionStates.IDLE
               ? SplashScreen(buildStatusWidget())
               : LockScreen(
-            onPinEntryCallback: validate,
-            lockScreenMode: LockScreenMode.LOCK,
-            key: _lockScreen,
-          )),
+                  onPinEntryCallback: validate,
+                  lockScreenMode: LockScreenMode.LOCK,
+                  key: _lockScreen,
+                )),
     );
   }
 
   validate(String code) async {
     try {
       await initDatabase(code);
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+      Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
     } catch (e) {
       _lockScreen.currentState.showError();
     }
@@ -167,8 +173,7 @@ class _LockState extends State<Lock> {
       if (!enabled && context != null) {
         await initDatabase(null);
         Future.delayed(Duration.zero, () {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              '/home', (Route<dynamic> route) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
         });
       } else {
         if (this.mounted)
@@ -199,16 +204,12 @@ class _LockState extends State<Lock> {
   }
 
   void init() async {
-
-
     ConnectivityStatus status = await NetworkChannel().getConnectivityStatus();
-
-
 
     if (status == ConnectivityStatus.CONNECTED) {
       bool torVal = await PrefsStore().getBool(PrefsStore.TOR_STATUS);
       String dojoString = await PrefsStore().getString(PrefsStore.DOJO);
-      NetworkState().setDojoStatus(dojoString.length!=0);
+      NetworkState().setDojoStatus(dojoString.length != 0);
       setState(() {
         lockProgressState = LockProgressState.TOR;
       });
@@ -219,10 +220,8 @@ class _LockState extends State<Lock> {
             lockProgressState = LockProgressState.DOJO;
           });
           Dojo dojo = Dojo.fromJson(jsonDecode(dojoString));
-          DojoAuth dojoAuth = await ApiChannel()
-              .authenticateDojo(dojo.pairing.url, dojo.pairing.apikey);
-          await ApiChannel().setDojo(dojoAuth.authorizations.accessToken,
-              dojoAuth.authorizations.accessToken, dojo.pairing.url);
+          DojoAuth dojoAuth = await ApiChannel().authenticateDojo(dojo.pairing.url, dojo.pairing.apikey);
+          await ApiChannel().setDojo(dojoAuth.authorizations.accessToken, dojoAuth.authorizations.accessToken, dojo.pairing.url);
           setState(() {
             lockProgressState = LockProgressState.IDLE;
           });
@@ -233,7 +232,7 @@ class _LockState extends State<Lock> {
       }
     } else {
       String dojoString = await PrefsStore().getString(PrefsStore.DOJO);
-      NetworkState().setDojoStatus(dojoString.length!=0);
+      NetworkState().setDojoStatus(dojoString.length != 0);
       final snackBar = SnackBar(
         content: Text(
           "No Internet... going offline mode",
@@ -278,22 +277,18 @@ class _LockState extends State<Lock> {
                   getTorStatusInText(
                     model.torStatus,
                   ),
-                  style: Theme.of(context)
-                      .textTheme
-                      .subhead
-                      .copyWith(fontSize: 12),
+                  style: Theme.of(context).textTheme.subhead.copyWith(fontSize: 12),
                 ),
                 Padding(
                   padding: EdgeInsets.all(12),
                 ),
-                NetworkState().torStatus == TorStatus.IDLE ||
-                    NetworkState().torStatus == TorStatus.IDLE
+                NetworkState().torStatus == TorStatus.IDLE || NetworkState().torStatus == TorStatus.IDLE
                     ? FlatButton(
-                  child: Text('restart tor'),
-                  onPressed: () {
-                    init();
-                  },
-                )
+                        child: Text('restart tor'),
+                        onPressed: () {
+                          init();
+                        },
+                      )
                     : SizedBox.shrink()
               ],
             ),
@@ -317,10 +312,7 @@ class _LockState extends State<Lock> {
                 ),
                 Text(
                   "Connecting to dojo...",
-                  style: Theme.of(context)
-                      .textTheme
-                      .subhead
-                      .copyWith(fontSize: 12),
+                  style: Theme.of(context).textTheme.subhead.copyWith(fontSize: 12),
                 ),
                 Padding(
                   padding: EdgeInsets.all(12),
@@ -343,8 +335,7 @@ class SentinelX extends StatelessWidget {
       ChangeNotifierProvider<NetworkState>.value(value: NetworkState()),
       ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
       ChangeNotifierProvider<Wallet>.value(value: AppState().selectedWallet),
-      ChangeNotifierProvider<TxState>.value(
-          value: AppState().selectedWallet.txState),
+      ChangeNotifierProvider<TxState>.value(value: AppState().selectedWallet.txState),
       ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),
     ], child: Home());
   }
