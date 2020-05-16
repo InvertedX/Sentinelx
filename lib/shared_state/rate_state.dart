@@ -29,8 +29,8 @@ class RateState extends SentinelXChangeNotifier {
     this.provider = provider;
     this.provider.setCurrency(currency);
     this.rate = this.provider.getRate().rate;
+    Future.delayed(Duration(milliseconds: 100)).then((value) => this.notifyListeners());
     this.save();
-    this.notifyListeners();
   }
 
   Future getExchangeRates() async {
@@ -62,20 +62,19 @@ class RateState extends SentinelXChangeNotifier {
     return this.getExchangeRates();
   }
 
-  void init() async {
+  Future init() async {
     currency = await PrefsStore().getString(PrefsStore.CURRENCY);
     index = await PrefsStore().getNum(PrefsStore.AMOUNT_VIEW_TYPE);
+    this.rate = await PrefsStore().getNum(PrefsStore.CURRENCY_RATE);
     if (index == null) {
       index = 1;
     }
     if (currency == null || currency.isEmpty) {
       currency = "USD";
+    }
+
+    if (this.rate == null) {
       this.rate = 1;
-    } else {
-      this.rate = await PrefsStore().getNum(PrefsStore.CURRENCY_RATE);
-      if (this.rate == null) {
-        this.rate = 1;
-      }
     }
     this.notifyListeners();
   }
@@ -87,11 +86,7 @@ class RateState extends SentinelXChangeNotifier {
   }
 
   void save() async {
-
     await PrefsStore().put(PrefsStore.CURRENCY_RATE, this.rate);
     await PrefsStore().put(PrefsStore.AMOUNT_VIEW_TYPE, this.index);
   }
-
-
-
 }

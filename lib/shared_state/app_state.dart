@@ -29,7 +29,7 @@ class AppState extends SentinelXChangeNotifier {
 
   TxDB txDB;
 
-  static final AppState _instance = AppState._privateConstructor();
+  static AppState _instance = AppState._privateConstructor();
 
   factory AppState() {
     return _instance;
@@ -161,7 +161,7 @@ class AppState extends SentinelXChangeNotifier {
     RateState().clearListeners();
     AppState().clearListeners();
     AppState().loaderState.clearListeners();
-    ThemeProvider().clearListeners();
+    theme.clearListeners();
     await selectedWallet.txDB.clear();
     await selectedWallet.dropAll();
     await initDatabase(null);

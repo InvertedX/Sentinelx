@@ -66,7 +66,7 @@ class _ReceiveState extends State<Receive> with SingleTickerProviderStateMixin {
 }
 
 class QRWidget extends StatefulWidget {
-  XPUBModel xpub;
+  final XPUBModel xpub;
 
   QRWidget(this.xpub);
 
