@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/shared_state/rate_state.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
+// ignore: must_be_immutable
 class AmountWidget extends StatefulWidget {
   final num result;
   TextStyle style = new TextStyle();
@@ -24,10 +26,12 @@ class _AmountWidgetState extends State<AmountWidget> with SingleTickerProviderSt
     init();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onLongPressUp: (){
+
+      },
       onLongPress: () {
         if (RateState().index == 2) {
           RateState().setViewIndex(0);
@@ -38,15 +42,13 @@ class _AmountWidgetState extends State<AmountWidget> with SingleTickerProviderSt
       child: AbsorbPointer(
         absorbing: true,
         child: Container(
-          height: widget.height,
-          child: PageView.builder(
-            controller: _pageController,
-            scrollDirection: Axis.vertical,
-            physics: BouncingScrollPhysics(),
-            itemCount: 3,
-            itemBuilder: (context, position) {
-              if (position == 0) {
-                return Column(
+            height: widget.height,
+            child: PageView(
+              scrollDirection: Axis.vertical,
+              physics: BouncingScrollPhysics(),
+              controller: _pageController,
+              children: <Widget>[
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -56,24 +58,22 @@ class _AmountWidgetState extends State<AmountWidget> with SingleTickerProviderSt
                       textAlign: widget.align,
                     ),
                   ],
-                );
-              }
-              if (position == 1) {
-                return Consumer<RateState>(builder: (context, model, c) {
-                  return Column(
+                ),
+                Consumer<RateState>(builder: (context, model, c) {
+                  return
+                    Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        "${model.formatRate(widget.result)}",
+                        "${RateState().formatRate(widget.result)}",
                         style: widget.style,
                         textAlign: widget.align,
                       ),
                     ],
                   );
-                });
-              } else {
-                return Column(
+                }),
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -83,17 +83,14 @@ class _AmountWidgetState extends State<AmountWidget> with SingleTickerProviderSt
                       textAlign: widget.align,
                     ),
                   ],
-                );
-              }
-            },
-          ),
-        ),
+                )
+              ],
+            )),
       ),
     );
   }
 
   void init() async {
-
     RateState().addListener(() {
       if (_pageController.hasClients && RateState().index < 3 && RateState().index >= 0) {
         _pageController.animateToPage(RateState().index, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
