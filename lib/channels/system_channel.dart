@@ -176,4 +176,22 @@ class SystemChannel {
   void onNotificationCalls(void Function(String event) callback) {
     onStreamCallBack = callback;
   }
+
+  Future<bool> saveToFile(String backup, String name) async {
+    try {
+      var run = await platform.invokeMethod<bool>("saveToFile", {"name": name, "data": backup});
+      return run;
+    } catch (exception) {
+      throw exception;
+    }
+  }
+
+  Future<String> openFile() async {
+    try {
+      var contents = await platform.invokeMethod<String>("openFile");
+      return contents;
+    } catch (exception) {
+      throw exception;
+    }
+  }
 }

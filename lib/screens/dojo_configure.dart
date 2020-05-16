@@ -190,6 +190,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
 
       _progressKey.currentState.updateText("Success");
 
+      NetworkState().setDojoStatus(true);
       _progressKey.currentState.updateProgress(100);
 
       await Future.delayed(Duration(milliseconds: 500));
@@ -235,6 +236,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
       iconNegative: new Icon(Icons.close),
     );
     if (confirm) {
+      NetworkState().setDojoStatus(false);
       await PrefsStore().put(PrefsStore.DOJO, "");
       await ApiChannel().setDojo("", "", "");
       await SystemChannel().clearDojo();

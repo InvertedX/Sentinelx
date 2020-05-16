@@ -12,6 +12,7 @@ class Wallet extends ChangeNotifier {
   static const String STORE_NAME = 'wallet';
 
   int id;
+
   String walletName = "Wallet1";
   List<XPUBModel> xpubs = [];
   List<String> legacyAddresses = [];
@@ -21,13 +22,12 @@ class Wallet extends ChangeNotifier {
 
   Wallet({this.walletName, this.xpubs});
 
-
-  static Future<Database> get _db async =>  SentinelxDB.instance.database;
+  static Future<Database> get _db async => SentinelxDB.instance.database;
 
   static final _walletStore = intMapStoreFactory.store(STORE_NAME);
 
   Future initTxDb(int id) async {
-    if(this.getTxDb().contains("null")){
+    if (this.getTxDb().contains("null")) {
       return;
     }
     txDB = TxDB.instance("txstore-wallet-$id.semdb");
@@ -36,7 +36,7 @@ class Wallet extends ChangeNotifier {
   }
 
   Future loadAllTxes() async {
-    List<Tx> txList =   await TxDB.getAllTxes(this.xpubs);
+    List<Tx> txList = await TxDB.getAllTxes(this.xpubs);
     txState.addTxes(txList);
   }
 
@@ -62,6 +62,15 @@ class Wallet extends ChangeNotifier {
   }
 
   static Future update(Wallet wallet) async {
+    if (wallet.id == null) {
+      var wallets = await getAllWallets();
+      if (wallets.length != 0) {
+        Wallet instance = wallets.first;
+        instance.xpubs = wallet.xpubs;
+      } else {
+        wallet.id = await _walletStore.add(await _db, wallet.toJson());
+      }
+    }
     final finder = Finder(filter: Filter.byKey(wallet.id));
     await _walletStore.update(
       await _db,
@@ -86,7 +95,6 @@ class Wallet extends ChangeNotifier {
     }
     return data;
   }
-
 
   updateTrackingLabel(int index, String label) async {
     XPUBModel xpubModel = this.xpubs[index];
@@ -142,12 +150,14 @@ class Wallet extends ChangeNotifier {
     this.txDB.clear();
     this.txState.clear();
     notifyListeners();
-    await SentinelxDB.instance.clear();
-    return this.saveState();
+  }
+
+  Future dropAll() async{
+    _walletStore.drop(await _db);
   }
 
   String getTxDb() {
-    return "txstore-wallet-${this.id}.semdb";
+    return "txstore-wallet-${this.id == null ? 1 : this.id}.semdb";
   }
 
   void removeTracking(int index) {
@@ -166,5 +176,4 @@ class Wallet extends ChangeNotifier {
     }
     return false;
   }
-
 }

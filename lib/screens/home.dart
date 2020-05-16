@@ -10,6 +10,8 @@ import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/screens/Receive/receive_screen.dart';
 import 'package:sentinelx/screens/dojo_configure.dart';
+import 'package:sentinelx/screens/settings/back_up.dart';
+import 'package:sentinelx/screens/settings/restore_backup.dart';
 import 'package:sentinelx/screens/settings/settings.dart';
 import 'package:sentinelx/screens/settings/update_screen.dart';
 import 'package:sentinelx/screens/tx_details.dart';
@@ -58,6 +60,24 @@ class _HomeState extends State<Home> {
           style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
         ),
         actions: <Widget>[
+          Consumer<NetworkState>(
+            builder: (context, model, child) {
+              return IconButton(
+                  icon: Icon(
+                    Icons.router,
+                    color: model.dojoConnected ? Colors.greenAccent : Colors.white,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (c) {
+                              return DojoConfigureScreen();
+                            },
+                            fullscreenDialog: true));
+                  });
+            },
+          ),
           Consumer<NetworkState>(
             builder: (context, model, child) {
               return IconButton(
@@ -111,20 +131,41 @@ class _HomeState extends State<Home> {
                         AccountsPager(),
                       ],
                     )),
-                SliverToBoxAdapter(
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                        child: Text(
-                          "Transactions",
-                          style: Theme.of(context).textTheme.title,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                Consumer<AppState>(builder: (context, model, child) {
+                  return model.selectedWallet.xpubs.length == 0
+                      ? SliverToBoxAdapter(
+                          child: Container(
+                            height: 400,
+                            child: Center(
+                              child: OutlineButton(
+                                child: Text("Import backup"),
+                                onPressed: () {
+                                  Navigator.push(context, new MaterialPageRoute(
+                                    builder: (c) {
+                                      return RestoreScreen();
+                                    },
+                                    fullscreenDialog: true
+                                  ));
+                                },
+                              ),
+                            ),
+                          ),
+                        )
+                      : SliverToBoxAdapter(
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                                child: Text(
+                                  "Transactions",
+                                  style: Theme.of(context).textTheme.title,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                }),
                 Consumer<TxState>(
                   builder: (context, model, child) {
                     return SliverList(

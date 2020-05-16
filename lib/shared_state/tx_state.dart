@@ -1,9 +1,8 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:sentinelx/models/tx.dart';
+import 'package:sentinelx/shared_state/change_notifier.dart';
 
-class TxState extends ChangeNotifier {
+class TxState extends SentinelXChangeNotifier {
   List<Tx> txList = [];
 
   addTxes(List<Tx> txes) async {

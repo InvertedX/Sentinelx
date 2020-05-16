@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sentinelx/shared_state/change_notifier.dart';
 
-class ThemeProvider extends ChangeNotifier {
+class ThemeProvider extends SentinelXChangeNotifier {
   static Color secondaryBg = Color(0xff262626);
   static Color whiteText = Color(0xffD4D4D4);
   Color accent = Colors.redAccent.shade200;

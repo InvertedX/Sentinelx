@@ -18,19 +18,20 @@ class PrefsStore {
   static const CURRENCY_RATE_PERIOD = "CURRENCY_RATE_PERIOD";
   static const AMOUNT_VIEW_TYPE = "AMOUNT_VIEW_TYPE";
   static const DOJO = "DOJO";
-  static const SHOW_UPDATE_NOTIFICATION  = "SHOW_UPDATE_NOTIFICATION";
-
+  static const SHOW_UPDATE_NOTIFICATION = "SHOW_UPDATE_NOTIFICATION";
+  static const AUTO_SAVE_BACKUP = "AUTO_SAVE_BACKUP";
+  Database database;
 
   static PrefsStore get instance => _singleton;
+  StoreRef store;
 
-  PrefsStore._();
+  PrefsStore._() {
+    store = StoreRef.main();
+  }
 
   factory PrefsStore() {
     return _singleton;
   }
-
-  Database database;
-  var store = StoreRef.main();
 
   init() async {
     final appDocumentDir = await SystemChannel().getDataDir();
@@ -73,13 +74,13 @@ class PrefsStore {
     }
   }
 
-  Future<bool> getBool(String key,{bool defaultValue}) async {
+  Future<bool> getBool(String key, {bool defaultValue}) async {
     try {
       var _value = await store.record(key).get(database) as bool;
       if (_value == null) {
-        if(defaultValue == null){
+        if (defaultValue == null) {
           return Future.value(false);
-        }else{
+        } else {
           return Future.value(defaultValue);
         }
       }
@@ -105,10 +106,6 @@ class PrefsStore {
   }
 
   clear() async {
-    database.close();
-    final appDocumentDir = await SystemChannel().getDataDir();
-    final dbPath = join(appDocumentDir.path, 'prefs.semdb');
-    await File(dbPath).delete();
-    init();
+     await store.drop(database);
   }
 }

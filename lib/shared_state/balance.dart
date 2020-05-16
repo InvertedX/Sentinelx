@@ -1,6 +1,7 @@
-import 'package:flutter/widgets.dart';
 
-class BalanceModel extends ChangeNotifier {
+import 'package:sentinelx/shared_state/change_notifier.dart';
+
+class BalanceModel extends SentinelXChangeNotifier {
   num balance = 0;
 
   update(num balance) {

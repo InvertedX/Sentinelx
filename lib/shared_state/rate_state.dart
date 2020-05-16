@@ -1,13 +1,13 @@
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/api_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/exchange/LocalBitcoinRateProvider.dart';
 import 'package:sentinelx/models/exchange/exchange_provider.dart';
+import 'package:sentinelx/shared_state/change_notifier.dart';
 import 'package:sentinelx/utils/format_util.dart';
 
-class RateState extends ChangeNotifier {
+class RateState extends SentinelXChangeNotifier {
   ExchangeProvider provider = new ExchangeProvider("{}");
 
   int index = 1;
@@ -29,8 +29,8 @@ class RateState extends ChangeNotifier {
     this.provider = provider;
     this.provider.setCurrency(currency);
     this.rate = this.provider.getRate().rate;
+    Future.delayed(Duration(milliseconds: 100)).then((value) => this.notifyListeners());
     this.save();
-    this.notifyListeners();
   }
 
   Future getExchangeRates() async {
@@ -62,20 +62,19 @@ class RateState extends ChangeNotifier {
     return this.getExchangeRates();
   }
 
-  void init() async {
+  Future init() async {
     currency = await PrefsStore().getString(PrefsStore.CURRENCY);
     index = await PrefsStore().getNum(PrefsStore.AMOUNT_VIEW_TYPE);
+    this.rate = await PrefsStore().getNum(PrefsStore.CURRENCY_RATE);
     if (index == null) {
       index = 1;
     }
     if (currency == null || currency.isEmpty) {
       currency = "USD";
+    }
+
+    if (this.rate == null) {
       this.rate = 1;
-    } else {
-      this.rate = await PrefsStore().getNum(PrefsStore.CURRENCY_RATE);
-      if (this.rate == null) {
-        this.rate = 1;
-      }
     }
     this.notifyListeners();
   }

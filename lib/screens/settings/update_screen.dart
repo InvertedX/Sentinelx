@@ -117,7 +117,7 @@ class _UpdateCheckState extends State<UpdateCheck> {
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
                         child: Text(
-                          "Latest Version $newVersion",
+                          "New version available \n\n$newVersion",
                           textAlign: TextAlign.start,
                           style: TextStyle(color: Theme.of(context).accentColor),
                         ),

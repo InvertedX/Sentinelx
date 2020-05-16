@@ -1,20 +1,18 @@
 package com.invertedx.sentinelx.channel
 
 import android.Manifest
-import android.app.Notification
+import android.app.Activity
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ShareCompat
-import androidx.core.app.TaskStackBuilder
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.invertedx.sentinelx.MainActivity
@@ -25,9 +23,13 @@ import com.invertedx.sentinelx.utils.SentinalPrefs
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.params.TestNet3Params
-import java.io.File
+import java.io.*
 import java.util.*
 
 
@@ -35,6 +37,7 @@ class SystemChannel(private val applicationContext: Context, private val activit
 
     private val NOTIIFCATION_STREAM = "NOTIFICATION_STREAM";
     private var notificationSink: EventChannel.EventSink? = null;
+    private val disposables: CompositeDisposable = CompositeDisposable();
 
     init {
         EventChannel(activity.flutterView, NOTIIFCATION_STREAM)
@@ -114,7 +117,7 @@ class SystemChannel(private val applicationContext: Context, private val activit
 
                 this.activity.setOnPermissionResult { requestCode, permissions, grantResults ->
 
-                    for (i in 0 until permissions.size) {
+                    for (i in permissions.indices) {
                         val permissionResult = permissions[i]
                         val grantResult = grantResults[i]
 
@@ -239,6 +242,104 @@ class SystemChannel(private val applicationContext: Context, private val activit
 
             }
 
+
+            "saveToFile" -> {
+                val REQUEST_CODE = 68;
+
+                val fileName = methodCall.argument<String>("name");
+                val data = methodCall.argument<String>("data");
+
+                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT);
+
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.type = "text/plain";
+                intent.putExtra(Intent.EXTRA_TITLE, fileName);
+                intent.putExtra(Intent.EXTRA_TITLE, fileName);
+
+                activity.startActivityForResult(intent, REQUEST_CODE);
+
+                //This will bind to MainActivity onActivityResult
+                activity.listenResult(ActivityResultListener { intent, resultCode ->
+
+                    if (resultCode == Activity.RESULT_CANCELED) {
+                        return@ActivityResultListener
+                    }
+
+                    if (intent == null) {
+                        result.error("00", "Unable to retrieve intent", null);
+                        return@ActivityResultListener
+                    }
+
+                    try {
+                        val outputStream = activity.contentResolver.openOutputStream(intent.data!!);
+                        val bw = BufferedWriter(OutputStreamWriter(outputStream!!));
+                        bw.write(data!!);
+                        bw.flush();
+                        bw.close();
+                        result.success(true);
+                    } catch (e: IOException) {
+                        result.error("00", "Unable to write file", e.message);
+                        e.printStackTrace();
+                    }
+
+                }, REQUEST_CODE);
+            }
+            "openFile" -> {
+                val requestCode = 21;
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.type = "*/*";
+                activity.startActivityForResult(intent, requestCode);
+
+                //This will bind to MainActivity onActivityResult
+                activity.listenResult(ActivityResultListener { intent, resultCode ->
+
+                    if (resultCode == Activity.RESULT_CANCELED) {
+                        return@ActivityResultListener
+                    }
+
+                    if (intent == null) {
+                        result.error("00", "Unable to retrieve intent", null);
+                        return@ActivityResultListener
+                    }
+
+                    try {
+                        val disposable = Single.fromCallable<String> {
+
+                            //get file size
+                            val size = activity.contentResolver.openFileDescriptor(intent.data!!, "r")
+                                    ?.statSize;
+
+                            if (size != null) {
+                                if (size > 2e+6) {
+                                    throw  IOException("File size is too large")
+                                }
+                                //Restrict Files that has size more than 2 mb
+                                activity.contentResolver.openInputStream(intent.data!!)
+                                        .use {
+                                            it!!.bufferedReader().readText();
+                                        }
+                            } else {
+                                return@fromCallable "";
+                            }
+
+                        }.subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe { content, throwable ->
+                                    if (throwable == null)
+                                        result.success(content)
+                                    if (throwable != null)
+                                        result.error("00", throwable.message, throwable.message);
+                                }
+                        disposables.add(disposable);
+                    } catch (e: IOException) {
+                        result.error("00", "Unable to write file", e.message);
+                        e.printStackTrace();
+                    }
+
+                }, requestCode);
+            }
+
         }
     }
 
@@ -250,10 +351,14 @@ class SystemChannel(private val applicationContext: Context, private val activit
 
     fun onNotificationIntent(intent: Intent) {
         if (intent.hasExtra("TYPE") && intent.getStringExtra("TYPE") == "NOTIFY") {
-           if(notificationSink !=null){
-               notificationSink!!.success("UPDATE_NOTIFICATION");
-           }
+            if (notificationSink != null) {
+                notificationSink!!.success("UPDATE_NOTIFICATION");
+            }
         }
+    }
+
+    fun dispose() {
+        disposables .dispose()
     }
 
 
