@@ -8,7 +8,7 @@ class ThemeChooser extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Consumer<ThemeProvider>(
+      child: Consumer<ThemeState>(
         builder: (context, model, child) {
           return Container(
             height: MediaQuery.of(context).size.height / 2.8,
@@ -50,7 +50,7 @@ class ThemeChooser extends StatelessWidget {
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
                                   Card(
-                                    color: Provider.of<ThemeProvider>(context)
+                                    color: Provider.of<ThemeState>(context)
                                         .lightTheme
                                         .backgroundColor,
                                     elevation: 2,
@@ -92,7 +92,7 @@ class ThemeChooser extends StatelessWidget {
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
                                   Card(
-                                    color: Provider.of<ThemeProvider>(context)
+                                    color: Provider.of<ThemeState>(context)
                                         .darkTheme
                                         .backgroundColor,
                                     elevation: 2,
@@ -121,8 +121,8 @@ class ThemeChooser extends StatelessWidget {
 //                              scrollDirection: Axis.horizontal,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          children: ThemeProvider.accentColors.keys.map((key) {
-                            Color accent = ThemeProvider.accentColors[key];
+                          children: ThemeState.accentColors.keys.map((key) {
+                            Color accent = ThemeState.accentColors[key];
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
@@ -139,7 +139,7 @@ class ThemeChooser extends StatelessWidget {
                                                     .textTheme
                                                     .caption
                                                     .color,
-                                                width: Provider.of<ThemeProvider>(
+                                                width: Provider.of<ThemeState>(
                                                             context)
                                                         .isActiveAccent(accent)
                                                     ? 2
@@ -176,7 +176,7 @@ class ThemeChooser extends StatelessWidget {
     );
   }
 
-  setLightTheme(ThemeProvider model) async {
+  setLightTheme(ThemeState model) async {
     model.setLight();
     try {
       await PrefsStore().put(PrefsStore.SELECTED_THEME, "light");
@@ -185,7 +185,7 @@ class ThemeChooser extends StatelessWidget {
     }
   }
 
-  setDarkTheme(ThemeProvider model) async {
+  setDarkTheme(ThemeState model) async {
     model.setDark();
     try {
       await PrefsStore().put(PrefsStore.SELECTED_THEME, "dark");
@@ -194,7 +194,7 @@ class ThemeChooser extends StatelessWidget {
     }
   }
 
-  setAccent(ThemeProvider model, Color color, String key) async {
+  setAccent(ThemeState model, Color color, String key) async {
     model.changeAccent(color);
     try {
       PrefsStore().put(PrefsStore.THEME_ACCENT, key);

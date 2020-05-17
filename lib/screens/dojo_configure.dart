@@ -145,7 +145,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
         content: Text(
             "Error : $er",
             style: Theme.of(context).textTheme.subtitle.copyWith(color: Colors.white)),
-        backgroundColor: ThemeProvider.accentColors["Red"] ,
+        backgroundColor: ThemeState.accentColors["Red"] ,
         duration: Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       );

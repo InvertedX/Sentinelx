@@ -32,121 +32,118 @@ class _TorControlPanelState extends State<TorControlPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: NetworkState(),
-      child: Card(
-        margin: EdgeInsets.all(1),
-        color: Theme.of(context).backgroundColor,
-        child: Container(
-          height: MediaQuery.of(context).size.height / 1.8,
-          child: Column(
-            children: <Widget>[
-              Center(
-                  child: Container(
-                      width: 120,
-                      child: Divider(
-                        thickness: 4,
-                      ))),
-              Column(
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 14),
-                    child: Row(
-                      children: <Widget>[
-                        Text(
-                          "Tor Routing",
-                          style: Theme.of(context).textTheme.title.copyWith(fontSize: 16),
-                        ),
-                        Consumer<NetworkState>(
-                          builder: (context, model, c) {
-                            bool isRunning = model.torStatus == TorStatus.CONNECTED;
-                            return FlatButton(
-                              onPressed: () {
-                                startOrStopTor(isRunning);
-                              },
-                              child: Text(isRunning ? "Stop" : "Start"),
-                            );
-                          },
-                        ),
-                      ],
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    ),
-                  )
-                ],
-              ),
-              Divider(
-                thickness: 2,
-              ),
-              Expanded(
-                child: ListView(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.all(12),
-                    ),
-                    Consumer<NetworkState>(
-                      builder: (con, model, c) {
-                        return Container(
-                          child: Column(
-                            children: <Widget>[
-                              Icon(
-                                SentinelxIcons.onion_tor,
-                                size: 62,
-                                color: getTorIconColor(model.torStatus),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(6),
-                              ),
-                              Text(getTorStatusInText(model.torStatus))
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(24),
-                    ),
-                    Divider(),
-                    ListTile(
-                      title: Text("Renew Identity"),
-                      trailing: FlatButton(
-                        child: Text("renew"),
-                        onPressed: () {
-                          NetworkChannel().renewTor();
+    return Card(
+      margin: EdgeInsets.all(1),
+      color: Theme.of(context).backgroundColor,
+      child: Container(
+        height: MediaQuery.of(context).size.height / 1.8,
+        child: Column(
+          children: <Widget>[
+            Center(
+                child: Container(
+                    width: 120,
+                    child: Divider(
+                      thickness: 4,
+                    ))),
+            Column(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 14),
+                  child: Row(
+                    children: <Widget>[
+                      Text(
+                        "Tor Routing",
+                        style: Theme.of(context).textTheme.title.copyWith(fontSize: 16),
+                      ),
+                      Consumer<NetworkState>(
+                        builder: (context, model, c) {
+                          bool isRunning = model.torStatus == TorStatus.CONNECTED;
+                          return FlatButton(
+                            onPressed: () {
+                              startOrStopTor(isRunning);
+                            },
+                            child: Text(isRunning ? "Stop" : "Start"),
+                          );
                         },
                       ),
-                    ),
-                    Divider(),
-                    ListTile(
-                      onTap: () {
-                        showModalBottomSheet(context: context, isScrollControlled: true, builder: (context) => PortSelector());
-                      },
-                      title: Text("SOCKS Port"),
-                      trailing: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24),
-                        child: Text(port==-1 ? "auto": "$port" ),
-                      ),
-                    ),
-                    Divider(),
-                    ListTile(
-                      title: Text("View tor logs"),
-                      onTap: showLogs,
-                    ),
-                    isDojoEnabled
-                        ? ListTile(
-                            subtitle: Text(
-                              "Note: Tor cannot be disabled if dojo is active",
-                              style: Theme.of(context).textTheme.subtitle.copyWith(fontSize: 12),
-                              textAlign: TextAlign.center,
+                    ],
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  ),
+                )
+              ],
+            ),
+            Divider(
+              thickness: 2,
+            ),
+            Expanded(
+              child: ListView(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(12),
+                  ),
+                  Consumer<NetworkState>(
+                    builder: (con, model, c) {
+                      return Container(
+                        child: Column(
+                          children: <Widget>[
+                            Icon(
+                              SentinelxIcons.onion_tor,
+                              size: 62,
+                              color: getTorIconColor(model.torStatus),
                             ),
-                            selected: true,
-                            onTap: showLogs,
-                          )
-                        : SizedBox.shrink(),
-                  ],
-                ),
-              )
-            ],
-          ),
+                            Padding(
+                              padding: EdgeInsets.all(6),
+                            ),
+                            Text(getTorStatusInText(model.torStatus))
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(24),
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Text("Renew Identity"),
+                    trailing: FlatButton(
+                      child: Text("renew"),
+                      onPressed: () {
+                        NetworkChannel().renewTor();
+                      },
+                    ),
+                  ),
+                  Divider(),
+                  ListTile(
+                    onTap: () {
+                      showModalBottomSheet(context: context, isScrollControlled: true, builder: (context) => PortSelector());
+                    },
+                    title: Text("SOCKS Port"),
+                    trailing: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Text(port==-1 ? "auto": "$port" ),
+                    ),
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Text("View tor logs"),
+                    onTap: showLogs,
+                  ),
+                  isDojoEnabled
+                      ? ListTile(
+                          subtitle: Text(
+                            "Note: Tor cannot be disabled if dojo is active",
+                            style: Theme.of(context).textTheme.subtitle.copyWith(fontSize: 12),
+                            textAlign: TextAlign.center,
+                          ),
+                          selected: true,
+                          onTap: showLogs,
+                        )
+                      : SizedBox.shrink(),
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );

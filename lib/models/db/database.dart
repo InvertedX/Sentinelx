@@ -10,7 +10,7 @@ initDatabase(String pass) async {
   await SentinelxDB.instance.init(pass);
   final wallets = await Wallet.getAllWallets();
   AppState appState = AppState();
-  appState.theme = new ThemeProvider();
+  appState.theme = new ThemeState();
 
   if (wallets.length == 0) {
     //Default account

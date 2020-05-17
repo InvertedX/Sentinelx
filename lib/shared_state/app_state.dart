@@ -24,14 +24,17 @@ import 'package:sentinelx/utils/utils.dart';
 class AppState extends SentinelXChangeNotifier {
   TxDB txDB;
 
+  ///Sentinelx can hold multiple wallets (which is comprised group of xpubs or addresses )
+  ///Currently app wont show any option to change wallets , there will be only one wallet
   List<Wallet> wallets = [];
+
   Wallet selectedWallet = Wallet(walletName: "WalletSTUB", xpubs: []);
   bool isTestNet = false;
   Rate selectedRate;
   ExchangeProvider exchangeProvider;
   RateState rateState;
   NetworkState networkState;
-  ThemeProvider theme = ThemeProvider();
+  ThemeState theme = ThemeState();
   int pageIndex = 0;
   bool offline = false;
   LoaderState loaderState = LoaderState();
@@ -59,7 +62,6 @@ class AppState extends SentinelXChangeNotifier {
 
       String response = await ApiChannel().getXpubOrAddress(xpub);
       Map<String, dynamic> json = await compute(parseJsonResponse, response);
-      print("response ${response}");
       if (json.containsKey("addresses")) {
         List<dynamic> items = json['addresses'];
         var balance = 0;
@@ -92,7 +94,6 @@ class AppState extends SentinelXChangeNotifier {
               }).toList();
             } catch (e) {
               debugPrint(e);
-//              print(e);
             }
             await TxDB.insertOrUpdate(txes, addressObj, true);
             if (pageIndex == 0 || pageIndex > this.selectedWallet.xpubs.length - 1) {
@@ -183,7 +184,6 @@ class AppState extends SentinelXChangeNotifier {
         "newVersion": latestVersion,
         "isUpToDate": false,
         "changeLog": changeLogBody,
-        "isUpToDate": false,
         "downloadAssets": latest.containsKey("assets") ? latest['assets'] : []
       };
     } else {

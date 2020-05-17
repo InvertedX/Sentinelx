@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sentinelx/shared_state/change_notifier.dart';
 
-class ThemeProvider extends SentinelXChangeNotifier {
+class ThemeState extends SentinelXChangeNotifier {
   static Color secondaryBg = Color(0xff262626);
   static Color whiteText = Color(0xffD4D4D4);
   Color accent = Colors.redAccent.shade200;
@@ -18,7 +18,7 @@ class ThemeProvider extends SentinelXChangeNotifier {
     "Orange": Colors.orangeAccent.shade400,
   };
 
-  ThemeProvider() {
+  ThemeState() {
     buildThemes();
     theme = darkTheme;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(

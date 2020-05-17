@@ -43,7 +43,7 @@ Future main() async {
         Provider<AppState>.value(value: appState),
         ChangeNotifierProvider<NetworkState>.value(value: appState.networkState),
         ChangeNotifierProvider<RateState>.value(value: appState.rateState),
-        ChangeNotifierProvider<ThemeProvider>.value(value: appState.theme),
+        ChangeNotifierProvider<ThemeState>.value(value: appState.theme),
         ChangeNotifierProvider<Wallet>.value(value: appState.selectedWallet),
         ChangeNotifierProvider<TxState>.value(value: appState.selectedWallet.txState),
         ChangeNotifierProvider<LoaderState>.value(value: appState.loaderState),
@@ -61,7 +61,7 @@ class AppWrapper extends StatefulWidget {
 class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
+    return Consumer<ThemeState>(
       builder: (context, model, child) {
         return MaterialApp(
           theme: model.theme,
@@ -91,7 +91,7 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
   void dispose() {
     //Dont do  database closing and dispose if local restart is applied
     if (!Phoenix.isRestarting) {
-      AppState appState =  Provider.of<AppState>(context);
+      AppState appState = Provider.of<AppState>(context);
       appState.rateState.save();
       PrefsStore().dispose();
       SentinelxDB.instance.closeConnection();
@@ -109,7 +109,7 @@ setUpTheme() async {
   String accentKey = await PrefsStore().getString(PrefsStore.THEME_ACCENT);
   String theme = await PrefsStore().getString(PrefsStore.SELECTED_THEME);
   if (accentKey.trim().isNotEmpty) {
-    AppState().theme.changeAccent(ThemeProvider.accentColors[accentKey]);
+    AppState().theme.changeAccent(ThemeState.accentColors[accentKey]);
   }
   if (theme.trim().isNotEmpty) {
     if (theme == "light") {
@@ -208,10 +208,12 @@ class _LockState extends State<Lock> {
   void init() async {
     ConnectivityStatus status = await NetworkChannel().getConnectivityStatus();
 
+    NetworkState networkState = get<NetworkState>(context);
+
     if (status == ConnectivityStatus.CONNECTED) {
       bool torVal = await PrefsStore().getBool(PrefsStore.TOR_STATUS);
       String dojoString = await PrefsStore().getString(PrefsStore.DOJO);
-      NetworkState().setDojoStatus(dojoString.length != 0);
+      networkState.setDojoStatus(dojoString.length != 0);
       setState(() {
         lockProgressState = LockProgressState.TOR;
       });
@@ -234,7 +236,7 @@ class _LockState extends State<Lock> {
       }
     } else {
       String dojoString = await PrefsStore().getString(PrefsStore.DOJO);
-      NetworkState().setDojoStatus(dojoString.length != 0);
+      networkState.setDojoStatus(dojoString.length != 0);
       final snackBar = SnackBar(
         content: Text(
           "No Internet... going offline mode",
@@ -257,6 +259,8 @@ class _LockState extends State<Lock> {
   }
 
   Widget buildStatusWidget() {
+    NetworkState networkState = get<NetworkState>(context);
+
     if (lockProgressState == LockProgressState.IDLE) {
       return SizedBox.shrink();
     } else if (lockProgressState == LockProgressState.TOR) {
@@ -284,7 +288,7 @@ class _LockState extends State<Lock> {
                 Padding(
                   padding: EdgeInsets.all(12),
                 ),
-                NetworkState().torStatus == TorStatus.IDLE || NetworkState().torStatus == TorStatus.IDLE
+                networkState.torStatus == TorStatus.IDLE || networkState.torStatus == TorStatus.IDLE
                     ? FlatButton(
                         child: Text('restart tor'),
                         onPressed: () {
@@ -330,15 +334,17 @@ class _LockState extends State<Lock> {
 }
 
 class SentinelX extends StatelessWidget {
+  final AppState appState = AppState();
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
-      Provider<AppState>.value(value: AppState()),
-      ChangeNotifierProvider<NetworkState>.value(value: NetworkState()),
-      ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
-      ChangeNotifierProvider<Wallet>.value(value: AppState().selectedWallet),
-      ChangeNotifierProvider<TxState>.value(value: AppState().selectedWallet.txState),
-      ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),
+      Provider<AppState>.value(value: appState),
+      ChangeNotifierProvider<NetworkState>.value(value: appState.networkState),
+      ChangeNotifierProvider<ThemeState>.value(value: appState.theme),
+      ChangeNotifierProvider<Wallet>.value(value: appState.selectedWallet),
+      ChangeNotifierProvider<TxState>.value(value: appState.selectedWallet.txState),
+      ChangeNotifierProvider<LoaderState>.value(value: appState.loaderState),
     ], child: Home());
   }
 }
