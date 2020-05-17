@@ -31,7 +31,7 @@ initDatabase(String pass) async {
     print(appState.selectedWallet.toJson());
     appState.selectedWallet.initTxDb(appState.selectedWallet.id);
   }
-  await RateState().init();
+  await appState.rateState.init();
 }
 
 initAppStateWithStub() async {

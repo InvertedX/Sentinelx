@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/api_channel.dart';
 import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/db/backup_manager.dart';
@@ -392,7 +393,7 @@ class _RestoreScreenState extends State<RestoreScreen> {
     await Future.delayed(Duration(milliseconds: 810));
 
     progressXPUB.currentState.setMessage("XPUBs and addresses |  (0/${selectedXPUB.length})");
-    Wallet wallet = AppState().selectedWallet;
+    Wallet wallet =  Provider.of<AppState>(context).selectedWallet;
 
     //importing xpubs
     for (int i = 0; i < selectedXPUB.length; i++) {
@@ -439,12 +440,12 @@ class _RestoreScreenState extends State<RestoreScreen> {
       await Future.delayed(Duration(milliseconds: 500));
       progressPrefs.currentState.setProgress(1);
       // Set rate from imported prefs
-      await RateState().init();
+      await Provider.of<RateState>(context).init();
     }
     if (selectedDOJO != null) {
       await Future.delayed(Duration(milliseconds: 500));
       progressDOJO.currentState.setProgress(0.6);
-      NetworkState().setDojoStatus(true);
+      Provider.of<NetworkState>(context).setDojoStatus(true);
       await PrefsStore().put(PrefsStore.DOJO, jsonEncode(selectedDOJO.toJson()));
       await SystemChannel().setDojo(selectedDOJO.pairing.url, selectedDOJO.pairing.apikey);
       //tor is always on if dojo is enabled

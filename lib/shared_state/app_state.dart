@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:sentinelx/channels/api_channel.dart';
@@ -7,27 +8,33 @@ import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/db/database.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/tx_db.dart';
-import 'package:sentinelx/models/exchange/LocalBitcoinRateProvider.dart';
 import 'package:sentinelx/models/exchange/exchange_provider.dart';
 import 'package:sentinelx/models/exchange/rate.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/unspent.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
-import 'package:sentinelx/screens/settings/update_screen.dart';
 import 'package:sentinelx/shared_state/change_notifier.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
 import 'package:sentinelx/shared_state/network_state.dart';
 import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/shared_state/theme_provider.dart';
-import 'package:sentinelx/shared_state/tx_state.dart';
 import 'package:sentinelx/utils/utils.dart';
-import 'package:sentinelx/widgets/phoenix.dart';
 
 class AppState extends SentinelXChangeNotifier {
-  AppState._privateConstructor();
-
   TxDB txDB;
+
+  List<Wallet> wallets = [];
+  Wallet selectedWallet = Wallet(walletName: "WalletSTUB", xpubs: []);
+  bool isTestNet = false;
+  Rate selectedRate;
+  ExchangeProvider exchangeProvider;
+  RateState rateState;
+  NetworkState networkState;
+  ThemeProvider theme = ThemeProvider();
+  int pageIndex = 0;
+  bool offline = false;
+  LoaderState loaderState = LoaderState();
 
   static AppState _instance = AppState._privateConstructor();
 
@@ -35,15 +42,10 @@ class AppState extends SentinelXChangeNotifier {
     return _instance;
   }
 
-  List<Wallet> wallets = [];
-  Wallet selectedWallet = Wallet(walletName: "WalletSTUB", xpubs: []);
-  bool isTestNet = false;
-  Rate selectedRate;
-  ExchangeProvider exchangeProvider;
-  ThemeProvider theme = ThemeProvider();
-  int pageIndex = 0;
-  bool offline = false;
-  LoaderState loaderState = LoaderState();
+  AppState._privateConstructor() {
+    networkState = NetworkState();
+    rateState = RateState();
+  }
 
   selectWallet(Wallet wallet) {
     this.selectedWallet = wallet;
@@ -154,14 +156,14 @@ class AppState extends SentinelXChangeNotifier {
   Future clearWalletData() async {
     await ApiChannel().setDojo("", "", "");
     await SystemChannel().clearDojo();
-    await TxState().clear();
+    await this.selectedWallet.txState.clear();
     await PrefsStore().clear();
-    TxState().clearListeners();
-    NetworkState().clearListeners();
-    RateState().clearListeners();
-    AppState().clearListeners();
-    AppState().loaderState.clearListeners();
-    theme.clearListeners();
+    this.selectedWallet.txState.clearListeners();
+    this.networkState.clearListeners();
+    this.rateState..clearListeners();
+    this.clearListeners();
+    this.loaderState.clearListeners();
+    this.theme.clearListeners();
     await selectedWallet.txDB.clear();
     await selectedWallet.dropAll();
     await initDatabase(null);

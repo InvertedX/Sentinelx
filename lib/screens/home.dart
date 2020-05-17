@@ -270,7 +270,7 @@ class _HomeState extends State<Home> {
             print(e);
           }
         }
-        RateState().getExchangeRates();
+        Provider.of<RateState>(context).getExchangeRates();
 //      await refreshUnspent();
         return;
       }

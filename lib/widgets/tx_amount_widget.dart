@@ -22,20 +22,21 @@ class _AmountWidgetState extends State<AmountWidget> with SingleTickerProviderSt
   void initState() {
     super.initState();
     _pageController = new PageController(initialPage: RateState().index, keepPage: true, viewportFraction: 0.89);
-    init();
+    //Wait for initstate to complete
+    Future.delayed(Duration()).then((value) => init());
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onLongPressUp: (){
+    RateState rateState = Provider.of<RateState>(context, listen: false);
 
-      },
+    return GestureDetector(
+      onLongPressUp: () {},
       onLongPress: () {
-        if (RateState().index == 2) {
-          RateState().setViewIndex(0);
+        if (rateState.index == 2) {
+          rateState.setViewIndex(0);
         } else {
-          RateState().setViewIndex(RateState().index + 1);
+          rateState.setViewIndex(rateState.index + 1);
         }
       },
       child: AbsorbPointer(
@@ -52,20 +53,19 @@ class _AmountWidgetState extends State<AmountWidget> with SingleTickerProviderSt
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "${RateState().formatToBTCRate(widget.result)}",
+                      "${rateState.formatToBTCRate(widget.result)}",
                       style: widget.style,
                       textAlign: widget.align,
                     ),
                   ],
                 ),
                 Consumer<RateState>(builder: (context, model, c) {
-                  return
-                    Column(
+                  return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        "${RateState().formatRate(widget.result)}",
+                        "${rateState.formatRate(widget.result)}",
                         style: widget.style,
                         textAlign: widget.align,
                       ),
@@ -77,7 +77,7 @@ class _AmountWidgetState extends State<AmountWidget> with SingleTickerProviderSt
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "${RateState().formatSatRate(widget.result)}",
+                      "${rateState.formatSatRate(widget.result)}",
                       style: widget.style,
                       textAlign: widget.align,
                     ),
@@ -90,9 +90,11 @@ class _AmountWidgetState extends State<AmountWidget> with SingleTickerProviderSt
   }
 
   void init() async {
-    RateState().addListener(() {
-      if (_pageController.hasClients && RateState().index < 3 && RateState().index >= 0) {
-        _pageController.animateToPage(RateState().index, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+    RateState rateState = Provider.of<RateState>(context);
+    rateState.addListener(() {
+      if (_pageController.hasClients && rateState.index < 3 && rateState.index >= 0) {
+        print( Provider.of<RateState>(context).rate);
+        _pageController.animateToPage(rateState.index, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
       }
     });
   }

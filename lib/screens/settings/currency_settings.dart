@@ -21,9 +21,10 @@ class _CurrencySettingsState extends State<CurrencySettings> {
 
   @override
   Widget build(BuildContext context) {
+    RateState rateState = Provider.of<RateState>(context);
     try {
-      selectedCurrency = RateState().provider.currency;
-      selectedPeriod = RateState().provider.getSelectedPeriod();
+      selectedCurrency = Provider.of<RateState>(context).provider.currency;
+      selectedPeriod = Provider.of<RateState>(context).provider.getSelectedPeriod();
     } catch (e) {}
     return Scaffold(
       appBar: AppBar(
@@ -49,7 +50,7 @@ class _CurrencySettingsState extends State<CurrencySettings> {
           ),
           ListTile(
             title: Text("Rate period"),
-            subtitle: Text(RateState().provider.getSelectedPeriod() == null ? "Default" : RateState().provider.getSelectedPeriod()),
+            subtitle: Text(rateState.provider.getSelectedPeriod() == null ? "Default" :rateState.provider.getSelectedPeriod()),
             onTap: showRatePeriodChooser,
           ),
           Divider(),
@@ -98,7 +99,7 @@ class _CurrencySettingsState extends State<CurrencySettings> {
   }
 
   void showRatePeriodChooser() {
-    ExchangeProvider provider = RateState().provider;
+    ExchangeProvider provider = Provider.of<RateState>(context).provider;
     showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -143,7 +144,7 @@ class _CurrencySettingsState extends State<CurrencySettings> {
       selectedCurrency = currency;
     });
     Navigator.pop(context);
-    await RateState().setCurrency(currency);
+    await Provider.of<RateState>(context).setCurrency(currency);
     setState(() {
       loading = false;
     });
@@ -187,7 +188,7 @@ class _CurrencySettingsState extends State<CurrencySettings> {
     });
     PrefsStore().put(PrefsStore.CURRENCY_RATE_PERIOD, period['key']);
     Navigator.pop(context);
-    await RateState().getExchangeRates();
+    await Provider.of<RateState>(context).getExchangeRates();
     setState(() {
       loading = false;
     });

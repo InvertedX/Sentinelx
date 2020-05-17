@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/network_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/exchange/rate.dart';
@@ -9,6 +10,10 @@ import 'package:sentinelx/shared_state/app_state.dart';
 Future<Map<String, dynamic>> parseJsonResponse(String response) async {
   Map<String, dynamic> json = jsonDecode(response);
   return json;
+}
+
+T get<T>(BuildContext context){
+  return Provider.of<T>(context);
 }
 
 getTorIconColor(TorStatus torStatus) {

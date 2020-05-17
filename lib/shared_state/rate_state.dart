@@ -12,15 +12,7 @@ class RateState extends SentinelXChangeNotifier {
 
   int index = 1;
 
-  RateState._privateConstructor() {
-    init();
-  }
-
-  static final RateState _instance = RateState._privateConstructor();
-
-  factory RateState() {
-    return _instance;
-  }
+  RateState();
 
   String currency = "USD";
   num rate = 1;

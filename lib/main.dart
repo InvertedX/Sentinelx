@@ -36,16 +36,17 @@ Future main() async {
   if (!enabled) {
     await initDatabase(null);
   }
+  final AppState appState = AppState();
   return runApp(Phoenix(
     child: MultiProvider(
       providers: [
-        Provider<AppState>.value(value: AppState()),
-        ChangeNotifierProvider<NetworkState>.value(value: NetworkState()),
-        ChangeNotifierProvider<RateState>.value(value: RateState()),
-        ChangeNotifierProvider<ThemeProvider>.value(value: AppState().theme),
-        ChangeNotifierProvider<Wallet>.value(value: AppState().selectedWallet),
-        ChangeNotifierProvider<TxState>.value(value: AppState().selectedWallet.txState),
-        ChangeNotifierProvider<LoaderState>.value(value: AppState().loaderState),
+        Provider<AppState>.value(value: appState),
+        ChangeNotifierProvider<NetworkState>.value(value: appState.networkState),
+        ChangeNotifierProvider<RateState>.value(value: appState.rateState),
+        ChangeNotifierProvider<ThemeProvider>.value(value: appState.theme),
+        ChangeNotifierProvider<Wallet>.value(value: appState.selectedWallet),
+        ChangeNotifierProvider<TxState>.value(value: appState.selectedWallet.txState),
+        ChangeNotifierProvider<LoaderState>.value(value: appState.loaderState),
       ],
       child: AppWrapper(),
     ),
@@ -90,13 +91,14 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
   void dispose() {
     //Dont do  database closing and dispose if local restart is applied
     if (!Phoenix.isRestarting) {
-      RateState().save();
+      AppState appState =  Provider.of<AppState>(context);
+      appState.rateState.save();
       PrefsStore().dispose();
       SentinelxDB.instance.closeConnection();
-      RateState().dispose();
-      AppState().dispose();
+      appState.rateState.dispose();
+      appState.dispose();
       WidgetsBinding.instance.removeObserver(this);
-    }else{
+    } else {
       Phoenix.isRestarting = false;
     }
     super.dispose();

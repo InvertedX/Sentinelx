@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/network_channel.dart';
 import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/main.dart';
@@ -364,7 +365,7 @@ class _SettingsState extends State<Settings> {
       );
 
       await Future.delayed(Duration(milliseconds: 800));
-      await AppState().clearWalletData();
+      await Provider.of<AppState>(context).clearWalletData();
       scaffoldKey.currentState.showSnackBar(snackbar);
       await Future.delayed(Duration(milliseconds: 900));
       setState(() {
