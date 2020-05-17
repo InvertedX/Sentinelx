@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/shared_state/rate_state.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 // ignore: must_be_immutable
 class AmountWidget extends StatefulWidget {
