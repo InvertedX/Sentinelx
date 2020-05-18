@@ -9,9 +9,8 @@ import 'package:sentinelx/models/db/database.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/db/sentinelx_db.dart';
 import 'package:sentinelx/models/dojo.dart';
-import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/screens/Lock/lock_screen.dart';
-import 'package:sentinelx/screens/home.dart';
+import 'package:sentinelx/screens/home/home_screen.dart';
 import 'package:sentinelx/screens/settings/settings.dart';
 import 'package:sentinelx/screens/splash_screen.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
@@ -20,7 +19,7 @@ import 'package:sentinelx/shared_state/network_state.dart';
 import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/shared_state/sentinel_state.dart';
 import 'package:sentinelx/shared_state/theme_provider.dart';
-import 'package:sentinelx/shared_state/tx_state.dart';
+import 'package:sentinelx/shared_state/view_model_provider.dart';
 import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/breath_widget.dart';
 import 'package:sentinelx/widgets/phoenix.dart';
@@ -41,12 +40,12 @@ Future main() async {
     child: MultiProvider(
       providers: [
         Provider<AppState>.value(value: appState),
-        ChangeNotifierProvider<NetworkState>.value(value: appState.networkState),
-        ChangeNotifierProvider<RateState>.value(value: appState.rateState),
-        ChangeNotifierProvider<ThemeState>.value(value: appState.theme),
-        ChangeNotifierProvider<Wallet>.value(value: appState.selectedWallet),
-        ChangeNotifierProvider<TxState>.value(value: appState.selectedWallet.txState),
-        ChangeNotifierProvider<LoaderState>.value(value: appState.loaderState),
+        Provider<NetworkState>.value(value: appState.networkState),
+        Provider<RateState>.value(value: appState.rateState),
+        Provider<ThemeState>.value(value: appState.theme),
+//        ChangeNotifierProvider<Wallet>.value(value: appState.selectedWallet),
+//        Provider<TxState>.value(value: appState.selectedWallet.txState),
+        Provider<LoaderState>.value(value: appState.loaderState),
       ],
       child: AppWrapper(),
     ),
@@ -61,14 +60,15 @@ class AppWrapper extends StatefulWidget {
 class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeState>(
-      builder: (context, model, child) {
+//    ThemeState themeState = Provider.of<ThemeState>(context);
+    return ViewModelProvider<ThemeState>(
+      builder: (ThemeState themeState) {
         return MaterialApp(
-          theme: model.theme,
+          theme: themeState.theme,
           debugShowCheckedModeBanner: false,
           routes: <String, WidgetBuilder>{
             '/': (context) => Lock(),
-            '/home': (context) => SentinelX(),
+            '/home': (context) => HomeScreen(),
             '/settings': (context) => Settings(),
           },
         );
@@ -89,7 +89,7 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    //Dont do  database closing and dispose if local restart is applied
+    //do not close or dispose if local restart is applied
     if (!Phoenix.isRestarting) {
       AppState appState = Provider.of<AppState>(context);
       appState.rateState.save();
@@ -131,7 +131,7 @@ class _LockState extends State<Lock> {
   StreamSubscription sub;
 
   GlobalKey<LockScreenState> _lockScreen = GlobalKey();
-  GlobalKey<ScaffoldState> _ScaffoldState = GlobalKey();
+  GlobalKey<ScaffoldState> _scaffoldState = GlobalKey();
 
   SessionStates sessionStates = SessionStates.IDLE;
   LockProgressState lockProgressState = LockProgressState.IDLE;
@@ -146,7 +146,7 @@ class _LockState extends State<Lock> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _ScaffoldState,
+      key: _scaffoldState,
       body: AnimatedSwitcher(
           switchInCurve: Curves.easeInExpo,
           duration: Duration(milliseconds: 400),
@@ -246,7 +246,7 @@ class _LockState extends State<Lock> {
         duration: Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       );
-      _ScaffoldState.currentState.showSnackBar(snackBar);
+      _scaffoldState.currentState.showSnackBar(snackBar);
       await Future.delayed(Duration(seconds: 2));
       initDb();
     }
@@ -264,8 +264,8 @@ class _LockState extends State<Lock> {
     if (lockProgressState == LockProgressState.IDLE) {
       return SizedBox.shrink();
     } else if (lockProgressState == LockProgressState.TOR) {
-      return Consumer<NetworkState>(
-        builder: (con, model, c) {
+      return ViewModelProvider<NetworkState>(
+        builder: (model) {
           return Container(
             child: Column(
               children: <Widget>[
@@ -302,8 +302,8 @@ class _LockState extends State<Lock> {
         },
       );
     } else if (lockProgressState == LockProgressState.DOJO) {
-      return Consumer<NetworkState>(
-        builder: (con, model, c) {
+      return ViewModelProvider<NetworkState>(
+        builder: (model) {
           return Container(
             child: Column(
               children: <Widget>[
@@ -332,19 +332,4 @@ class _LockState extends State<Lock> {
     return SizedBox.shrink();
   }
 }
-
-class SentinelX extends StatelessWidget {
-  final AppState appState = AppState();
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(providers: [
-      Provider<AppState>.value(value: appState),
-      ChangeNotifierProvider<NetworkState>.value(value: appState.networkState),
-      ChangeNotifierProvider<ThemeState>.value(value: appState.theme),
-      ChangeNotifierProvider<Wallet>.value(value: appState.selectedWallet),
-      ChangeNotifierProvider<TxState>.value(value: appState.selectedWallet.txState),
-      ChangeNotifierProvider<LoaderState>.value(value: appState.loaderState),
-    ], child: Home());
-  }
-}
+ 
