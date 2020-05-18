@@ -128,12 +128,14 @@ class NetworkChannel(private val applicationContext: Context, private val activi
                 val startIntent = Intent(applicationContext, TorService::class.java)
                 startIntent.action = TorService.STOP_SERVICE
                 applicationContext.startService(startIntent)
+                result.success(true);
             }
 
             "newNym" -> {
                 val startIntent = Intent(applicationContext, TorService::class.java)
                 startIntent.action = TorService.RENEW_IDENTITY
                 applicationContext.startService(startIntent)
+                result.success(true);
             }
 
             "connectivityStatus" -> {
@@ -173,7 +175,6 @@ class NetworkChannel(private val applicationContext: Context, private val activi
                         result.success(true);
                         return
                     }
-                    
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                     result.error(null, ex.message, null);
