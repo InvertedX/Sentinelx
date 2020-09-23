@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +10,7 @@ import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/screens/Track/track_screen.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
+import 'package:sentinelx/shared_state/view_model_provider.dart';
 import 'package:sentinelx/widgets/card_widget.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
@@ -28,8 +32,7 @@ class _WatchListState extends State<WatchList> with SingleTickerProviderStateMix
   void initState() {
     super.initState();
     scrollController = ScrollController();
-    fabSlideAnimationController = new AnimationController(duration: Duration(milliseconds: 100), vsync: this)
-      ..addListener(() => setState(() {}));
+    fabSlideAnimationController = new AnimationController(duration: Duration(milliseconds: 100), vsync: this)..addListener(() => setState(() {}));
 
     fabSlideAnimation = Tween(begin: 0.0, end: 100.0).animate(fabSlideAnimationController);
     scrollController.addListener(() {
@@ -52,7 +55,7 @@ class _WatchListState extends State<WatchList> with SingleTickerProviderStateMix
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Consumer<Wallet>(builder: (context, model, child) {
+        child: ViewModelProvider<Wallet>(builder: (model) {
           if (model.xpubs.length == 0) {
             return Container(
               height: double.infinity,
@@ -81,7 +84,7 @@ class _WatchListState extends State<WatchList> with SingleTickerProviderStateMix
             controller: scrollController,
             itemCount: model.xpubs.length,
             itemBuilder: (context, index) {
-              return ChangeNotifierProvider.value(
+              return Provider.value(
                 value: model.xpubs[index],
                 child: SlideUpWrapper(
                   Card(
@@ -158,7 +161,7 @@ class _WatchListState extends State<WatchList> with SingleTickerProviderStateMix
       ),
       floatingActionButton: Transform.translate(
         offset: Offset(0, fabSlideAnimation.value),
-        child: Consumer<Wallet>(builder: (context, model, child) {
+        child: ViewModelProvider<Wallet>(builder: (model) {
           if (model.xpubs.length == 0) {
             return SizedBox.shrink();
           }

@@ -72,7 +72,7 @@ class TxDB {
     final recordSnapshots = await txStore.find(await _db);
     return recordSnapshots.map((snapshot) {
       final tx = Tx.fromJson(snapshot.value);
-      tx.key = snapshot.key;
+      tx.key ="${snapshot.key}";
       return tx;
     }).toList();
   }
@@ -84,7 +84,7 @@ class TxDB {
       final recordSnapshots = await txStore.find(await _db);
       recordSnapshots.forEach((record) {
         final tx = Tx.fromJson(record.value);
-        tx.key = record.key;
+        tx.key = "${record.key}";
         var txExist = txes.firstWhere((item) => item.hash == tx.hash, orElse: () => null);
         if (txExist == null) {
           txes.add(tx);

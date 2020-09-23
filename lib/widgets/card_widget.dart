@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
+import 'package:sentinelx/shared_state/view_model_provider.dart';
 import 'package:sentinelx/utils/format_util.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
 import 'package:sentinelx/widgets/tx_amount_widget.dart';
@@ -15,6 +16,7 @@ class _CardWidgetState extends State<CardWidget> {
   @override
   Widget build(BuildContext context) {
     XPUBModel xpubModel = Provider.of<XPUBModel>(context);
+
     final IconData icon = (xpubModel.bip.contains("84") || xpubModel.bip.contains("49"))
         ? SentinelxIcons.segwit
         : xpubModel.bip.contains("44") ? SentinelxIcons.xpub : SentinelxIcons.bitcoin;
@@ -96,8 +98,8 @@ class _CardWidgetState extends State<CardWidget> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisSize: MainAxisSize.max,
                           children: <Widget>[
-                            Consumer<LoaderState>(
-                              builder: (context, model, child) {
+                            ViewModelProvider<LoaderState>(
+                              builder: ( model) {
                                 return (model.state == States.LOADING && model.loadingXpub == xpubModel.xpub)
                                     ? Container(
                                   alignment: Alignment.bottomLeft,

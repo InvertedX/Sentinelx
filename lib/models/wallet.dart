@@ -3,12 +3,13 @@ import 'package:sembast/sembast.dart';
 import 'package:sentinelx/models/tx.dart';
 import 'package:sentinelx/models/xpub.dart';
 import 'package:sentinelx/shared_state/balance.dart';
+import 'package:sentinelx/shared_state/change_notifier.dart';
 import 'package:sentinelx/shared_state/tx_state.dart';
 
 import 'db/sentinelx_db.dart';
 import 'db/tx_db.dart';
 
-class Wallet extends ChangeNotifier {
+class Wallet extends SentinelXChangeNotifier {
   static const String STORE_NAME = 'wallet';
 
   int id;

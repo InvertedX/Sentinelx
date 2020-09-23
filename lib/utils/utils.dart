@@ -13,7 +13,7 @@ Future<Map<String, dynamic>> parseJsonResponse(String response) async {
 }
 
 T get<T>(BuildContext context){
-  return Provider.of<T>(context);
+  return Provider.of<T>(context,listen: false);
 }
 
 getTorIconColor(TorStatus torStatus) {

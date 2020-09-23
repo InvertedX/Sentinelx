@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/shared_state/rate_state.dart';
+import 'package:sentinelx/shared_state/view_model_provider.dart';
 
 // ignore: must_be_immutable
 class AmountWidget extends StatefulWidget {
@@ -59,7 +60,7 @@ class _AmountWidgetState extends State<AmountWidget> with SingleTickerProviderSt
                     ),
                   ],
                 ),
-                Consumer<RateState>(builder: (context, model, c) {
+                ViewModelProvider<RateState>(builder: (model) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,10 +91,9 @@ class _AmountWidgetState extends State<AmountWidget> with SingleTickerProviderSt
   }
 
   void init() async {
-    RateState rateState = Provider.of<RateState>(context);
+    RateState rateState = Provider.of<RateState>(context,listen: false);
     rateState.addListener(() {
       if (_pageController.hasClients && rateState.index < 3 && rateState.index >= 0) {
-        print( Provider.of<RateState>(context).rate);
         _pageController.animateToPage(rateState.index, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
       }
     });

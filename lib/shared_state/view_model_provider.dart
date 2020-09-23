@@ -10,11 +10,8 @@ class ViewModelProvider<T extends SentinelXChangeNotifier> extends StatelessWidg
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<T>.value(
-      value: Provider.of<T>(context),
-      child: Consumer<T>(
-        builder: (BuildContext context, T value, Widget child) => builder(value),
-      ),
+    return Consumer<T>(
+      builder: (BuildContext context, T value, Widget child) => builder(value),
     );
   }
 }

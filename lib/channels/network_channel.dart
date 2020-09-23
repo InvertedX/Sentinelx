@@ -112,6 +112,7 @@ class NetworkChannel {
 
   Future stopTor() async {
     await platform.invokeMethod("stopTor");
+    return;
   }
 
   Future<ConnectivityStatus> getConnectivityStatus() async {

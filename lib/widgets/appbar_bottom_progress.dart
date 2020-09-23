@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/shared_state/loaderState.dart';
+import 'package:sentinelx/shared_state/view_model_provider.dart';
 
 class AppBarUnderProgress extends StatelessWidget implements PreferredSizeWidget {
   final bool loading;
@@ -26,11 +27,11 @@ class AppBarUnderProgress extends StatelessWidget implements PreferredSizeWidget
 class HomeAppBarProgress extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<LoaderState>(builder: (context, model, child) {
+    return ViewModelProvider<LoaderState>(builder: (model) {
       return AppBarUnderProgress(model.state == States.LOADING);
     });
   }
 
   @override
-  Size get preferredSize => Size(double.infinity,2 );
+  Size get preferredSize => Size(double.infinity, 2);
 }

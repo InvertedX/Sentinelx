@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:sentinelx/channels/api_channel.dart';
+import 'package:sentinelx/channels/network_channel.dart';
 import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/db/database.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
@@ -157,12 +158,15 @@ class AppState extends SentinelXChangeNotifier {
   Future clearWalletData() async {
     await ApiChannel().setDojo("", "", "");
     await SystemChannel().clearDojo();
+    await NetworkChannel().stopTor();
     await this.selectedWallet.txState.clear();
+    await this.selectedWallet.clear();
     await PrefsStore().clear();
     this.selectedWallet.txState.clearListeners();
     this.networkState.clearListeners();
     this.rateState..clearListeners();
     this.clearListeners();
+    this.networkState.clear();
     this.loaderState.clearListeners();
     this.theme.clearListeners();
     await selectedWallet.txDB.clear();

@@ -26,4 +26,10 @@ class NetworkState extends SentinelXChangeNotifier {
     this.torStatus = status;
     if (this.hasListeners) this.notifyListeners();
   }
+
+  void clear() {
+    torStatus = TorStatus.IDLE;
+    dojoConnected = false;
+    notifyListeners();
+  }
 }

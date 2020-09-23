@@ -9,6 +9,7 @@ class ThemeState extends SentinelXChangeNotifier {
   ThemeData theme ;
   ThemeData darkTheme;
   ThemeData lightTheme;
+
   static Map<String, Color> accentColors = {
     "Red": Colors.redAccent.shade200,
     "Green": Colors.greenAccent.shade700,

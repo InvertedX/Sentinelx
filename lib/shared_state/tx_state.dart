@@ -5,6 +5,9 @@ import 'package:sentinelx/shared_state/change_notifier.dart';
 class TxState extends SentinelXChangeNotifier {
   List<Tx> txList = [];
 
+
+  TxState();
+
   addTxes(List<Tx> txes) async {
     this.txList = await makeSections(txes);
     this.notifyListeners();

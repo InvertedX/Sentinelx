@@ -10,9 +10,16 @@ import 'package:sentinelx/utils/format_util.dart';
 class RateState extends SentinelXChangeNotifier {
   ExchangeProvider provider = new ExchangeProvider("{}");
 
+  static RateState _instance = RateState._();
+
   int index = 1;
 
-  RateState();
+  RateState._(){}
+
+
+  factory RateState() {
+    return _instance;
+  }
 
   String currency = "USD";
   num rate = 1;

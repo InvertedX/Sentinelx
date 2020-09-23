@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:sentinelx/channels/network_channel.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/shared_state/network_state.dart';
+import 'package:sentinelx/shared_state/view_model_provider.dart';
 import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/port_selector.dart';
 import 'package:sentinelx/widgets/sentinelx_icons.dart';
@@ -55,8 +56,8 @@ class _TorControlPanelState extends State<TorControlPanel> {
                         "Tor Routing",
                         style: Theme.of(context).textTheme.title.copyWith(fontSize: 16),
                       ),
-                      Consumer<NetworkState>(
-                        builder: (context, model, c) {
+                      ViewModelProvider<NetworkState>(
+                        builder: (model) {
                           bool isRunning = model.torStatus == TorStatus.CONNECTED;
                           return FlatButton(
                             onPressed: () {
@@ -81,8 +82,8 @@ class _TorControlPanelState extends State<TorControlPanel> {
                   Padding(
                     padding: EdgeInsets.all(12),
                   ),
-                  Consumer<NetworkState>(
-                    builder: (con, model, c) {
+                  ViewModelProvider<NetworkState>(
+                    builder: (model) {
                       return Container(
                         child: Column(
                           children: <Widget>[
@@ -121,7 +122,7 @@ class _TorControlPanelState extends State<TorControlPanel> {
                     title: Text("SOCKS Port"),
                     trailing: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 24),
-                      child: Text(port==-1 ? "auto": "$port" ),
+                      child: Text(port == -1 ? "auto" : "$port"),
                     ),
                   ),
                   Divider(),

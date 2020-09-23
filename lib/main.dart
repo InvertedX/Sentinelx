@@ -39,13 +39,11 @@ Future main() async {
   return runApp(Phoenix(
     child: MultiProvider(
       providers: [
-        Provider<AppState>.value(value: appState),
-        Provider<NetworkState>.value(value: appState.networkState),
-        Provider<RateState>.value(value: appState.rateState),
-        Provider<ThemeState>.value(value: appState.theme),
-//        ChangeNotifierProvider<Wallet>.value(value: appState.selectedWallet),
-//        Provider<TxState>.value(value: appState.selectedWallet.txState),
-        Provider<LoaderState>.value(value: appState.loaderState),
+        ChangeNotifierProvider<AppState>.value(value: appState),
+        ChangeNotifierProvider<NetworkState>.value(value: appState.networkState),
+        ChangeNotifierProvider<RateState>.value(value: appState.rateState),
+        ChangeNotifierProvider<ThemeState>.value(value: appState.theme),
+        ChangeNotifierProvider<LoaderState>.value(value: appState.loaderState),
       ],
       child: AppWrapper(),
     ),
@@ -332,4 +330,3 @@ class _LockState extends State<Lock> {
     return SizedBox.shrink();
   }
 }
- 

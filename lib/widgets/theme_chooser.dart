@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/shared_state/theme_provider.dart';
+import 'package:sentinelx/shared_state/view_model_provider.dart';
 
 class ThemeChooser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Consumer<ThemeState>(
-        builder: (context, model, child) {
+      child: ViewModelProvider<ThemeState>(
+        builder: (model) {
           return Container(
             height: MediaQuery.of(context).size.height / 2.8,
             child: SingleChildScrollView(
@@ -34,25 +35,16 @@ class ThemeChooser extends StatelessWidget {
                             child: Container(
                               decoration: BoxDecoration(
                                   border: Border.all(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .title
-                                          .color
-                                          .withOpacity(model.isDarkThemeEnabled()
-                                              ? 0.0
-                                              : 0.9),
+                                      color: Theme.of(context).textTheme.title.color.withOpacity(model.isDarkThemeEnabled() ? 0.0 : 0.9),
                                       style: BorderStyle.solid,
-                                      width:
-                                          model.isDarkThemeEnabled() ? 0 : 0.9),
+                                      width: model.isDarkThemeEnabled() ? 0 : 0.9),
                                   borderRadius: BorderRadius.circular(6)),
                               child: Wrap(
                                 direction: Axis.vertical,
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
                                   Card(
-                                    color: Provider.of<ThemeState>(context)
-                                        .lightTheme
-                                        .backgroundColor,
+                                    color: Provider.of<ThemeState>(context).lightTheme.backgroundColor,
                                     elevation: 2,
                                     child: Container(
                                       width: 60,
@@ -61,9 +53,7 @@ class ThemeChooser extends StatelessWidget {
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Text("Light",
-                                        style:
-                                            Theme.of(context).textTheme.caption),
+                                    child: Text("Light", style: Theme.of(context).textTheme.caption),
                                   ),
                                 ],
                               ),
@@ -77,13 +67,7 @@ class ThemeChooser extends StatelessWidget {
                             child: Container(
                               decoration: BoxDecoration(
                                   border: Border.all(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .title
-                                          .color
-                                          .withOpacity(model.isDarkThemeEnabled()
-                                              ? 0.9
-                                              : 0.0),
+                                      color: Theme.of(context).textTheme.title.color.withOpacity(model.isDarkThemeEnabled() ? 0.9 : 0.0),
                                       style: BorderStyle.solid,
                                       width: 1),
                                   borderRadius: BorderRadius.circular(6)),
@@ -92,9 +76,7 @@ class ThemeChooser extends StatelessWidget {
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
                                   Card(
-                                    color: Provider.of<ThemeState>(context)
-                                        .darkTheme
-                                        .backgroundColor,
+                                    color: Provider.of<ThemeState>(context).darkTheme.backgroundColor,
                                     elevation: 2,
                                     child: Container(
                                       width: 60,
@@ -103,9 +85,7 @@ class ThemeChooser extends StatelessWidget {
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Text("Dark",
-                                        style:
-                                            Theme.of(context).textTheme.caption),
+                                    child: Text("Dark", style: Theme.of(context).textTheme.caption),
                                   ),
                                 ],
                               ),
@@ -135,15 +115,8 @@ class ThemeChooser extends StatelessWidget {
                                         decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             border: Border.all(
-                                                color: Theme.of(context)
-                                                    .textTheme
-                                                    .caption
-                                                    .color,
-                                                width: Provider.of<ThemeState>(
-                                                            context)
-                                                        .isActiveAccent(accent)
-                                                    ? 2
-                                                    : 0,
+                                                color: Theme.of(context).textTheme.caption.color,
+                                                width: Provider.of<ThemeState>(context).isActiveAccent(accent) ? 2 : 0,
                                                 style: BorderStyle.solid),
                                             color: accent),
                                       ),

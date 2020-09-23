@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/wallet.dart';
 import 'package:sentinelx/shared_state/balance.dart';
+import 'package:sentinelx/shared_state/view_model_provider.dart';
 import 'package:sentinelx/utils/format_util.dart';
 import 'package:sentinelx/widgets/tx_amount_widget.dart';
 
@@ -40,8 +41,7 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
                         maxLines: 1,
                         textAlign: TextAlign.start,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w400),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                       ),
                     ],
                   ),
@@ -50,14 +50,13 @@ class _BalanceCardWidgetState extends State<BalanceCardWidget> {
                   flex: 2,
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: ChangeNotifierProvider<BalanceModel>.value(
+                    child: Provider<BalanceModel>.value(
                       value: wallet.balanceModel,
-                      child: Consumer<BalanceModel>(
-                        builder: (context, model, c) {
+                      child: ViewModelProvider<BalanceModel>(
+                        builder: (model) {
                           return AmountWidget(
                             model.balance,
-                            style:    TextStyle(
-                              fontSize: 26, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                             height: 100,
                           );
 //                          return Text(

@@ -11,6 +11,7 @@ import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/models/dojo.dart';
 import 'package:sentinelx/shared_state/network_state.dart';
 import 'package:sentinelx/shared_state/theme_provider.dart';
+import 'package:sentinelx/shared_state/view_model_provider.dart';
 import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/confirm_modal.dart';
 import 'package:sentinelx/widgets/dojo_progress.dart';
@@ -80,10 +81,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
                         },
                         icon: Icon(Icons.camera),
                         label: Text("Scan DOJO QR")),
-                    OutlineButton.icon(
-                        onPressed: readClipboard,
-                        icon: Icon(Icons.content_paste),
-                        label: Text("Paste payload"))
+                    OutlineButton.icon(onPressed: readClipboard, icon: Icon(Icons.content_paste), label: Text("Paste payload"))
                   ],
                 ),
               ),
@@ -97,9 +95,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
               SingleChildScrollView(
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 120),
-                  child: _dojo != null
-                      ? DojoCard(_dojo, this.clear)
-                      : SizedBox.shrink(),
+                  child: _dojo != null ? DojoCard(_dojo, this.clear) : SizedBox.shrink(),
                   margin: EdgeInsets.symmetric(horizontal: 12),
                 ),
               ),
@@ -111,7 +107,6 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
   }
 
   _validate(String val) async {
-
     try {
       await Future.delayed(Duration(milliseconds: 500));
       Dojo dojo = Dojo.fromJson(json.decode(val));
@@ -120,8 +115,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
         if (dojo.pairing.url.contains("test") && !isTestnet) {
           bool confirm = await showConfirmModel(
             context: context,
-            title: Text(
-                "Warning: youre trying to connect a dojo that is configured for testnet and you sentinel is running on main net",
+            title: Text("Warning: youre trying to connect a dojo that is configured for testnet and you sentinel is running on main net",
                 style: Theme.of(context).textTheme.subhead),
             iconPositive: new Icon(
               Icons.check,
@@ -142,10 +136,8 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
     } catch (er) {
       print(er);
       final snackBar = SnackBar(
-        content: Text(
-            "Error : $er",
-            style: Theme.of(context).textTheme.subtitle.copyWith(color: Colors.white)),
-        backgroundColor: ThemeState.accentColors["Red"] ,
+        content: Text("Error : $er", style: Theme.of(context).textTheme.subtitle.copyWith(color: Colors.white)),
+        backgroundColor: ThemeState.accentColors["Red"],
         duration: Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       );
@@ -157,8 +149,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
 
   void _connectToDojo(Dojo dojo) async {
     try {
-      _pageController.animateToPage(1,
-          duration: Duration(milliseconds: 600), curve: Curves.easeIn);
+      _pageController.animateToPage(1, duration: Duration(milliseconds: 600), curve: Curves.easeIn);
       bool isTorRunning = NetworkChannel().status == TorStatus.CONNECTED;
       await Future.delayed(Duration(milliseconds: 600));
       if (isTorRunning) {
@@ -177,16 +168,13 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
       _progressKey.currentState.updateProgress(70);
       _progressKey.currentState.updateText("Authenticating...");
       await Future.delayed(Duration(milliseconds: 500));
-      await ApiChannel()
-          .authenticateDojo(dojo.pairing.url, dojo.pairing.apikey);
+      await ApiChannel().authenticateDojo(dojo.pairing.url, dojo.pairing.apikey);
 
       _progressKey.currentState.updateText("Autheniticated");
 
-      DojoAuth dojoAuth = await ApiChannel()
-          .authenticateDojo(dojo.pairing.url, dojo.pairing.apikey);
+      DojoAuth dojoAuth = await ApiChannel().authenticateDojo(dojo.pairing.url, dojo.pairing.apikey);
 
-      await ApiChannel().setDojo(dojoAuth.authorizations.accessToken,
-          dojoAuth.authorizations.refreshToken, dojo.pairing.url);
+      await ApiChannel().setDojo(dojoAuth.authorizations.accessToken, dojoAuth.authorizations.refreshToken, dojo.pairing.url);
 
       _progressKey.currentState.updateText("Success");
 
@@ -197,15 +185,14 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
 
       await PrefsStore().put(PrefsStore.DOJO, jsonEncode(dojo.toJson()));
 
-      await SystemChannel().setDojo(dojo.pairing.url,dojo.pairing.apikey);
+      await SystemChannel().setDojo(dojo.pairing.url, dojo.pairing.apikey);
 
       setState(() {
         _dojo = dojo;
       });
 
       await Future.delayed(Duration(milliseconds: 500));
-      _pageController.animateToPage(2,
-          duration: Duration(milliseconds: 600), curve: Curves.easeIn);
+      _pageController.animateToPage(2, duration: Duration(milliseconds: 600), curve: Curves.easeIn);
     } catch (e) {
       print("e $e");
     }
@@ -224,8 +211,7 @@ class _DojoConfigureScreenState extends State<DojoConfigureScreen> {
   clear() async {
     bool confirm = await showConfirmModel(
       context: context,
-      title: Text("Are you sure want to disconnect from dojo ?",
-          style: Theme.of(context).textTheme.subhead),
+      title: Text("Are you sure want to disconnect from dojo ?", style: Theme.of(context).textTheme.subhead),
       iconPositive: new Icon(
         Icons.check,
       ),
@@ -275,10 +261,7 @@ class _DojoCardState extends State<DojoCard> {
           borderRadius: const BorderRadius.all(
             Radius.circular(8.0),
           ),
-          side: BorderSide(
-              color: Theme.of(context).textTheme.title.color.withOpacity(0.3),
-              width: 1,
-              style: BorderStyle.solid)),
+          side: BorderSide(color: Theme.of(context).textTheme.title.color.withOpacity(0.3), width: 1, style: BorderStyle.solid)),
       elevation: 24,
       child: Container(
         child: Column(
@@ -297,15 +280,14 @@ class _DojoCardState extends State<DojoCard> {
                       ),
                       Row(
                         children: <Widget>[
-                          Consumer<NetworkState>(
-                            builder: (context, model, child) {
+                          ViewModelProvider<NetworkState>(
+                            builder: (model) {
                               return IconButton(
                                 icon: Icon(
                                   SentinelxIcons.onion_tor,
                                   color: getTorIconColor(model.torStatus),
                                 ),
-                                onPressed: () {
-                                },
+                                onPressed: () {},
                               );
                             },
                           ),
@@ -349,15 +331,13 @@ class _DojoCardState extends State<DojoCard> {
                     message: "Disconnect dojo",
                     child: FlatButton(
                       onPressed: this.widget.clearCallback,
-                      child: Icon(Icons.power_settings_new,
-                          color: Colors.redAccent),
+                      child: Icon(Icons.power_settings_new, color: Colors.redAccent),
                     ),
                   ),
                   Tooltip(
                     message: "Show dojo pairing code",
                     child: FlatButton(
-                      onPressed: () =>
-                          {_showQR(jsonEncode(widget._dojo.toJson()), context)},
+                      onPressed: () => {_showQR(jsonEncode(widget._dojo.toJson()), context)},
                       child: Icon(
                         SentinelxIcons.qrcode,
                         size: 16,
@@ -414,9 +394,7 @@ class _DojoCardState extends State<DojoCard> {
   void reAuthenticate() async {
     bool confirm = await showConfirmModel(
       context: context,
-      title: Text(
-          "Sentinel x will reauthenticate dojo. do you want to continue?",
-          style: Theme.of(context).textTheme.subhead),
+      title: Text("Sentinel x will reauthenticate dojo. do you want to continue?", style: Theme.of(context).textTheme.subhead),
       iconPositive: new Icon(
         Icons.check,
       ),
@@ -431,10 +409,8 @@ class _DojoCardState extends State<DojoCard> {
         this.setState(() {
           _loadingDojo = true;
         });
-        DojoAuth dojoAuth = await ApiChannel().authenticateDojo(
-            widget._dojo.pairing.url, widget._dojo.pairing.apikey);
-        await ApiChannel().setDojo(dojoAuth.authorizations.accessToken,
-            dojoAuth.authorizations.accessToken, widget._dojo.pairing.url);
+        DojoAuth dojoAuth = await ApiChannel().authenticateDojo(widget._dojo.pairing.url, widget._dojo.pairing.apikey);
+        await ApiChannel().setDojo(dojoAuth.authorizations.accessToken, dojoAuth.authorizations.accessToken, widget._dojo.pairing.url);
         this.setState(() {
           _loadingDojo = false;
         });

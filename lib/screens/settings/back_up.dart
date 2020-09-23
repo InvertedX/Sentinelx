@@ -1,17 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:sentinelx/channels/api_channel.dart';
 import 'package:sentinelx/channels/system_channel.dart';
 import 'package:sentinelx/models/db/backup_manager.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
 import 'package:sentinelx/screens/settings/restore_backup.dart';
 import 'package:sentinelx/widgets/appbar_bottom_progress.dart';
-import 'package:sentinelx/widgets/checkbox.dart';
 
 class BackUpSettingsScreen extends StatefulWidget {
   @override
@@ -43,7 +38,7 @@ class _BackUpSettingsScreenState extends State<BackUpSettingsScreen> {
           ListTile(
             title: Text("Restore"),
             subtitle: Text("This will erase current data"),
-            onTap: (){
+            onTap: () {
               Navigator.push(context, new MaterialPageRoute(
                 builder: (c) {
                   return RestoreScreen();
@@ -83,7 +78,7 @@ class _BackUpSettingsScreenState extends State<BackUpSettingsScreen> {
                       ),
                       Divider(),
                       ListTile(
-                        onTap: (){
+                        onTap: () {
                           stateSetter(() {
                             _radioValue = 1;
                           });
@@ -100,7 +95,7 @@ class _BackUpSettingsScreenState extends State<BackUpSettingsScreen> {
                         ),
                       ),
                       ListTile(
-                        onTap: (){
+                        onTap: () {
                           stateSetter(() {
                             _radioValue = 2;
                           });
@@ -247,7 +242,7 @@ class _BackUpSettingsScreenState extends State<BackUpSettingsScreen> {
                         String name = '${formatter.format(DateTime.now())}_sentinelx_backup.txt';
                         try {
                           bool saved = await SystemChannel().saveToFile(backup, name);
-                          if (saved !=null && saved)
+                          if (saved != null && saved)
                             scaffold.currentState.showSnackBar(
                               new SnackBar(
                                 content: new Text(

@@ -17,7 +17,6 @@ import 'package:sentinelx/shared_state/network_state.dart';
 import 'package:sentinelx/shared_state/rate_state.dart';
 import 'package:sentinelx/widgets/ExpansionPanelCustom.dart';
 import 'package:sentinelx/widgets/appbar_bottom_progress.dart';
-import 'package:sentinelx/widgets/phoenix.dart';
 import 'package:sentinelx/widgets/sentinel_icon_set_icons.dart';
 import 'package:sentinelx/widgets/tx_amount_widget.dart';
 
@@ -393,14 +392,14 @@ class _RestoreScreenState extends State<RestoreScreen> {
     await Future.delayed(Duration(milliseconds: 810));
 
     progressXPUB.currentState.setMessage("XPUBs and addresses |  (0/${selectedXPUB.length})");
-    Wallet wallet =  Provider.of<AppState>(context).selectedWallet;
+    Wallet wallet = Provider.of<AppState>(context, listen: false).selectedWallet;
 
     //importing xpubs
     for (int i = 0; i < selectedXPUB.length; i++) {
       await Future.delayed(Duration(milliseconds: 810));
       bool exist = false;
       XPUBModel xpub = selectedXPUB[i];
-      progressXPUB.currentState.setProgress(i/selectedXPUB.length);
+      progressXPUB.currentState.setProgress(i / selectedXPUB.length);
       progressXPUB.currentState.setMessage("XPUBs and addresses |  (${selectedXPUB.indexOf(xpub) + 1}/${selectedXPUB.length})");
       wallet.xpubs.forEach((registered) {
         if (xpub.xpub == registered.xpub) {
@@ -440,12 +439,12 @@ class _RestoreScreenState extends State<RestoreScreen> {
       await Future.delayed(Duration(milliseconds: 500));
       progressPrefs.currentState.setProgress(1);
       // Set rate from imported prefs
-      await Provider.of<RateState>(context).init();
+      await Provider.of<RateState>(context, listen: false).init();
     }
     if (selectedDOJO != null) {
       await Future.delayed(Duration(milliseconds: 500));
       progressDOJO.currentState.setProgress(0.6);
-      Provider.of<NetworkState>(context).setDojoStatus(true);
+      Provider.of<NetworkState>(context, listen: false).setDojoStatus(true);
       await PrefsStore().put(PrefsStore.DOJO, jsonEncode(selectedDOJO.toJson()));
       await SystemChannel().setDojo(selectedDOJO.pairing.url, selectedDOJO.pairing.apikey);
       //tor is always on if dojo is enabled

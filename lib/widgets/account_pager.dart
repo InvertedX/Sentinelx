@@ -7,6 +7,8 @@ import 'package:sentinelx/screens/Track/track_screen.dart';
 import 'package:sentinelx/screens/watch_list.dart';
 import 'package:sentinelx/shared_state/app_state.dart';
 import 'package:sentinelx/shared_state/rate_state.dart';
+import 'package:sentinelx/shared_state/view_model_provider.dart';
+import 'package:sentinelx/utils/utils.dart';
 import 'package:sentinelx/widgets/balance_card_widget.dart';
 import 'package:sentinelx/widgets/card_widget.dart';
 
@@ -40,8 +42,8 @@ class _AccountsPagerState extends State<AccountsPager>
       color: Theme
           .of(context)
           .scaffoldBackgroundColor,
-      child: Consumer<Wallet>(
-        builder: (context, model, child) {
+      child: ViewModelProvider<Wallet>(
+        builder: ( model) {
           wallet = model;
           final count = model.xpubs.length == 0 ? 1 : model.xpubs.length + 2;
           return PageView.builder(
@@ -109,7 +111,7 @@ class _AccountsPagerState extends State<AccountsPager>
           height: 200,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ChangeNotifierProvider.value(
+            child: Provider.value(
                 value: wallet.xpubs[index - 1],
                 child: Card(
                   elevation: 8,
@@ -122,7 +124,7 @@ class _AccountsPagerState extends State<AccountsPager>
   }
 
   void _onPageChange(int index) {
-    Provider.of<AppState>(context).setPageIndex(index);
+    get<AppState>(context).setPageIndex(index);
   }
 
   @override

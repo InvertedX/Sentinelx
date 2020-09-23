@@ -20,7 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   sembast: ^2.0.1
-  provider: ^3.0.0+1
+  provider: ^4.1.2
   qr_flutter:
     git:
       url: git://github.com/lukef/qr.flutter.git

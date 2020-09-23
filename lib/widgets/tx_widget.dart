@@ -11,25 +11,18 @@ import 'dart:math' as math;
 
 import 'package:sentinelx/widgets/tx_amount_widget.dart';
 
-class TxWidget extends StatefulWidget {
+class TxWidget extends StatelessWidget {
   final Tx tx;
   final Function callback;
 
   TxWidget({this.tx, this.callback});
 
   @override
-  _TxWidgetState createState() => _TxWidgetState();
-}
-
-class _TxWidgetState extends State<TxWidget> {
-  bool isExpanded = false;
-
-  @override
   Widget build(BuildContext context) {
-    Color txColor = widget.tx.result > 0 ? Colors.greenAccent : Colors.redAccent;
+    Color txColor = tx.result > 0 ? Colors.greenAccent : Colors.redAccent;
     return InkWell(
       onTap: () {
-        widget.callback(widget.tx);
+        callback(tx);
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 18),
@@ -47,22 +40,21 @@ class _TxWidgetState extends State<TxWidget> {
                       padding: EdgeInsets.all(2),
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
-                        child: Icon(widget.tx.result > 0 ? Icons.call_received : Icons.call_made,
-                            color: txColor),
+                        child: Icon(tx.result > 0 ? Icons.call_received : Icons.call_made, color: txColor),
                       ),
                     ),
                   ),
                   SizedBox(
                     height: 6,
                   ),
-                  Text(formatTime(widget.tx.time))
+                  Text(formatTime(tx.time))
                 ],
               ),
               flex: 1,
             ),
             Expanded(
               child: AmountWidget(
-                widget.tx.result,
+                tx.result,
                 align: TextAlign.center,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 height: 50,
@@ -76,6 +68,6 @@ class _TxWidgetState extends State<TxWidget> {
   }
 
   String getAmount() {
-    return "${satToBtc(widget.tx.result)} BTC";
+    return "${satToBtc(tx.result)} BTC";
   }
 }

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:sentinelx/models/dojo.dart';
-import 'package:sentinelx/models/exchange_rate.dart';
 import 'package:sentinelx/models/tx_details_response.dart';
 
 class ApiChannel {
@@ -49,6 +48,7 @@ class ApiChannel {
 
   Future<String> getUnspent(List<String> xpubsAndAddresses) async {
     String joined = xpubsAndAddresses.join("|");
+    print("indexindexindexindex jsoin ${joined}");
     String response = await platform.invokeMethod("unspent", {'params': joined});
     return response;
   }

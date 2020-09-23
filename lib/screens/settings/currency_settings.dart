@@ -2,11 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentinelx/models/db/prefs_store.dart';
-import 'package:sentinelx/models/exchange/LocalBitcoinRateProvider.dart';
-import 'package:sentinelx/models/exchange/currencies.dart';
 import 'package:sentinelx/models/exchange/exchange_provider.dart';
-import 'package:sentinelx/models/exchange/rate.dart';
 import 'package:sentinelx/shared_state/rate_state.dart';
+import 'package:sentinelx/shared_state/view_model_provider.dart';
 import 'package:sentinelx/widgets/appbar_bottom_progress.dart';
 
 class CurrencySettings extends StatefulWidget {
@@ -31,9 +29,7 @@ class _CurrencySettingsState extends State<CurrencySettings> {
         title: Text("Currency settings"),
         bottom: AppBarUnderProgress(loading),
       ),
-      backgroundColor: Theme
-          .of(context)
-          .backgroundColor,
+      backgroundColor: Theme.of(context).backgroundColor,
       body: ListView(
         children: <Widget>[
           Divider(),
@@ -50,7 +46,7 @@ class _CurrencySettingsState extends State<CurrencySettings> {
           ),
           ListTile(
             title: Text("Rate period"),
-            subtitle: Text(rateState.provider.getSelectedPeriod() == null ? "Default" :rateState.provider.getSelectedPeriod()),
+            subtitle: Text(rateState.provider.getSelectedPeriod() == null ? "Default" : rateState.provider.getSelectedPeriod()),
             onTap: showRatePeriodChooser,
           ),
           Divider(),
@@ -65,24 +61,23 @@ class _CurrencySettingsState extends State<CurrencySettings> {
         builder: (context) {
           return Card(
             margin: const EdgeInsets.all(8.0),
-            child: Consumer<RateState>(
-              builder: (context, rateState, _) {
+            child: ViewModelProvider<RateState>(
+              builder: (rateState) {
                 return Container(
                   height: double.infinity,
                   child: ListView.separated(
-                    separatorBuilder: (b, c) =>
-                        Divider(
-                          height: 1,
-                        ),
+                    separatorBuilder: (b, c) => Divider(
+                      height: 1,
+                    ),
                     itemBuilder: (BuildContext context, int i) {
                       String curr = rateState.provider.availableCurrencies[i];
                       return ListTile(
                         title: Text(curr),
                         trailing: selectedCurrency == curr
                             ? Icon(
-                          Icons.check,
-                          color: Colors.greenAccent,
-                        )
+                                Icons.check,
+                                color: Colors.greenAccent,
+                              )
                             : SizedBox.shrink(),
                         onTap: () {
                           this.setCurrency(rateState.provider.availableCurrencies[i]);
@@ -105,8 +100,8 @@ class _CurrencySettingsState extends State<CurrencySettings> {
         builder: (context) {
           return Card(
             margin: const EdgeInsets.all(8.0),
-            child: Consumer<RateState>(
-              builder: (context, rateState, _) {
+            child: ViewModelProvider<RateState>(
+              builder: (rateState) {
                 return Wrap(
                   children: provider.ratePeriods.map((period) {
                     return Wrap(
@@ -144,7 +139,7 @@ class _CurrencySettingsState extends State<CurrencySettings> {
       selectedCurrency = currency;
     });
     Navigator.pop(context);
-    await Provider.of<RateState>(context).setCurrency(currency);
+    await Provider.of<RateState>(context, listen: false).setCurrency(currency);
     setState(() {
       loading = false;
     });
@@ -194,4 +189,3 @@ class _CurrencySettingsState extends State<CurrencySettings> {
     });
   }
 }
-
